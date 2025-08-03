@@ -1,0 +1,34 @@
+﻿// Firebase & Admin Dashboard Configuration import { initializeApp } from "firebase/app"; import { getDatabase, ref, set, onValue, get, child } from "firebase/database"; import { Chart } from 'chart.js';
+
+
+const firebaseConfig = { apiKey: "AIzaSyAcEAciQvvUvFb5BFzi5V...", authDomain: "echanjplus.firebaseapp.com", databaseURL: "https://echanjplus-default-rtdb.firebaseio.com", projectId: "echanjplus", storageBucket: "echanjplus.appspot.com", messagingSenderId: "1098329483990", appId: "1:1098329483990:web:c7f8b88a..." };
+
+
+const app = initializeApp(firebaseConfig); const database = getDatabase(app);
+
+
+// Transaction Constraints const MINIMUM_MONTAN = 100;
+
+
+// Fonksyon pou verifye si montan valab function verifyMontan(montan) { return parseInt(montan) >= MINIMUM_MONTAN; }
+
+
+// Fonksyon pou mete done nan Firebase function saveTransaction(data) { if (!verifyMontan(data.montan)) { alert("Montan twò fèb. Se 100 goud ki minimòm lan."); return; } const date = new Date().toISOString(); const code = "T-" + Math.random().toString(36).substr(2, 6).toUpperCase(); set(ref(database, 'transactions/' + code), { ...data, code, date, status: "pending" }); alert("Tranzaksyon an anrejistre avèk kòd: " + code); }
+
+
+// Fonksyon pou verifye kòd sou paj admin lan function verifyCode(code) { const dbRef = ref(database); get(child(dbRef, transactions/${code})).then((snapshot) => { if (snapshot.exists()) { const data = snapshot.val(); document.getElementById("result").innerHTML = <h3>Tranzaksyon Valab ✅</h3> <p><strong>Non:</strong> ${data.nom}</p> <p><strong>Nimewo:</strong> ${data.nimewo}</p> <p><strong>Montan:</strong> ${data.montan} G</p> <p><strong>Dat:</strong> ${data.date}</p> <p><strong>Status:</strong> ${data.status}</p>; } else { alert("Kòd sa pa egziste sou sistèm nan."); } }); }
+
+
+// Fonksyon pou afiche grafik function showChart(trxData) { const ctx = document.getElementById('chart').getContext('2d'); const labels = trxData.map(d => d.date.split('T')[0]); const data = trxData.map(d => parseInt(d.montan)); new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Tranzaksyon pa jou', data, backgroundColor: 'rgba(255, 206, 86, 0.5)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 1 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } }); }
+
+
+// Fonksyon pou chaje tout tranzaksyon function fetchAllTransactions() { const dbRef = ref(database, 'transactions'); onValue(dbRef, (snapshot) => { const data = snapshot.val(); const all = Object.values(data || {}); showChart(all); renderTransactionsTable(all); }); }
+
+
+// Afichaj tab tranzaksyon pou admin function renderTransactionsTable(list) { const tbody = document.getElementById("admin-table-body"); tbody.innerHTML = ""; list.forEach((item) => { const row = <tr> <td>${item.code}</td> <td>${item.nom}</td> <td>${item.nimewo}</td> <td>${item.montan} G</td> <td>${item.date}</td> <td>${item.status}</td> </tr>; tbody.innerHTML += row; }); }
+
+
+// Fonksyon pou telechaje CSV function downloadCSV(data) { const header = "Code,Non,Nimewo,Montan,Dat,Status\n"; const body = data.map(d => ${d.code},${d.nom},${d.nimewo},${d.montan},${d.date},${d.status}).join("\n"); const csv = header + body; const blob = new Blob([csv], { type: 'text/csv' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "transactions.csv"; link.click(); }
+
+
+// Egzanp Rele Fonksyon yo // saveTransaction({ nom: "Stevenson", nimewo: "50947111123", montan: "150" }); // verifyCode("T-XXXXXX"); // fetchAllTransactions();
