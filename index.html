@@ -1,34 +1,174 @@
-﻿// Firebase & Admin Dashboard Configuration import { initializeApp } from "firebase/app"; import { getDatabase, ref, set, onValue, get, child } from "firebase/database"; import { Chart } from 'chart.js';
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echanj Plus</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #0f0f0f, #1c1c1c);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: #222;
+      width: 100%;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.6);
+    }
+    header h1 {
+      font-size: 2.5rem;
+      color: #ffc107;
+      text-shadow: 2px 2px #000;
+    }
+    header p {
+      font-size: 1rem;
+      color: #ccc;
+      margin-top: 0.5rem;
+    }
+    .btn {
+      background-color: #ffc107;
+      color: #000;
+      padding: 1rem 2rem;
+      margin: 0.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .btn:hover {
+      background-color: #e0a800;
+      transform: scale(1.05);
+    }
+    section {
+      width: 100%;
+      max-width: 500px;
+      background: #1e1e1e;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 15px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    }
+    section.active {
+      display: flex;
+    }
+    section h2 {
+      color: #ffc107;
+      margin-bottom: 1rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
 
+  <header>
+    <h1>Echanj Plus</h1>
+    <p>Vit • Senp • Serye</p>
+    <button class="btn" onclick="showSection('minit')">Voye Minit</button>
+    <button class="btn" onclick="showSection('peyman')">Peyman</button>
+  </header>
 
-const firebaseConfig = { apiKey: "AIzaSyAcEAciQvvUvFb5BFzi5V...", authDomain: "echanjplus.firebaseapp.com", databaseURL: "https://echanjplus-default-rtdb.firebaseio.com", projectId: "echanjplus", storageBucket: "echanjplus.appspot.com", messagingSenderId: "1098329483990", appId: "1:1098329483990:web:c7f8b88a..." };
+  <section id="minit" class="section">
+    <h2>Antre Kantite Minit</h2>
+    <input type="number" id="minitVal" placeholder="eg: 100" min="100">
+    <button class="btn" onclick="voyeUSSD('digicel')">Digicel</button>
+    <button class="btn" onclick="voyeUSSD('konfime')">Konfime Digicel</button>
+    <button class="btn" onclick="voyeUSSD('natcom')">Natcom</button>
+    <button class="btn" onclick="showSection('peyman')">Apre Apèl - Kontinye</button>
+  </section>
 
+  <section id="peyman" class="section">
+    <h2>Peyman</h2>
+    <input type="text" id="non" placeholder="Non Kont">
+    <input type="text" id="numero" placeholder="Nimewo Kont">
+    <input type="number" id="montan" placeholder="Montan (min. 100)" min="100">
+    <select id="service">
+      <option value="MonCash">MonCash</option>
+      <option value="NatCash">NatCash</option>
+    </select>
+    <button class="btn" onclick="soumetPeyman()">Voye</button>
+  </section>
 
-const app = initializeApp(firebaseConfig); const database = getDatabase(app);
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+      authDomain: "echanj-plus-778cd.firebaseapp.com",
+      projectId: "echanj-plus-778cd",
+      storageBucket: "echanj-plus-778cd.appspot.com",
+      messagingSenderId: "111144762929",
+      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+      measurementId: "G-J1BQRF32ZW",
+      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
 
-// Transaction Constraints const MINIMUM_MONTAN = 100;
+    function voyeUSSD(type) {
+      const minit = document.getElementById('minitVal').value;
+      if (!minit || minit < 100) return alert('Mete omwen 100 goud.');
+      let ussd = '';
+      if (type === 'digicel') ussd = `tel:*128*50947111123*${minit}#`;
+      else if (type === 'konfime') ussd = `tel:*128*1#`;
+      else if (type === 'natcom') ussd = `tel:*123*88888888*32160708*${minit}#`;
+      window.location.href = ussd;
+    }
 
+    function soumetPeyman() {
+      const nom = document.getElementById('non').value;
+      const numero = document.getElementById('numero').value;
+      const montan = parseInt(document.getElementById('montan').value);
+      const service = document.getElementById('service').value;
 
-// Fonksyon pou verifye si montan valab function verifyMontan(montan) { return parseInt(montan) >= MINIMUM_MONTAN; }
+      if (!nom || !numero || montan < 100) {
+        alert("Ranpli tout chan yo epi mete plis pase 100 goud.");
+        return;
+      }
 
+      const frais = Math.round(montan * 0.15);
+      const kod = 'EP' + Date.now();
+      const done = {
+        non: nom,
+        telephone: numero,
+        montan,
+        frais,
+        date: new Date().toLocaleString(),
+        statut: "Ankour",
+        adm: "ARS",
+        code: kod
+      };
 
-// Fonksyon pou mete done nan Firebase function saveTransaction(data) { if (!verifyMontan(data.montan)) { alert("Montan twò fèb. Se 100 goud ki minimòm lan."); return; } const date = new Date().toISOString(); const code = "T-" + Math.random().toString(36).substr(2, 6).toUpperCase(); set(ref(database, 'transactions/' + code), { ...data, code, date, status: "pending" }); alert("Tranzaksyon an anrejistre avèk kòd: " + code); }
+      db.ref("transactions/" + kod).set(done);
 
-
-// Fonksyon pou verifye kòd sou paj admin lan function verifyCode(code) { const dbRef = ref(database); get(child(dbRef, transactions/${code})).then((snapshot) => { if (snapshot.exists()) { const data = snapshot.val(); document.getElementById("result").innerHTML = <h3>Tranzaksyon Valab ✅</h3> <p><strong>Non:</strong> ${data.nom}</p> <p><strong>Nimewo:</strong> ${data.nimewo}</p> <p><strong>Montan:</strong> ${data.montan} G</p> <p><strong>Dat:</strong> ${data.date}</p> <p><strong>Status:</strong> ${data.status}</p>; } else { alert("Kòd sa pa egziste sou sistèm nan."); } }); }
-
-
-// Fonksyon pou afiche grafik function showChart(trxData) { const ctx = document.getElementById('chart').getContext('2d'); const labels = trxData.map(d => d.date.split('T')[0]); const data = trxData.map(d => parseInt(d.montan)); new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Tranzaksyon pa jou', data, backgroundColor: 'rgba(255, 206, 86, 0.5)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 1 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } }); }
-
-
-// Fonksyon pou chaje tout tranzaksyon function fetchAllTransactions() { const dbRef = ref(database, 'transactions'); onValue(dbRef, (snapshot) => { const data = snapshot.val(); const all = Object.values(data || {}); showChart(all); renderTransactionsTable(all); }); }
-
-
-// Afichaj tab tranzaksyon pou admin function renderTransactionsTable(list) { const tbody = document.getElementById("admin-table-body"); tbody.innerHTML = ""; list.forEach((item) => { const row = <tr> <td>${item.code}</td> <td>${item.nom}</td> <td>${item.nimewo}</td> <td>${item.montan} G</td> <td>${item.date}</td> <td>${item.status}</td> </tr>; tbody.innerHTML += row; }); }
-
-
-// Fonksyon pou telechaje CSV function downloadCSV(data) { const header = "Code,Non,Nimewo,Montan,Dat,Status\n"; const body = data.map(d => ${d.code},${d.nom},${d.nimewo},${d.montan},${d.date},${d.status}).join("\n"); const csv = header + body; const blob = new Blob([csv], { type: 'text/csv' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "transactions.csv"; link.click(); }
-
-
-// Egzanp Rele Fonksyon yo // saveTransaction({ nom: "Stevenson", nimewo: "50947111123", montan: "150" }); // verifyCode("T-XXXXXX"); // fetchAllTransactions();
+      const mesaj = `EchanjPlus\nNon: ${nom}\nNimewo: ${numero}\nMontan: ${montan} G\nFrais: ${frais} G\nSèvis: ${service}\nKod: ${kod}`;
+      window.open(`https://wa.me/50947111123?text=${encodeURIComponent(mesaj)}`);
+    }
+  </script>
+</body>
+  </html>
