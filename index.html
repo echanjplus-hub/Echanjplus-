@@ -1,453 +1,251 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Echanj Plus</title>
+  <meta charset="UTF-8">
+  <title>Echanj Plus | Avanse</title>
   <style>
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(145deg, #0f0f0f, #1c1c1c);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: #f0f2f5;
     }
     header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background-color: #007bff;
+      color: white;
+      padding: 15px;
       text-align: center;
-      padding: 1.5rem 1rem;
-      background: #1f1f1f;
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-      border-bottom: 2px solid rgba(255,193,7,0.4);
     }
-    .brand {
-      flex: 1 1 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .brand h1 {
-      margin: 0;
-      font-size: 2.2rem;
-      color: #ffc107;
-      text-shadow: 2px 2px #000;
-      letter-spacing: 1px;
-    }
-    .brand p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #ddd;
-    }
-    .nav-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      flex: 1 1 auto;
-    }
-    .user-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 0 0 auto;
-      margin-top: 5px;
-    }
-    .user-badge {
-      background: rgba(255,193,7,0.1);
-      padding: 6px 12px;
-      border-radius: 30px;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      backdrop-filter: blur(6px);
-    }
-    .btn {
-      background-color: #ffc107;
-      color: #000;
-      padding: 0.9rem 1.5rem;
-      margin: 0;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all 0.25s ease;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-      position: relative;
-      overflow: hidden;
-    }
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    .btn:hover {
-      background-color: #e0a800;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.5);
-    }
-    section {
-      width: 100%;
-      max-width: 520px;
-      background: #1e1e1e;
-      margin: 1.5rem auto;
-      padding: 2rem 1.5rem;
-      border-radius: 16px;
-      display: none;
-      flex-direction: column;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
-      position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(255,193,7,0.2);
-    }
-    section.active {
-      display: flex;
-      animation: fadeIn 0.5s ease forwards;
-    }
-    section h2 {
-      color: #ffc107;
-      margin-bottom: 1rem;
-      font-size: 1.6rem;
-      position: relative;
-    }
-    input, select {
-      width: 100%;
-      padding: 0.95rem 1rem;
-      margin: 0.6rem 0;
-      border-radius: 12px;
-      border: 1px solid rgba(255,193,7,0.3);
-      font-size: 1rem;
-      background: #232323;
-      color: #fff;
-      transition: all 0.25s ease;
-    }
-    input:focus, select:focus {
-      outline: none;
-      box-shadow: 0 0 12px rgba(255,193,7,0.7);
-      transform: scale(1.01);
-      border-color: #ffc107;
-    }
-    .small {
-      font-size: 0.8rem;
-      color: #ccc;
-    }
-    .auth-box {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .inline-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .message {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      min-height: 1.2em;
-    }
-
-    /* mandatory overlay when not authenticated */
-    .gate-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(30,30,30,0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      z-index: 50;
-    }
-    .gate-card {
-      background: #1f1f1f;
-      padding: 2rem 1.5rem;
-      border-radius: 14px;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 20px 48px rgba(0,0,0,0.7);
-      border: 1px solid rgba(255,193,7,0.4);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      animation: pop 0.4s ease;
-    }
-    .gate-card h2 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: #ffc107;
-    }
-    .badge-auth {
-      background: rgba(255,255,255,0.08);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-    }
-    .logout {
-      background: transparent;
-      border: 1px solid #fff;
-      color: #fff;
-      padding: 6px 12px;
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
       border-radius: 8px;
-      font-size: 0.75rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    input, select, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
-    @keyframes pop {
-      from { opacity: 0; transform: scale(0.92); }
-      to { opacity: 1; transform: scale(1); }
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
     }
-
-    .small-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-      color: #aaa;
+    button:hover {
+      background-color: #0056b3;
     }
-    .flex-between {
-      display: flex;
-      justify-content: space-between;
+    #loader {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.8);
+      display: none;
+      justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
+      z-index: 9999;
     }
-    .pill {
-      background: rgba(255,193,7,0.08);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 0.75rem;
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 6px solid #ccc;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <h1>Echanj Plus</h1>
-      <p>Vit • Senp • Serye</p>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn" onclick="requireAuth(() => showSection('minit'))">Voye Minit</button>
-      <button class="btn" onclick="requireAuth(() => showSection('peyman'))">Peyman</button>
-      <button class="btn" onclick="showSection('auth')">Konekte / Enskri</button>
-    </div>
-    <div class="user-area" id="userArea" style="display:none;">
-      <div class="user-badge" id="userEmailDisplay">...</div>
-      <button class="btn logout" onclick="logout()">Dekonekte</button>
-    </div>
-  </header>
+<div id="loader"><div class="spinner"></div></div>
 
-  <section id="minit" class="section">
-    <h2>Antre Kantite Minit</h2>
-    <input type="number" id="minitVal" placeholder="eg: 100" min="100">
-    <div class="inline-group">
-      <button class="btn" onclick="requireAuth(() => voyeUSSD('digicel'))">Digicel</button>
-      <button class="btn" onclick="requireAuth(() => voyeUSSD('konfime'))">Konfime Digicel</button>
-      <button class="btn" onclick="requireAuth(() => voyeUSSD('natcom'))">Natcom</button>
-    </div>
-    <button class="btn" onclick="requireAuth(() => showSection('peyman'))">Apre Apèl - Kontinye</button>
-  </section>
+<header>
+  <h1>🌀 Echanj Plus</h1>
+  <p>Jesyon Transaksyon | Enskripsyon | Admin Dashboard | USSD | Pari Lakay</p>
+</header>
 
-  <section id="peyman" class="section">
-    <h2>Peyman</h2>
-    <div class="auth-box">
-      <div class="small-label">Chwazi Sèvis</div>
-      <select id="service">
-        <option value="MonCash">MonCash</option>
-        <option value="NatCash">NatCash</option>
-      </select>
-      <div class="small-label">Enfòmasyon Pèsonèl</div>
-      <input type="text" id="non" placeholder="Non Kont">
-      <input type="text" id="numero" placeholder="Nimewo Kont">
-      <input type="number" id="montan" placeholder="Montan (min. 100)" min="100">
-      <button class="btn" onclick="requireAuth(soumetPeyman)">Voye</button>
-    </div>
-  </section>
+<div class="container">
+  <h2>👤 Enskripsyon / Koneksyon</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Modpas">
+  <button onclick="auth.createUserWithEmailAndPassword(email.value, password.value)">✅ Enskri</button>
+  <button onclick="auth.signInWithEmailAndPassword(email.value, password.value)">🔓 Konekte</button>
+  <button onclick="auth.signOut()">🔒 Dekonekte</button>
+</div>
 
-  <section id="auth" class="section active">
-    <h2>Konekte oswa Enskri</h2>
-    <div class="gate-card">
-      <div class="auth-box">
-        <div class="small-label">Imèl</div>
-        <input type="email" id="email" placeholder="Imèl ou" required>
-        <div class="small-label">Modpas</div>
-        <input type="password" id="password" placeholder="Modpas ou" required>
-      </div>
-      <div class="inline-group">
-        <button class="btn" onclick="register()">Enskri</button>
-        <button class="btn" onclick="login()">Konekte</button>
-      </div>
-      <div class="message" id="authMsg"></div>
-      <div class="small" style="margin-top:4px;">Ou dwe konekte pou itilize Echanj Plus. Si ou poko gen kont, enskri rapid.</div>
-    </div>
-  </section>
+<div class="container">
+  <h2>📤 Voye Minit</h2>
+  <input type="text" id="non" placeholder="Non w">
+  <input type="text" id="numero" placeholder="Nimewo Telefòn">
+  <input type="number" id="montan" placeholder="Montan an GHT">
+  <select id="service">
+    <option value="Digicel">Digicel</option>
+    <option value="Natcom">Natcom</option>
+  </select>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-      authDomain: "echanj-plus-778cd.firebaseapp.com",
-      projectId: "echanj-plus-778cd",
-      storageBucket: "echanj-plus-778cd.appspot.com",
-      messagingSenderId: "111144762929",
-      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-      measurementId: "G-J1BQRF32ZW",
-      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com"
+  <input type="text" id="generatedUSSD" placeholder="Kòd USSD ap parèt isit" readonly>
+  <button onclick="genererUSSD()">⚙️ Jenere Kòd USSD</button>
+  <button onclick="konfimeDigicel()">✅ Konfime Digicel</button>
+
+  <button onclick="soumetMinit()">📨 Soumèt</button>
+</div>
+
+<div class="container">
+  <h2>💳 Seksyon Peyman</h2>
+  <button onclick="soumetPeyman()">💰 Fè Peyman</button>
+
+  <h3>🏦 Peye sou Kont Pari Lakay</h3>
+  <input type="text" id="kontPari" placeholder="Nimewo Kont Pari Lakay">
+  <input type="number" id="kobPari" placeholder="Kantite Kob (GHT)">
+  <button onclick="peyePariLakay()">🎲 Voye sou Pari Lakay</button>
+</div>
+
+<div class="container">
+  <h2>📊 Dashboard Admin</h2>
+  <button onclick="exportToCSV()">📁 Backup CSV</button>
+  <table>
+    <thead>
+      <tr>
+        <th>Non</th>
+        <th>Nimewo</th>
+        <th>Montan</th>
+        <th>Sèvis</th>
+        <th>Dat</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+    <tbody id="transactionTableBody"></tbody>
+  </table>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const database = firebase.database();
+
+  function genererUSSD() {
+    const numero = document.getElementById('numero').value;
+    const montan = document.getElementById('montan').value;
+    const service = document.getElementById('service').value;
+    let ussd = "";
+    if (service === "Digicel") {
+      ussd = `*128*50947111123*${montan}#`;
+    } else if (service === "Natcom") {
+      ussd = `*123*88888888*32160708*${montan}#`;
+    }
+    document.getElementById('generatedUSSD').value = ussd;
+  }
+
+  function konfimeDigicel() {
+    document.getElementById('generatedUSSD').value = "*128*1#";
+  }
+
+  function soumetMinit() {
+    const data = {
+      uid: auth.currentUser ? auth.currentUser.uid : "anonymous",
+      non: document.getElementById('non').value,
+      numero: document.getElementById('numero').value,
+      montan: document.getElementById('montan').value,
+      service: document.getElementById('service').value,
+      ussd: document.getElementById('generatedUSSD').value,
+      statut: "pending",
+      date: new Date().toISOString()
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
+    database.ref("transactions").push(data).then(() => {
+      alert("Minit voye!");
+    });
+  }
 
-    const userArea = document.getElementById('userArea');
-    const userEmailDisplay = document.getElementById('userEmailDisplay');
-    const authMsg = document.getElementById('authMsg');
+  function soumetPeyman() {
+    alert("Peman an soumèt! (Ou ka ajoute logika pou verifye si minit deja voye)");
+  }
 
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  function peyePariLakay() {
+    const kontPari = document.getElementById('kontPari').value;
+    const kobPari = document.getElementById('kobPari').value;
+    const uid = auth.currentUser ? auth.currentUser.uid : "anonymous";
+    const paymentData = {
+      uid,
+      kontPari,
+      kobPari,
+      service: 'PariLakay',
+      date: new Date().toISOString(),
+      statut: 'pending'
+    };
+    database.ref("transactions").push(paymentData).then(() => {
+      alert("Peman sou Pari Lakay voye!");
+    });
+  }
+
+  function exportToCSV() {
+    const tbody = document.getElementById('transactionTableBody');
+    let csv = 'Non,Nimewo,Montan,Sèvis,Dat,Statut\\n';
+    for (let row of tbody.rows) {
+      const cols = Array.from(row.cells).map(cell => cell.innerText);
+      csv += cols.join(',') + '\\n';
     }
+    const blob = new Blob([csv], {{ type: 'text/csv' }});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'transactions.csv';
+    link.click();
+  }
 
-    function requireAuth(fn) {
-      if (auth.currentUser) {
-        fn();
-      } else {
-        showSection('auth');
-        authMsg.style.color = '#ffcc00';
-        authMsg.textContent = 'Ou dwe konekte pou kontinye. Tanpri konekte oswa enskri.';
-      }
-    }
-
-    function voyeUSSD(type) {
-      const minit = document.getElementById('minitVal').value;
-      if (!minit || minit < 100) return alert('Mete omwen 100 goud.');
-      let ussd = '';
-      if (type === 'digicel') ussd = `tel:*128*50947111123*${minit}#`;
-      else if (type === 'konfime') ussd = `tel:*128*1#`;
-      else if (type === 'natcom') ussd = `tel:*123*88888888*32160708*${minit}#`;
-      window.location.href = ussd;
-    }
-
-    function soumetPeyman() {
-      const nom = document.getElementById('non').value;
-      const numero = document.getElementById('numero').value;
-      const montan = parseInt(document.getElementById('montan').value);
-      const service = document.getElementById('service').value;
-
-      if (!nom || !numero || montan < 100) {
-        alert("Ranpli tout chan yo epi mete plis pase 100 goud.");
-        return;
-      }
-
-      const frais = Math.round(montan * 0.15);
-      const kod = 'EP' + Date.now();
-      const done = {
-        non: nom,
-        telephone: numero,
-        montan,
-        frais,
-        date: new Date().toLocaleString(),
-        statut: "Ankour",
-        adm: "ARS",
-        code: kod
-      };
-
-      db.ref("transactions/" + kod).set(done);
-
-      const mesaj = `EchanjPlus\nNon: ${nom}\nNimewo: ${numero}\nMontan: ${montan} G\nFrais: ${frais} G\nSèvis: ${service}\nKod: ${kod}`;
-      window.open(`https://wa.me/50947111123?text=${encodeURIComponent(mesaj)}`);
-    }
-
-    function register() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      authMsg.style.color = '#fff';
-      authMsg.textContent = '';
-
-      if (!email || !password) {
-        authMsg.style.color = 'red';
-        authMsg.textContent = 'Tanpri ranpli imèl ak modpas.';
-        return;
-      }
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          authMsg.style.color = 'lightgreen';
-          authMsg.textContent = 'Enskripsyon fèt avèk siksè! Konekte kounye a.';
-        })
-        .catch(err => {
-          authMsg.style.color = 'red';
-          authMsg.textContent = 'Erè: ' + err.message;
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      database.ref("transactions").on("value", snapshot => {
+        const body = document.getElementById('transactionTableBody');
+        body.innerHTML = "";
+        snapshot.forEach(child => {
+          const data = child.val();
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.non || '-'}</td>
+            <td>${data.numero || '-'}</td>
+            <td>${data.montan || data.kobPari || '-'}</td>
+            <td>${data.service || '-'}</td>
+            <td>${data.date || '-'}</td>
+            <td>${data.statut || '-'}</td>
+          `;
+          body.appendChild(row);
         });
-    }
-
-    function login() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      authMsg.style.color = '#fff';
-      authMsg.textContent = '';
-
-      if (!email || !password) {
-        authMsg.style.color = 'red';
-        authMsg.textContent = 'Tanpri ranpli imèl ak modpas.';
-        return;
-      }
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          authMsg.style.color = 'lightgreen';
-          authMsg.textContent = 'Byenvini! Koneksyon reyalize.';
-          // montre lòt seksyon
-          showSection('minit');
-        })
-        .catch(err => {
-          authMsg.style.color = 'red';
-          authMsg.textContent = 'Erè: ' + err.message;
-        });
-    }
-
-    function logout() {
-      auth.signOut().then(() => {
-        userArea.style.display = 'none';
-        authMsg.style.color = '#fff';
-        authMsg.textContent = 'Ou dekonekte. Tanpri konekte pou kontinye.';
-        showSection('auth');
       });
     }
+  });
+</script>
 
-    // Obsève chanjman estati itilizatè a
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        // montre zòn itilizatè
-        userArea.style.display = 'flex';
-        userEmailDisplay.textContent = user.email || 'Itilizatè';
-        authMsg.textContent = '';
-        // otomatik mete aksè sou minit si li te sou auth
-        // si ou vle ou ka kenbe li kote li ye
-      } else {
-        userArea.style.display = 'none';
-      }
-    });
-  </script>
 </body>
   </html>
