@@ -1,453 +1,155 @@
-<!DOCTYPE html>
-<html lang="ht">
+<!DOCTYPE html><html lang="ht">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Echanj Plus</title>
+  <script defer src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-check.js"></script>
   <style>
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(145deg, #0f0f0f, #1c1c1c);
+      font-family: Arial, sans-serif;
+      background-color: #111;
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      text-align: center;
-      padding: 1.5rem 1rem;
-      background: #1f1f1f;
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-      border-bottom: 2px solid rgba(255,193,7,0.4);
-    }
-    .brand {
-      flex: 1 1 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .brand h1 {
       margin: 0;
-      font-size: 2.2rem;
-      color: #ffc107;
-      text-shadow: 2px 2px #000;
-      letter-spacing: 1px;
+      padding: 0;
     }
-    .brand p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #ddd;
-    }
-    .nav-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      flex: 1 1 auto;
-    }
-    .user-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 0 0 auto;
-      margin-top: 5px;
-    }
-    .user-badge {
-      background: rgba(255,193,7,0.1);
-      padding: 6px 12px;
-      border-radius: 30px;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      backdrop-filter: blur(6px);
-    }
-    .btn {
-      background-color: #ffc107;
-      color: #000;
-      padding: 0.9rem 1.5rem;
-      margin: 0;
-      border: none;
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 30px;
+      background-color: #222;
       border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all 0.25s ease;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-      position: relative;
-      overflow: hidden;
+      margin-top: 50px;
     }
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    .btn:hover {
-      background-color: #e0a800;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.5);
-    }
-    section {
+    input, button, select {
+      display: block;
       width: 100%;
-      max-width: 520px;
-      background: #1e1e1e;
-      margin: 1.5rem auto;
-      padding: 2rem 1.5rem;
-      border-radius: 16px;
-      display: none;
-      flex-direction: column;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
-      position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(255,193,7,0.2);
-    }
-    section.active {
-      display: flex;
-      animation: fadeIn 0.5s ease forwards;
-    }
-    section h2 {
-      color: #ffc107;
-      margin-bottom: 1rem;
-      font-size: 1.6rem;
-      position: relative;
-    }
-    input, select {
-      width: 100%;
-      padding: 0.95rem 1rem;
-      margin: 0.6rem 0;
-      border-radius: 12px;
-      border: 1px solid rgba(255,193,7,0.3);
-      font-size: 1rem;
-      background: #232323;
-      color: #fff;
-      transition: all 0.25s ease;
-    }
-    input:focus, select:focus {
-      outline: none;
-      box-shadow: 0 0 12px rgba(255,193,7,0.7);
-      transform: scale(1.01);
-      border-color: #ffc107;
-    }
-    .small {
-      font-size: 0.8rem;
-      color: #ccc;
-    }
-    .auth-box {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .inline-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .message {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      min-height: 1.2em;
-    }
-
-    /* mandatory overlay when not authenticated */
-    .gate-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(30,30,30,0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      z-index: 50;
-    }
-    .gate-card {
-      background: #1f1f1f;
-      padding: 2rem 1.5rem;
-      border-radius: 14px;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 20px 48px rgba(0,0,0,0.7);
-      border: 1px solid rgba(255,193,7,0.4);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      animation: pop 0.4s ease;
-    }
-    .gate-card h2 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: #ffc107;
-    }
-    .badge-auth {
-      background: rgba(255,255,255,0.08);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-    }
-    .logout {
-      background: transparent;
-      border: 1px solid #fff;
-      color: #fff;
-      padding: 6px 12px;
+      margin: 15px 0;
+      padding: 10px;
+      border: none;
       border-radius: 8px;
-      font-size: 0.75rem;
+      font-size: 16px;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    button {
+      background-color: #fcd200;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
     }
-    @keyframes pop {
-      from { opacity: 0; transform: scale(0.92); }
-      to { opacity: 1; transform: scale(1); }
+    #user-info {
+      margin-top: 10px;
+      font-size: 18px;
+      color: lightgreen;
     }
-
-    .small-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-      color: #aaa;
-    }
-    .flex-between {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .pill {
-      background: rgba(255,193,7,0.08);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 0.75rem;
+    .hidden {
+      display: none;
     }
   </style>
 </head>
-<body>
+<body><div class="container">
+  <h1>Echanj Plus</h1>
+  <p>Slogan: "Tranzaksyon ou an sekirite, vit, e otomatik!"</p>  <div id="auth-section">
+    <button onclick="signIn()">🔐 Konekte ak Google</button>
+    <button onclick="signOut()">🔓 Dekonekte</button>
+    <p id="user-info"></p>
+  </div>  <div id="form-section" class="hidden">
+    <h2>Voye Minit</h2>
+    <select id="network">
+      <option value="digicel">Digicel</option>
+      <option value="natcom">Natcom</option>
+    </select>
+    <input type="number" id="minit" placeholder="Antre kantite minit ou vle voye">
+    <button onclick="sendUSSD()">📲 Voye Kòd USSD Otomatik</button>
+  </div>
+</div><script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js";
+  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app-check.js";
 
-  <header>
-    <div class="brand">
-      <h1>Echanj Plus</h1>
-      <p>Vit • Senp • Serye</p>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn" onclick="requireAuth(() => showSection('minit'))">Voye Minit</button>
-      <button class="btn" onclick="requireAuth(() => showSection('peyman'))">Peyman</button>
-      <button class="btn" onclick="showSection('auth')">Konekte / Enskri</button>
-    </div>
-    <div class="user-area" id="userArea" style="display:none;">
-      <div class="user-badge" id="userEmailDisplay">...</div>
-      <button class="btn logout" onclick="logout()">Dekonekte</button>
-    </div>
-  </header>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID",
+    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com"
+  };
 
-  <section id="minit" class="section">
-    <h2>Antre Kantite Minit</h2>
-    <input type="number" id="minitVal" placeholder="eg: 100" min="100">
-    <div class="inline-group">
-      <button class="btn" onclick="requireAuth(() => voyeUSSD('digicel'))">Digicel</button>
-      <button class="btn" onclick="requireAuth(() => voyeUSSD('konfime'))">Konfime Digicel</button>
-      <button class="btn" onclick="requireAuth(() => voyeUSSD('natcom'))">Natcom</button>
-    </div>
-    <button class="btn" onclick="requireAuth(() => showSection('peyman'))">Apre Apèl - Kontinye</button>
-  </section>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  <section id="peyman" class="section">
-    <h2>Peyman</h2>
-    <div class="auth-box">
-      <div class="small-label">Chwazi Sèvis</div>
-      <select id="service">
-        <option value="MonCash">MonCash</option>
-        <option value="NatCash">NatCash</option>
-      </select>
-      <div class="small-label">Enfòmasyon Pèsonèl</div>
-      <input type="text" id="non" placeholder="Non Kont">
-      <input type="text" id="numero" placeholder="Nimewo Kont">
-      <input type="number" id="montan" placeholder="Montan (min. 100)" min="100">
-      <button class="btn" onclick="requireAuth(soumetPeyman)">Voye</button>
-    </div>
-  </section>
+  // ✅ App Check ak reCAPTCHA v3
+  const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('YOUR_RECAPTCHA_PUBLIC_KEY'),
+    isTokenAutoRefreshEnabled: true
+  });
 
-  <section id="auth" class="section active">
-    <h2>Konekte oswa Enskri</h2>
-    <div class="gate-card">
-      <div class="auth-box">
-        <div class="small-label">Imèl</div>
-        <input type="email" id="email" placeholder="Imèl ou" required>
-        <div class="small-label">Modpas</div>
-        <input type="password" id="password" placeholder="Modpas ou" required>
-      </div>
-      <div class="inline-group">
-        <button class="btn" onclick="register()">Enskri</button>
-        <button class="btn" onclick="login()">Konekte</button>
-      </div>
-      <div class="message" id="authMsg"></div>
-      <div class="small" style="margin-top:4px;">Ou dwe konekte pou itilize Echanj Plus. Si ou poko gen kont, enskri rapid.</div>
-    </div>
-  </section>
+  // ✅ Firebase Messaging
+  const messaging = getMessaging(app);
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-      authDomain: "echanj-plus-778cd.firebaseapp.com",
-      projectId: "echanj-plus-778cd",
-      storageBucket: "echanj-plus-778cd.appspot.com",
-      messagingSenderId: "111144762929",
-      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-      measurementId: "G-J1BQRF32ZW",
-      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
-
-    const userArea = document.getElementById('userArea');
-    const userEmailDisplay = document.getElementById('userEmailDisplay');
-    const authMsg = document.getElementById('authMsg');
-
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function requireAuth(fn) {
-      if (auth.currentUser) {
-        fn();
-      } else {
-        showSection('auth');
-        authMsg.style.color = '#ffcc00';
-        authMsg.textContent = 'Ou dwe konekte pou kontinye. Tanpri konekte oswa enskri.';
-      }
-    }
-
-    function voyeUSSD(type) {
-      const minit = document.getElementById('minitVal').value;
-      if (!minit || minit < 100) return alert('Mete omwen 100 goud.');
-      let ussd = '';
-      if (type === 'digicel') ussd = `tel:*128*50947111123*${minit}#`;
-      else if (type === 'konfime') ussd = `tel:*128*1#`;
-      else if (type === 'natcom') ussd = `tel:*123*88888888*32160708*${minit}#`;
-      window.location.href = ussd;
-    }
-
-    function soumetPeyman() {
-      const nom = document.getElementById('non').value;
-      const numero = document.getElementById('numero').value;
-      const montan = parseInt(document.getElementById('montan').value);
-      const service = document.getElementById('service').value;
-
-      if (!nom || !numero || montan < 100) {
-        alert("Ranpli tout chan yo epi mete plis pase 100 goud.");
-        return;
-      }
-
-      const frais = Math.round(montan * 0.15);
-      const kod = 'EP' + Date.now();
-      const done = {
-        non: nom,
-        telephone: numero,
-        montan,
-        frais,
-        date: new Date().toLocaleString(),
-        statut: "Ankour",
-        adm: "ARS",
-        code: kod
-      };
-
-      db.ref("transactions/" + kod).set(done);
-
-      const mesaj = `EchanjPlus\nNon: ${nom}\nNimewo: ${numero}\nMontan: ${montan} G\nFrais: ${frais} G\nSèvis: ${service}\nKod: ${kod}`;
-      window.open(`https://wa.me/50947111123?text=${encodeURIComponent(mesaj)}`);
-    }
-
-    function register() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      authMsg.style.color = '#fff';
-      authMsg.textContent = '';
-
-      if (!email || !password) {
-        authMsg.style.color = 'red';
-        authMsg.textContent = 'Tanpri ranpli imèl ak modpas.';
-        return;
-      }
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          authMsg.style.color = 'lightgreen';
-          authMsg.textContent = 'Enskripsyon fèt avèk siksè! Konekte kounye a.';
-        })
-        .catch(err => {
-          authMsg.style.color = 'red';
-          authMsg.textContent = 'Erè: ' + err.message;
+  async function requestPermissionAndSaveToken(userId) {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      const token = await getToken(messaging, { vapidKey: "YOUR_VAPID_KEY" });
+      if (token) {
+        await setDoc(doc(db, "userTokens", userId), {
+          token: token,
+          createdAt: new Date()
         });
-    }
-
-    function login() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      authMsg.style.color = '#fff';
-      authMsg.textContent = '';
-
-      if (!email || !password) {
-        authMsg.style.color = 'red';
-        authMsg.textContent = 'Tanpri ranpli imèl ak modpas.';
-        return;
       }
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          authMsg.style.color = 'lightgreen';
-          authMsg.textContent = 'Byenvini! Koneksyon reyalize.';
-          // montre lòt seksyon
-          showSection('minit');
-        })
-        .catch(err => {
-          authMsg.style.color = 'red';
-          authMsg.textContent = 'Erè: ' + err.message;
-        });
     }
+  }
 
-    function logout() {
-      auth.signOut().then(() => {
-        userArea.style.display = 'none';
-        authMsg.style.color = '#fff';
-        authMsg.textContent = 'Ou dekonekte. Tanpri konekte pou kontinye.';
-        showSection('auth');
-      });
+  // ✅ Auth State
+  onAuthStateChanged(auth, user => {
+    const userInfo = document.getElementById("user-info");
+    const formSection = document.getElementById("form-section");
+
+    if (user) {
+      userInfo.innerText = `👋 Byenveni ${user.displayName}`;
+      formSection.classList.remove("hidden");
+      setDoc(doc(db, "users", user.uid), {
+        name: user.displayName,
+        email: user.email
+      }, { merge: true });
+      requestPermissionAndSaveToken(user.uid);
+    } else {
+      userInfo.innerText = "";
+      formSection.classList.add("hidden");
     }
+  });
 
-    // Obsève chanjman estati itilizatè a
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        // montre zòn itilizatè
-        userArea.style.display = 'flex';
-        userEmailDisplay.textContent = user.email || 'Itilizatè';
-        authMsg.textContent = '';
-        // otomatik mete aksè sou minit si li te sou auth
-        // si ou vle ou ka kenbe li kote li ye
-      } else {
-        userArea.style.display = 'none';
-      }
-    });
-  </script>
-</body>
+  // ✅ Konekte ak Google
+  window.signIn = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider);
+  }
+
+  // ✅ Dekonekte
+  window.signOut = () => {
+    signOut(auth);
+  }
+
+  // ✅ Voye Kòd USSD Otomatik
+  window.sendUSSD = () => {
+    const minit = document.getElementById("minit").value;
+    const network = document.getElementById("network").value;
+    let ussd = "";
+    if (network === "digicel") {
+      ussd = `*128*50947111123*${minit}#`;
+    } else {
+      ussd = `*123*88888888*32160708*${minit}#`;
+    }
+    window.location.href = `tel:${encodeURIComponent(ussd)}`;
+  }
+</script></body>
 </html>
