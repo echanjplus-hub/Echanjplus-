@@ -1,1 +1,525 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Echanj Plus — Sekirize</title>
+  <style>
+    :root{
+      --brand:#ffc107;
+      --primary:#0b5ed7;
+      --bg:#0f1720;
+      --card:#111827;
+      --muted:#9ca3af;
+    }
+    body{
+      margin:0;font-family:Inter,Segoe UI,Roboto,sans-serif;
+      background:linear-gradient(180deg,#071126 0%, #0f1720 100%);
+      color:#fff;
+      min-height:100vh;
+      display:flex;align-items:flex-start;justify-content:center;padding:28px;
+    }
+    .app{
+      width:100%;max-width:920px;
+      background:linear-gradient(180deg,#0b1220,#0f1720);
+      border-radius:12px;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,0.6);
+      border:1px solid rgba(255,193,7,0.08);
+    }
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    header h1{margin:0;color:var(--brand);font-size:1.5rem}
+    header .user-badge{background:rgba(255,193,7,0.08);padding:6px 10px;border-radius:999px;color:#fff;font-weight:600}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
+    .card{background:#0b1220;padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .card h2{margin:0 0 8px 0;color:var(--brand)}
+    input, select, button, textarea{
+      width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);
+      background:transparent;color:#fff;margin-top:8px;font-size:0.95rem;
+    }
+    input::placeholder{color:rgba(255,255,255,0.35)}
+    button{background:var(--brand);color:#000;font-weight:700;border:none;cursor:pointer}
+    button.secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.08)}
+    button[disabled]{opacity:0.6;cursor:not-allowed}
+    .small{font-size:0.85rem;color:var(--muted);margin-top:6px}
+    .center{text-align:center}
+    .muted{color:var(--muted)}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.9rem}
+    th{color:var(--brand);text-align:left}
+    #loader{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:9999}
+    .ring{width:56px;height:56px;border-radius:50%;border:6px solid rgba(255,255,255,0.08);border-top-color:var(--brand);animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .note{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;margin-top:8px;font-size:0.9rem}
+    nav a{color:#fff;text-decoration:none;margin-right:8px}
+    .danger{background:#7f1d1d}
+    footer{margin-top:12px;color:var(--muted);font-size:0.85rem;text-align:center}
+    @media(max-width:880px){
+      .grid{grid-template-columns:1fr; }
+      header{flex-direction:column;align-items:flex-start;gap:8px}
+    }
+  </style>
+</head>
+<body>
+  <div id="loader"><div class="ring"></div></div>
 
+  <div class="app" role="application" aria-label="Echanj Plus">
+    <header>
+      <div>
+        <h1>Echanj Plus</h1>
+        <div class="small muted">Vit • Senp • Serye</div>
+      </div>
+      <div>
+        <span id="userBadge" class="user-badge" style="display:none"></span>
+        <button id="logoutBtn" class="secondary" style="display:none;margin-left:8px" onclick="logout()">Dekonekte</button>
+      </div>
+    </header>
+
+    <div class="grid" id="mainGrid">
+      <!-- LEFT: main content sections -->
+      <div>
+        <!-- LOGIN / REGISTER -->
+        <section id="authSection" class="card">
+          <h2>Konekte oswa Enskri</h2>
+          <div id="authMsg" class="small"></div>
+          <input id="email" type="email" placeholder="Imèl (obligatwa)" />
+          <input id="password" type="password" placeholder="Modpas (min 6 karaktè)" />
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button style="flex:1" onclick="register()">Enskri</button>
+            <button style="flex:1" onclick="login()">Konekte</button>
+          </div>
+          <div class="note">Ou dwe konekte avan ou gen aksè a seksyon lòt yo. </div>
+        </section>
+
+        <!-- HOME: Voye Minit -->
+        <section id="homeSection" class="card" style="display:none;margin-top:16px">
+          <h2>Voye Minit (Obligatwa avan Peyman)</h2>
+          <div class="small muted">Ou dwe konekte pou itilize fòm sa a.</div>
+
+          <input id="nameInput" placeholder="Non ou" />
+          <input id="phoneInput" placeholder="Nimewo telefòn (8 chif, egz: 37123456)" />
+          <input id="amountInput" type="number" placeholder="Montan (min 100 G)" min="100" />
+          <select id="serviceSelect">
+            <option value="Digicel">Digicel</option>
+            <option value="Natcom">Natcom</option>
+          </select>
+
+          <input id="generatedUSSD" readonly placeholder="Kòd USSD ap parèt isi..." />
+          <div style="display:flex;gap:8px">
+            <button onclick="generateUSSD()" style="flex:1">Jenere USSD</button>
+            <button onclick="confirmDigicel()" style="flex:1" class="secondary">Konfime Digicel</button>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="sendUSSDBtn" onclick="sendUSSD()" style="flex:1">Voye USSD (Otomatik sou mobil)</button>
+            <button onclick="submitMinit()" style="flex:1">Soumèt Tranzaksyon</button>
+          </div>
+
+          <div id="homeMsg" class="note" style="display:none;"></div>
+        </section>
+
+        <!-- PAYMENT: accessible only if user already sent minit -->
+        <section id="paySection" class="card" style="display:none;margin-top:16px">
+          <h2>Peman</h2>
+          <div class="small muted">Ou dwe gen yon tranzaksyon "minit" valide avan ou ka fè peman.</div>
+
+          <div class="note" id="payStatus">Status: Ou pa gen minit voye ankò.</div>
+
+          <h3 style="margin-top:12px">Peye sou Pari Lakay</h3>
+          <input id="pariAccount" placeholder="Nimewo kont Pari Lakay" />
+          <input id="pariAmount" type="number" placeholder="Montan pou Pari Lakay" />
+          <div style="display:flex;gap:8px">
+            <button onclick="payPariLakay()">Peye Pari Lakay</button>
+            <button class="secondary" onclick="submitPayment()">Peye atravè MonCash/NatCash (placeholder)</button>
+          </div>
+
+          <div id="payMsg" class="note" style="display:none;"></div>
+        </section>
+      </div>
+
+      <!-- RIGHT: admin & dashboard -->
+      <aside>
+        <section id="dashboardSection" class="card" style="display:none">
+          <h2>Dashboard Admin</h2>
+          <div class="small muted">Aksè admin sèlman.</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button onclick="loadTransactions()">Chaje tranzaksyon</button>
+            <button onclick="exportCSV()" class="secondary">Download CSV</button>
+          </div>
+
+          <table aria-describedby="txTable">
+            <thead><tr><th>Id</th><th>UID</th><th>Non</th><th>Nimewo</th><th>Montan</th><th>Sèvis</th><th>Dat</th><th>Statut</th></tr></thead>
+            <tbody id="txBody"></tbody>
+          </table>
+          <div class="note" style="margin-top:8px">Pou ajoute/admin modifye estat, fè sa nan console DB oswa ajoute fonksyon admin.</div>
+        </section>
+
+        <section class="card" style="margin-top:16px">
+          <h2>Enfòmasyon</h2>
+          <div class="small muted">Règle: Login obligatwa, voye minit anvan peman.</div>
+          <div style="margin-top:8px">
+            <strong class="muted">USSD Digicel</strong><div>*128*50947111123*{montan}#</div>
+            <strong class="muted">USSD Natcom</strong><div>*123*88888888*32160708*{montan}#</div>
+            <strong class="muted">Konfim Digicel</strong><div>*128*1#</div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer>© Echanj Plus — Pa pataje kle ou | Ranplase firebaseConfig ak pwòp valè ou</footer>
+  </div>
+
+  <!-- Firebase SDKs (Realtime DB + Auth) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+  /*************************************************************************
+   * METE LA: ranplase ak konfig Firebase pwòp pwojè ou
+   *************************************************************************/
+  const firebaseConfig = {
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  /*************************************************************************
+   * ADMIN: mete UID(s) admin yo isit la (ou ka mete plizyè)
+   * Ou ka tou mete 'admins' nan DB epi valide ak rules.
+   *************************************************************************/
+  const ADMIN_UIDS = ['PUT_ADMIN_UID_HERE']; // eg: ['abc123...', 'uid2...']
+
+  // Loader util
+  const loader = document.getElementById('loader');
+  function showLoader(v=true){ loader.style.display = v ? 'flex' : 'none'; }
+
+  // UI Elements
+  const authSection = document.getElementById('authSection');
+  const homeSection = document.getElementById('homeSection');
+  const paySection = document.getElementById('paySection');
+  const dashboardSection = document.getElementById('dashboardSection');
+  const userBadge = document.getElementById('userBadge');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const authMsg = document.getElementById('authMsg');
+
+  // local workflow flag (also saved to DB)
+  let localState = { minitSent: false };
+
+  /* ---------- Auth functions ---------- */
+  function register(){
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    authMsg.textContent = '';
+    if(!email || !password){ authMsg.style.color='tomato'; authMsg.textContent='Ranpli imèl ak modpas.'; return; }
+    showLoader(true);
+    auth.createUserWithEmailAndPassword(email,password)
+      .then(()=> { authMsg.style.color='lightgreen'; authMsg.textContent='Enskripsyon reyalize. Ou pral konekte.'; })
+      .catch(e=>{ authMsg.style.color='tomato'; authMsg.textContent=e.message; })
+      .finally(()=> showLoader(false));
+  }
+
+  function login(){
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    authMsg.textContent = '';
+    if(!email || !password){ authMsg.style.color='tomato'; authMsg.textContent='Ranpli imèl ak modpas.'; return; }
+    showLoader(true);
+    auth.signInWithEmailAndPassword(email,password)
+      .then(()=> { authMsg.style.color='lightgreen'; authMsg.textContent='Ou konekte.'; showSectionForAuth(); })
+      .catch(e=>{ authMsg.style.color='tomato'; authMsg.textContent=e.message; })
+      .finally(()=> showLoader(false));
+  }
+
+  function logout(){
+    auth.signOut();
+    // UI handled by onAuthStateChanged
+  }
+
+  /* ---------- Navigation & Auth guard ---------- */
+  function hideAllSections(){ authSection.style.display='none'; homeSection.style.display='none'; paySection.style.display='none'; dashboardSection.style.display='none'; logoutBtn.style.display='none'; userBadge.style.display='none'; }
+
+  function showSectionForAuth(){ // called after login
+    authSection.style.display = 'none';
+    homeSection.style.display = 'block';
+    paySection.style.display = 'block';
+    logoutBtn.style.display = 'inline-block';
+  }
+
+  function enforceAuthUI(user){
+    if(!user){
+      // not authenticated -> show only auth section
+      hideAllSections();
+      authSection.style.display='block';
+      authMsg.textContent = 'Ou dwe konekte pou kontinye.';
+      userBadge.style.display='none';
+      return false;
+    } else {
+      // authenticated
+      userBadge.style.display='inline-block';
+      userBadge.textContent = user.email;
+      logoutBtn.style.display='inline-block';
+      // if admin show dashboard
+      if(ADMIN_UIDS.includes(user.uid)){
+        dashboardSection.style.display = 'block';
+      } else {
+        dashboardSection.style.display = 'none';
+      }
+      // Show home & pay (pay will check minit)
+      homeSection.style.display = 'block';
+      paySection.style.display = 'block';
+      // Load user's minitSent flag
+      loadUserState(user.uid);
+      return true;
+    }
+  }
+
+  // onAuth change: show/hide sections
+  auth.onAuthStateChanged(user=>{
+    hideAllSections();
+    if(user){
+      enforceAuthUI(user);
+    } else {
+      enforceAuthUI(null);
+    }
+  });
+
+  /* ---------- Utility validation ---------- */
+  function validPhone(p){
+    // accept 8 digits (Haiti) optionally with country code
+    return /^\d{8}$/.test(p) || /^509\d{8}$/.test(p);
+  }
+
+  /* ---------- USSD generation / send ---------- */
+  function generateUSSD(){
+    const montan = document.getElementById('amountInput').value;
+    const service = document.getElementById('serviceSelect').value;
+    if(!montan || parseInt(montan) < 100){ alert('Mete montan valab (min 100).'); return; }
+    let ussd = '';
+    if(service === 'Digicel'){
+      ussd = `*128*50947111123*${montan}#`;
+    } else {
+      ussd = `*123*88888888*32160708*${montan}#`;
+    }
+    document.getElementById('generatedUSSD').value = ussd;
+  }
+
+  function confirmDigicel(){
+    document.getElementById('generatedUSSD').value = '*128*1#';
+  }
+
+  function sendUSSD(){
+    const ussd = document.getElementById('generatedUSSD').value;
+    if(!ussd){ alert('Jenere kòd USSD avan.'); return; }
+    // Mobile: use tel: URL. Desktop fallback
+    const tel = `tel:${encodeURIComponent(ussd)}`;
+    if(/Mobi|Android|iPhone/i.test(navigator.userAgent)){
+      window.location.href = tel;
+    } else {
+      // Desktop fallback: show ussd to copy
+      prompt('Kopi kòd USSD la epi sèvi ak telefòn ou pou rele li:', ussd);
+    }
+  }
+
+  /* ---------- Submit minit (store transaction + set user flag) ---------- */
+  function submitMinit(){
+    const user = auth.currentUser;
+    if(!user){ alert('Ou dwe konekte.'); return; }
+    const name = document.getElementById('nameInput').value.trim();
+    const phone = document.getElementById('phoneInput').value.trim();
+    const montan = parseInt(document.getElementById('amountInput').value);
+    const service = document.getElementById('serviceSelect').value;
+    const ussd = document.getElementById('generatedUSSD').value;
+
+    if(!name || !phone || !montan){ alert('Ranpli tout chan yo.'); return; }
+    if(montan < 100){ alert('Montan dwe >= 100 G'); return; }
+    if(!validPhone(phone)){ alert('Nimewo pa valid (8 chif oswa kòd 509 + 8 chif).'); return; }
+
+    showLoader(true);
+    const code = 'EP' + Date.now();
+    const tx = {
+      code,
+      uid: user.uid,
+      non: name,
+      telephone: phone,
+      montan,
+      frais: Math.round(montan * 0.15),
+      service,
+      ussd: ussd || '',
+      date: new Date().toISOString(),
+      statut: 'sent'
+    };
+
+    // push to transactions, and set user flag under /users/{uid}/minitSent = true
+    const updates = {};
+    const newTxRef = db.ref('transactions').push();
+    updates['/transactions/' + newTxRef.key] = tx;
+    updates['/users/' + user.uid + '/minitSent'] = true;
+    updates['/users/' + user.uid + '/lastMinitTx'] = newTxRef.key;
+
+    db.ref().update(updates)
+      .then(()=>{
+        showLoader(false);
+        localState.minitSent = true;
+        document.getElementById('homeMsg').style.display = 'block';
+        document.getElementById('homeMsg').textContent = 'Minit voye ak siksè. Kounye a ou gen aksè a peman.';
+        // cleanup fields
+        document.getElementById('nameInput').value = '';
+        document.getElementById('phoneInput').value = '';
+        document.getElementById('amountInput').value = '';
+        document.getElementById('generatedUSSD').value = '';
+      })
+      .catch(err=>{
+        showLoader(false);
+        alert('Erè pandan soumèt: ' + err.message);
+      });
+  }
+
+  /* ---------- Load user state ---------- */
+  function loadUserState(uid){
+    if(!uid) return;
+    showLoader(true);
+    db.ref('users/' + uid + '/minitSent').once('value')
+      .then(snap=>{
+        const val = snap.val();
+        localState.minitSent = !!val;
+        updatePayUI();
+        showLoader(false);
+      })
+      .catch(e=>{
+        localState.minitSent = false;
+        updatePayUI();
+        showLoader(false);
+      });
+  }
+
+  function updatePayUI(){
+    const payStatus = document.getElementById('payStatus');
+    if(localState.minitSent){
+      payStatus.textContent = 'Status: Ou gen minit voye. Ou ka kontinye peman.';
+      payStatus.style.background = 'rgba(16,185,129,0.06)';
+    } else {
+      payStatus.textContent = 'Status: Ou pa gen minit voye ankò. Tanpri voye minit avan peman.';
+      payStatus.style.background = 'rgba(255,193,7,0.03)';
+    }
+  }
+
+  /* ---------- Payment actions ---------- */
+  function payPariLakay(){
+    const user = auth.currentUser;
+    if(!user){ alert('Ou dwe konekte.'); return; }
+    if(!localState.minitSent){ alert('Tanpri voye minit avan fè peman.'); return; }
+
+    const kont = document.getElementById('pariAccount').value.trim();
+    const kob = parseInt(document.getElementById('pariAmount').value);
+    if(!kont || !kob){ alert('Ranpli nimewo kont ak montan.'); return; }
+
+    showLoader(true);
+    const tx = {
+      uid: user.uid,
+      code: 'EP' + Date.now(),
+      service: 'PariLakay',
+      kontPari: kont,
+      montan: kob,
+      date: new Date().toISOString(),
+      statut: 'pending'
+    };
+    db.ref('transactions').push(tx)
+      .then(()=>{ showLoader(false); document.getElementById('payMsg').style.display='block'; document.getElementById('payMsg').textContent='Peman Pari Lakay soumèt.'; })
+      .catch(err=>{ showLoader(false); alert('Erè: ' + err.message); });
+  }
+
+  function submitPayment(){
+    // Placeholder for MonCash/NatCash integration — requires backend.
+    alert('Peman atravè MonCash/NatCash mande entegrasyon backend. Mwen ka ede w ajoute li.');
+  }
+
+  /* ---------- Admin: load transactions & csv ---------- */
+  function loadTransactions(){
+    const user = auth.currentUser;
+    if(!user || !ADMIN_UIDS.includes(user.uid)){ alert('Aksè admin sèlman.'); return; }
+    showLoader(true);
+    db.ref('transactions').orderByChild('date').limitToLast(500).once('value')
+      .then(snap=>{
+        const tbody = document.getElementById('txBody');
+        tbody.innerHTML = '';
+        snap.forEach(child=>{
+          const k = child.key;
+          const d = child.val();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${k}</td><td>${d.uid||''}</td><td>${d.non||d.kontPari||''}</td><td>${d.telephone||''}</td><td>${d.montan||d.montan||''}</td><td>${d.service||''}</td><td>${d.date||''}</td><td>${d.statut||''}</td>`;
+          tbody.prepend(tr);
+        });
+        showLoader(false);
+      })
+      .catch(err=>{ showLoader(false); alert('Erè: ' + err.message); });
+  }
+
+  function exportCSV(){
+    const user = auth.currentUser;
+    if(!user || !ADMIN_UIDS.includes(user.uid)){ alert('Aksè admin sèlman.'); return; }
+    showLoader(true);
+    db.ref('transactions').once('value').then(snap=>{
+      const rows = [['id','uid','non','telephone','montan','service','date','statut']];
+      snap.forEach(child=>{
+        const k = child.key; const d = child.val();
+        rows.push([k, d.uid||'', d.non||d.kontPari||'', d.telephone||'', d.montan||'', d.service||'', d.date||'', d.statut||'']);
+      });
+      const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'transactions_export.csv'; document.body.appendChild(a); a.click(); a.remove();
+      showLoader(false);
+    }).catch(err=>{ showLoader(false); alert('Erè: ' + err.message); });
+  }
+
+  /* ---------- Protect navigation by checking auth before page unload / hash change ---------- */
+  window.addEventListener('hashchange', () => {
+    if(!auth.currentUser){
+      // prevent navigation to sections
+      location.hash = '';
+      hideAllSections();
+      authSection.style.display='block';
+    }
+  });
+
+  // initial UI
+  hideAllSections(); authSection.style.display='block';
+  </script>
+
+  <!--
+    REKÒMANDASYON SEKIRITE (Realtime Database Rules)
+    Copie/Coller sa nan Firebase Console → Realtime Database → Rules
+    ADAPTE selon bezwen admin ou yo (ou ka mete admins list sou DB)
+  -->
+  <!--
+  {
+    "rules": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "transactions": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || data.child('uid').val() === auth.uid || newData.child('uid').val() === auth.uid)",
+        ".write": "auth != null && newData.child('uid').val() === auth.uid"
+      },
+      "users": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      },
+      "admins": {
+        ".read": false,
+        ".write": false
+      }
+    }
+  }
+  -->
+
+</body>
+  </html>
