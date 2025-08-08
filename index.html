@@ -1,13 +1,11 @@
 <!doctype html>
 <html lang="ht">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Echanj Plus — Minit → Peman</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Echanj Plus — Tout nan yon sèl</title>
 <style>
-:root{
-  --bg:#071226; --card:#0f1720; --accent:#ffc107; --muted:rgba(255,255,255,0.7)
-}
+:root{--bg:#071226;--card:#0f1720;--accent:#ffc107;--muted:rgba(255,255,255,0.7)}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Segoe UI,Arial;background:linear-gradient(180deg,#071226,#0b1220);color:#fff;min-height:100vh}
 .app{max-width:980px;margin:18px auto;padding:18px}
@@ -18,7 +16,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial;background:linear-gradient(180deg
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
 .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(0,0,0,0.45)}
 h2{margin:0;color:var(--accent)}
-input,select,textarea,button{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
+input,select,textarea,button{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;font-size:15px}
 input::placeholder{color:rgba(255,255,255,0.45)}
 button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weight:700}
 .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
@@ -30,6 +28,7 @@ button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weigh
 .row{display:flex;gap:8px}
 .row button{flex:1}
 .link-like{color:var(--accent);cursor:pointer;text-decoration:underline}
+.badge{background:rgba(255,193,7,0.12);padding:6px 12px;border-radius:999px;color:var(--accent);display:inline-block}
 </style>
 </head>
 <body>
@@ -39,7 +38,7 @@ button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weigh
       <div class="brand">Echanj Plus</div>
       <div class="small">Vit • Senp • Serye</div>
     </div>
-    <div id="topInfo" style="text-align:right">
+    <div id="topRight" style="text-align:right">
       <div id="userEmail" class="small hidden"></div>
       <button id="btnLogout" class="btn-ghost hidden" onclick="logout()" style="margin-top:6px">Dekonekte</button>
     </div>
@@ -47,34 +46,36 @@ button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weigh
 
   <div class="grid">
     <main>
-      <!-- REGISTER -->
-      <section id="section-register" class="card">
-        <h2>Enskripsyon</h2>
-        <div class="note">Ranpli tout chan pou kreye kont. Apre enskripsyon w ap oblije konekte.</div>
+      <!-- REGISTER (default view) -->
+      <section id="register" class="card">
+        <h2>Enskripsyon (obligatwa)</h2>
+        <div class="note">Ranpli tout chan sa yo pou kreye kont. Apre sa ou dwe konekte pou kontinye.</div>
         <input id="r_first" placeholder="Non" />
         <input id="r_last" placeholder="Prenon" />
         <input id="r_phone" placeholder="Nimewo telefòn (eg: 37123456 san +509)" />
         <input id="r_email" placeholder="Imèl" />
         <input id="r_pass" type="password" placeholder="Modpas (min 6 karaktè)" />
         <button id="btnRegister">Enskri</button>
-        <div class="small-note" style="margin-top:8px">Si w gen yon kont deja, <span class="link-like" onclick="showLogin()">konekte</span>.</div>
-        <div id="msgRegister" class="note hidden"></div>
+        <div class="small-note" style="margin-top:8px">Si w gen yon kont deja, <span class="link-like" id="linkToLogin">konekte</span>.</div>
+        <div id="regMsg" class="note hidden"></div>
       </section>
 
       <!-- LOGIN -->
-      <section id="section-login" class="card hidden">
+      <section id="login" class="card hidden">
         <h2>Konekte</h2>
         <input id="l_email" placeholder="Imèl" />
         <input id="l_pass" type="password" placeholder="Modpas" />
         <button id="btnLogin">Konekte</button>
-        <div class="small-note" style="margin-top:8px">Ou poko gen kont? <span class="link-like" onclick="showRegister()">Enskri</span></div>
-        <div id="msgLogin" class="note hidden"></div>
+        <div class="small-note" style="margin-top:8px">Ou poko gen kont? <span class="link-like" id="linkToRegister">Enskri</span></div>
+        <div id="loginMsg" class="note hidden"></div>
       </section>
 
       <!-- MINIT -->
-      <section id="section-minit" class="card hidden">
+      <section id="minit" class="card hidden">
         <h2>Voye Minit</h2>
-        <div class="note">Chwazi operatè a, antre montan, peze "Konpoze USSD" pou dialer louvri ak kòd la. Apre ou fin fè transfè sou rezo a, retounen sou sit la epi peze "Mwen voye minit" pou resevwa kòd sistèm pou peman.</div>
+        <div class="note">
+          Enstriksyon: Chwazi operatè, antre montan, peze "Konpoze USSD" pou ouvri aplikasyon apèl la ak kòd la deja ekri. Apre ou fin fè transfè a sou rezo a, retounen sou sit la epi peze "Mwen voye minit" pou sistèm lan voye yon kòd sekirite sou WhatsApp/SMS.
+        </div>
 
         <label class="small-note">Operatè</label>
         <select id="minit_operator">
@@ -82,33 +83,43 @@ button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weigh
           <option value="digicel">Digicel (100 - 1000 G)</option>
           <option value="natcom">Natcom (100 - 500 G)</option>
         </select>
+
         <input id="minit_amount" type="number" placeholder="Montan (G)" />
+
+        <div class="row">
+          <button id="btnCompose">Konpoze USSD</button>
+          <button id="btnConfirmUSSD" class="btn-ghost">Konfime (Digicel)</button>
+        </div>
+
         <div class="row" style="margin-top:8px">
-          <button onclick="composeUSSD()">Konpoze USSD</button>
-          <button class="btn-ghost" onclick="composeConfirmUSSD()">Konfime</button>
+          <button id="btnIHaveSent" class="btn-ghost">Mwen voye minit</button>
+          <button id="btnGoPayment" class="btn-ghost" disabled>Ale nan Peman</button>
         </div>
-        <div style="margin-top:8px" class="row">
-          <button class="btn-ghost" onclick="confirmMinit()">Mwen voye minit</button>
-          <button onclick="goToPayment()" id="btnGoPayment" class="btn-ghost" disabled>Ale nan Peman</button>
-        </div>
+
         <div id="minitMsg" class="note hidden"></div>
+
+        <div style="margin-top:10px" class="note">
+          <strong>USSD egzak:</strong><br/>
+          Digicel: <code>*128*50947111123*100#</code> — Konfime: <code>*128*1#</code><br/>
+          Natcom: <code>*123*88888888*32160708*100#</code>
+        </div>
       </section>
 
       <!-- VERIFY CODE -->
-      <section id="section-verify" class="card hidden">
+      <section id="verify" class="card hidden">
         <h2>Antre Kòd Sistèm</h2>
-        <div class="note">Apre ou fin voye minit, sistèm lan voye yon kòd sou WhatsApp/SMS. Mete li anba a pou jwenn aksè nan peman.</div>
-        <input id="verify_input" placeholder="Antre kòd sistèm lan" />
-        <button onclick="submitVerifyCode()">Verifye Kòd</button>
+        <div class="note">Apre ou fin voye minit la sistèm lan ap voye yon kòd sou WhatsApp/SMS pou ou. Mete kòd la pou jwenn aksè nan peman.</div>
+        <input id="verify_code" placeholder="Antre kòd sistèm lan" />
+        <button id="btnVerify">Verifye Kòd</button>
         <div id="verifyMsg" class="note hidden"></div>
       </section>
 
       <!-- PAYMENT -->
-      <section id="section-payment" class="card hidden">
+      <section id="payment" class="card hidden">
         <h2>Peman</h2>
-        <div id="paymentWarn" class="note">Ou dwe voye minit epi verifye kòd sistèm lan avan pou antre enfòmasyon peman.</div>
+        <div id="payWarn" class="note">Ou dwe voye minit epi verifye kòd sistèm lan avan pou antre enfòmasyon peman.</div>
 
-        <label class="small-note">Chwazi metòd</label>
+        <label class="small-note">Chwazi mòd</label>
         <select id="pay_method" onchange="renderPayForm()">
           <option value="">-- Chwazi --</option>
           <option value="moncash">MonCash</option>
@@ -116,18 +127,18 @@ button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weigh
           <option value="paryaj">Paryaj Lakay</option>
         </select>
 
-        <div id="payForm" style="margin-top:12px"></div>
-        <div id="payResult" class="note hidden" style="margin-top:8px"></div>
+        <div id="payForm"></div>
+        <div id="payRes" class="note hidden"></div>
       </section>
 
       <!-- PROFILE -->
-      <section id="section-profile" class="card hidden">
-        <h2>Profile</h2>
-        <div><strong>Non:</strong> <span id="p_first"></span></div>
-        <div><strong>Prenon:</strong> <span id="p_last"></span></div>
-        <div><strong>Nimewo:</strong> <span id="p_phone"></span></div>
-        <div><strong>Imel:</strong> <span id="p_email"></span></div>
-        <div style="margin-top:10px"><button onclick="refreshProfile()" class="btn-ghost">Refresh</button></div>
+      <section id="profile" class="card hidden">
+        <h2>Profil</h2>
+        <div><strong>Non:</strong> <span id="pf_first"></span></div>
+        <div><strong>Prenon:</strong> <span id="pf_last"></span></div>
+        <div><strong>Nimewo:</strong> <span id="pf_phone"></span></div>
+        <div><strong>Imel:</strong> <span id="pf_email"></span></div>
+        <div style="margin-top:10px"><button id="btnRefreshProfile" class="btn-ghost">Refresh</button></div>
       </section>
     </main>
 
@@ -136,8 +147,8 @@ button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weigh
         <h3>Kontwòl</h3>
         <div id="statusBox" class="note">Non konekte</div>
         <div style="margin-top:8px" class="row">
-          <button class="btn-ghost" onclick="openProfile()">Profile</button>
-          <button class="btn-ghost" onclick="openTransactions()">Transactions</button>
+          <button id="openProfile" class="btn-ghost">Profile</button>
+          <button id="openTx" class="btn-ghost">Transactions</button>
         </div>
       </section>
 
@@ -157,178 +168,170 @@ button{background:var(--accent);color:#000;border:none;cursor:pointer;font-weigh
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database-compat.js"></script>
 
 <script>
-/* ================== CONFIG: modify these if needed ================== */
-/* Backend (Termux) URL for /generate-code and /verify-code */
-const BACKEND_URL = "http://192.168.43.118:3000"; // <- ranplase ak IP/URL ou si diferan
-const SYSTEM_WHATSAPP = "50947111123"; // san + sign
-/* Firebase config (you provided earlier) */
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.firebasestorage.app",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-  measurementId: "G-J1BQRF32ZW"
-};
-/* ================================================================== */
+/* ====== KONFIGIRE: Mete BACKEND_URL si diferan ====== */
+const BACKEND_URL = "http://192.168.43.118:3000"; // ranplase ak IP/URL backend ou
+const SYSTEM_WHATSAPP = "50947111123"; // san +
 
-/* Initialize Firebase */
+// FIREBASE CONFIG (ou te bay li)
+const firebaseConfig = {
+  apiKey: "AIzaSyAjK6EPlokkARHnakMaDRjqRzN-yQqlayU",
+  authDomain: "echanj-plus.firebaseapp.com",
+  projectId: "echanj-plus",
+  storageBucket: "echanj-plus.firebasestorage.app",
+  messagingSenderId: "117332306453",
+  appId: "1:117332306453:web:41d04226aa15ca5c3fbc1c",
+  measurementId: "G-LPGLMCR7HP"
+};
+/* ================================================== */
+
+/* Initialize Firebase (IMPORTANT: do this BEFORE using auth/db) */
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
 /* UI refs */
-const secRegister = document.getElementById('section-register');
-const secLogin = document.getElementById('section-login');
-const secMinit = document.getElementById('section-minit');
-const secVerify = document.getElementById('section-verify');
-const secPayment = document.getElementById('section-payment');
-const secProfile = document.getElementById('section-profile');
+const sectionRegister = document.getElementById('register');
+const sectionLogin = document.getElementById('login');
+const sectionMinit = document.getElementById('minit');
+const sectionVerify = document.getElementById('verify');
+const sectionPayment = document.getElementById('payment');
+const sectionProfile = document.getElementById('profile');
 
-const msgRegister = document.getElementById('msgRegister');
-const msgLogin = document.getElementById('msgLogin');
+const regMsg = document.getElementById('regMsg');
+const loginMsg = document.getElementById('loginMsg');
 const minitMsg = document.getElementById('minitMsg');
 const verifyMsg = document.getElementById('verifyMsg');
 
-const txListEl = document.getElementById('txList');
+const txList = document.getElementById('txList');
 const statusBox = document.getElementById('statusBox');
 const userEmailEl = document.getElementById('userEmail');
-const btnLogout = document.getElementById('btnLogout');
+const btnLogoutEl = document.getElementById('btnLogout');
 
-/* Helper: show one section */
-function showOnly(section){
-  [secRegister, secLogin, secMinit, secVerify, secPayment, secProfile].forEach(s => s.classList.add('hidden'));
-  section.classList.remove('hidden');
+/* show only helper */
+function showOnly(el){
+  [sectionRegister, sectionLogin, sectionMinit, sectionVerify, sectionPayment, sectionProfile].forEach(s => s.classList.add('hidden'));
+  el.classList.remove('hidden');
 }
 
-/* Startup: show register by default */
-showOnly(secRegister);
+/* default: show register when no user */
+showOnly(sectionRegister);
 
-/* Auth state */
-auth.onAuthStateChanged(async user => {
-  if(user){
-    userEmailEl.textContent = user.email; userEmailEl.classList.remove('hidden');
-    btnLogout.classList.remove('hidden');
-    // load profile + tx
-    await loadProfile();
-    await loadTransactions();
-    showOnly(secMinit); // after login -> minit
-  } else {
-    userEmailEl.classList.add('hidden');
-    btnLogout.classList.add('hidden');
-    statusBox.textContent = 'Non konekte';
-    txListEl.innerHTML = 'Pa gen tranzaksyon';
-    showOnly(secRegister);
-  }
-});
+/* NAV handlers */
+document.getElementById('linkToLogin').addEventListener('click', ()=> showOnly(sectionLogin));
+document.getElementById('linkToRegister').addEventListener('click', ()=> showOnly(sectionRegister));
+document.getElementById('openProfile').addEventListener('click', ()=> showOnly(sectionProfile));
+document.getElementById('openTx').addEventListener('click', ()=> { showOnly(sectionMinit); loadTransactions(); });
 
-/* --- NAV HELPERS --- */
-function showLogin(){ showOnly(secLogin); }
-function showRegister(){ showOnly(secRegister); }
-function openProfile(){ showOnly(secProfile); }
-function openTransactions(){ showOnly(secMinit); loadTransactions(); }
-
-/* --- REGISTER (create user but sign out immediately) --- */
+/* REGISTER: create user, save profile, sign out immediately */
 document.getElementById('btnRegister').addEventListener('click', async () => {
-  msgRegister.classList.add('hidden');
+  regMsg.classList.add('hidden');
   const first = document.getElementById('r_first').value.trim();
   const last = document.getElementById('r_last').value.trim();
   let phone = document.getElementById('r_phone').value.trim();
   const email = document.getElementById('r_email').value.trim();
   const pass = document.getElementById('r_pass').value;
 
-  if(!first || !last || !phone || !email || !pass){ msgRegister.textContent = 'Ranpli tout chan yo.'; msgRegister.classList.remove('hidden'); return; }
-  if(pass.length < 6){ msgRegister.textContent = 'Modpas dwe gen omwen 6 karaktè.'; msgRegister.classList.remove('hidden'); return; }
-  // normalize phone digits (no '+')
+  if(!first || !last || !phone || !email || !pass){ regMsg.textContent='Ranpli tout chan yo.'; regMsg.classList.remove('hidden'); return; }
+  if(pass.length < 6){ regMsg.textContent='Modpas dwe gen omwen 6 karaktè.'; regMsg.classList.remove('hidden'); return; }
   phone = phone.replace(/\D/g,'');
+
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
     const uid = cred.user.uid;
     await db.ref('users/' + uid + '/profile').set({ first, last, phone, email, createdAt: Date.now() });
-    // sign out so user must login after register
-    await auth.signOut();
-    msgRegister.textContent = 'Kont kreye avèk siksè. Tanpri konekte.';
-    msgRegister.classList.remove('hidden');
-    setTimeout(()=> showOnly(secLogin), 1200);
+    await auth.signOut(); // require login after register
+    regMsg.textContent = 'Kont kreye avèk siksè. Tanpri konekte.';
+    regMsg.classList.remove('hidden');
+    setTimeout(()=> showOnly(sectionLogin), 1200);
   } catch(e){
-    msgRegister.textContent = 'Erè: ' + e.message; msgRegister.classList.remove('hidden');
+    regMsg.textContent = 'Erè: ' + e.message;
+    regMsg.classList.remove('hidden');
   }
 });
 
-/* --- LOGIN --- */
+/* LOGIN */
 document.getElementById('btnLogin').addEventListener('click', async () => {
-  msgLogin.classList.add('hidden');
+  loginMsg.classList.add('hidden');
   const email = document.getElementById('l_email').value.trim();
   const pass = document.getElementById('l_pass').value;
-  if(!email || !pass){ msgLogin.textContent = 'Ranpli imèl ak modpas.'; msgLogin.classList.remove('hidden'); return; }
+  if(!email || !pass){ loginMsg.textContent='Ranpli imèl ak modpas.'; loginMsg.classList.remove('hidden'); return; }
   try {
     await auth.signInWithEmailAndPassword(email, pass);
-    // onAuthStateChanged will handle transitions
+    // onAuthStateChanged will handle view
   } catch(e){
-    msgLogin.textContent = 'Erè: ' + e.message; msgLogin.classList.remove('hidden');
+    loginMsg.textContent = 'Erè: ' + e.message; loginMsg.classList.remove('hidden');
   }
 });
 
-/* --- LOGOUT --- */
+/* AUTH STATE */
+auth.onAuthStateChanged(async user => {
+  if(user){
+    userEmailEl.textContent = user.email; userEmailEl.classList.remove('hidden');
+    btnLogoutEl.classList.remove('hidden');
+    await loadProfile();
+    await loadTransactions();
+    showOnly(sectionMinit);
+  } else {
+    userEmailEl.classList.add('hidden');
+    btnLogoutEl.classList.add('hidden');
+    statusBox.textContent = 'Non konekte';
+    txList.innerHTML = 'Pa gen tranzaksyon';
+    showOnly(sectionRegister);
+  }
+});
+
+/* LOGOUT */
 function logout(){ auth.signOut(); }
 
-/* --- USSD compose helpers --- */
-function composeUSSD(){
+/* USSD compose */
+document.getElementById('btnCompose').addEventListener('click', () => {
   minitMsg.classList.add('hidden');
   const op = document.getElementById('minit_operator').value;
   const amt = parseInt(document.getElementById('minit_amount').value);
-  if(!op){ minitMsg.textContent = 'Chwazi operatè a.'; minitMsg.classList.remove('hidden'); return; }
-  if(!amt || amt < 100){ minitMsg.textContent = 'Antre yon montan valab (min 100 G).'; minitMsg.classList.remove('hidden'); return; }
+  if(!op){ minitMsg.textContent='Chwazi operatè a.'; minitMsg.classList.remove('hidden'); return; }
+  if(!amt || amt < 100){ minitMsg.textContent='Antre montan valab (min 100 G).'; minitMsg.classList.remove('hidden'); return; }
   if(op === 'digicel' && (amt < 100 || amt > 1000)){ minitMsg.textContent='Digicel: limit 100 - 1000 G'; minitMsg.classList.remove('hidden'); return; }
   if(op === 'natcom' && (amt < 100 || amt > 500)){ minitMsg.textContent='Natcom: limit 100 - 500 G'; minitMsg.classList.remove('hidden'); return; }
-
   let code = '';
   if(op === 'digicel') code = `*128*50947111123*${amt}#`;
   else code = `*123*88888888*32160708*${amt}#`;
-
-  // open dialer on Android
   window.location.href = 'tel:' + encodeURIComponent(code);
-}
+});
 
-/* Compose simple confirm USSD (Digicel confirm) */
-function composeConfirmUSSD(){
+/* Digicel confirm quick dial */
+document.getElementById('btnConfirmUSSD').addEventListener('click', () => {
   window.location.href = 'tel:' + encodeURIComponent('*128*1#');
-}
+});
 
-/* --- Confirm minit: save tx and call backend to generate code --- */
-async function confirmMinit(){
+/* After user pressed 'Mwen voye minit' */
+document.getElementById('btnIHaveSent').addEventListener('click', async () => {
   minitMsg.classList.add('hidden');
-  const user = auth.currentUser;
-  if(!user){ alert('Ou dwe konekte.'); return; }
+  const user = auth.currentUser; if(!user){ alert('Ou dwe konekte.'); return; }
   const op = document.getElementById('minit_operator').value;
   const amt = parseInt(document.getElementById('minit_amount').value);
   if(!op || !amt){ minitMsg.textContent='Ranpli operatè ak montan.'; minitMsg.classList.remove('hidden'); return; }
 
-  // push transaction and mark minitSent
+  // save transaction and flag
   const txRef = db.ref('transactions').push();
   const txObj = { uid:user.uid, type:'minit', service:op, montan:amt, date:Date.now(), statut:'sent' };
   await txRef.set(txObj);
   await db.ref('users/' + user.uid + '/minitSent').set(true);
 
-  // call backend to generate code and send to user's phone via WhatsApp/SMS
-  const profileSnap = await db.ref('users/' + user.uid + '/profile').once('value');
-  const profile = profileSnap.val() || {};
-  const to = profile.phone ? (profile.phone.startsWith('509') ? '+'+profile.phone : '+509'+profile.phone) : null;
+  // call backend to generate code and send to user (backend must implement)
   try {
-    const resp = await fetch(BACKEND_URL + '/generate-code', {
+    const pSnap = await db.ref('users/' + user.uid + '/profile').once('value');
+    const p = pSnap.val() || {};
+    const to = p.phone ? (p.phone.startsWith('509') ? '+'+p.phone : '+509'+p.phone) : null;
+    const res = await fetch(BACKEND_URL + '/generate-code', {
       method:'POST', headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ uid:user.uid, to })
     });
-    const j = await resp.json();
+    const j = await res.json();
     if(j && j.ok){
-      minitMsg.textContent = 'Minit konfime. Kòd sistèm lan voye sou WhatsApp/SMS. Mete l pou verifye epi jwenn aksè peman.';
+      minitMsg.textContent = 'Kòd sistèm lan voye sou WhatsApp/SMS. Antre li pou verifye epi jwenn aksè peman.';
       minitMsg.classList.remove('hidden');
-      // allow go to payment (but still require verification)
       document.getElementById('btnGoPayment').disabled = false;
-      // show verify section
-      setTimeout(()=> showOnly(secVerify), 900);
+      setTimeout(()=> showOnly(sectionVerify), 900);
     } else {
       minitMsg.textContent = 'Pa rive voye kòd la: ' + (j && j.error ? j.error : 'erè sèvè');
       minitMsg.classList.remove('hidden');
@@ -336,34 +339,43 @@ async function confirmMinit(){
   } catch(e){
     minitMsg.textContent = 'Erè kontakte backend: ' + e.message; minitMsg.classList.remove('hidden');
   }
-}
+});
 
-/* --- Verify code --- */
-async function submitVerifyCode(){
+/* Navigate to payment - user must have minitSent & codeVerified */
+document.getElementById('btnGoPayment').addEventListener('click', async () => {
+  const user = auth.currentUser; if(!user){ alert('Ou dwe konekte.'); return; }
+  const minit = (await db.ref('users/' + user.uid + '/minitSent').once('value')).val();
+  if(!minit) return alert('Al voye minit lan avan ou antre nan paj peman.');
+  showOnly(sectionVerify);
+});
+
+/* Verify code button */
+document.getElementById('btnVerify').addEventListener('click', async () => {
   verifyMsg.classList.add('hidden');
-  const code = document.getElementById('verify_input').value.trim();
+  const code = document.getElementById('verify_code').value.trim();
   if(!code){ verifyMsg.textContent='Antre kòd la.'; verifyMsg.classList.remove('hidden'); return; }
   const user = auth.currentUser; if(!user){ alert('Ou dwe konekte.'); return; }
 
   try {
-    const resp = await fetch(BACKEND_URL + '/verify-code', {
+    const res = await fetch(BACKEND_URL + '/verify-code', {
       method:'POST', headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ uid:user.uid, code })
     });
-    const j = await resp.json();
+    const j = await res.json();
     if(j && j.ok){
-      verifyMsg.textContent = 'Kòd verifye. Ou gen aksè peman kounye a.'; verifyMsg.classList.remove('hidden');
       await db.ref('users/' + user.uid + '/codeVerified').set(true);
-      setTimeout(()=> { showOnly(secPayment); }, 800);
+      verifyMsg.textContent = 'Kòd verifye — kounye a ou gen aksè peman.';
+      verifyMsg.classList.remove('hidden');
+      setTimeout(()=> showOnly(sectionPayment), 900);
     } else {
       verifyMsg.textContent = 'Kòd pa kòrèk oswa ekspire.'; verifyMsg.classList.remove('hidden');
     }
   } catch(e){
     verifyMsg.textContent = 'Erè verifye kòd: ' + e.message; verifyMsg.classList.remove('hidden');
   }
-}
+});
 
-/* --- Payment form rendering & submission --- */
+/* Render payment form depending on method */
 function renderPayForm(){
   const method = document.getElementById('pay_method').value;
   const holder = document.getElementById('payForm');
@@ -384,9 +396,9 @@ function renderPayForm(){
   }
 }
 
+/* Submit payment */
 async function submitPayment(method){
-  const user = auth.currentUser; if(!user) return alert('Ou dwe konekte.');
-  // check minit & verification
+  const user = auth.currentUser; if(!user){ alert('Ou dwe konekte.'); return; }
   const minit = (await db.ref('users/' + user.uid + '/minitSent').once('value')).val();
   if(!minit) return alert('Ou dwe voye minit avan peman.');
   const verified = (await db.ref('users/' + user.uid + '/codeVerified').once('value')).val();
@@ -404,28 +416,27 @@ async function submitPayment(method){
     if(!payload.num || !payload.amount) return alert('Ranpli tout chan yo.');
   }
 
-  // push to DB
   const txRef = db.ref('transactions').push();
   await txRef.set(payload);
 
-  // open WhatsApp to system with message for confirmation
+  // open WhatsApp to system for confirmation
   const msg = `EchanjPlus\nUid:${user.uid}\nMetòd:${method}\nKont:${payload.num}\nMontan:${payload.amount} G\nTx:${txRef.key}`;
   window.open(`https://wa.me/${SYSTEM_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
 
-  document.getElementById('payResult').classList.remove('hidden');
-  document.getElementById('payResult').textContent = 'Peman soumèt. Nou voye detay sou WhatsApp sistèm pou konfime.';
+  document.getElementById('payRes').classList.remove('hidden');
+  document.getElementById('payRes').textContent = 'Peman soumèt. Nou voye detay sou WhatsApp sistèm pou konfime.';
   loadTransactions();
 }
 
-/* --- Profile & Transactions loaders --- */
+/* Load profile & transactions */
 async function loadProfile(){
   const user = auth.currentUser; if(!user) return;
   const pSnap = await db.ref('users/' + user.uid + '/profile').once('value');
   const p = pSnap.val() || {};
-  document.getElementById('p_first').textContent = p.first || '';
-  document.getElementById('p_last').textContent = p.last || '';
-  document.getElementById('p_phone').textContent = p.phone || '';
-  document.getElementById('p_email').textContent = p.email || user.email;
+  document.getElementById('pf_first').textContent = p.first || '';
+  document.getElementById('pf_last').textContent = p.last || '';
+  document.getElementById('pf_phone').textContent = p.phone || '';
+  document.getElementById('pf_email').textContent = p.email || user.email;
   statusBox.textContent = (p.first ? `${p.first} ${p.last || ''}` : user.email);
   userEmailEl.textContent = user.email; userEmailEl.classList.remove('hidden');
 }
@@ -434,27 +445,24 @@ async function loadTransactions(){
   const user = auth.currentUser; if(!user) return;
   const snap = await db.ref('transactions').orderByChild('uid').equalTo(user.uid).once('value');
   const data = snap.val() || {};
-  txListEl.innerHTML = '';
+  txList.innerHTML = '';
   const keys = Object.keys(data || {});
-  if(keys.length === 0) txListEl.innerHTML = 'Pa gen tranzaksyon';
+  if(keys.length === 0) txList.innerHTML = 'Pa gen tranzaksyon';
   keys.reverse().forEach(k=>{
     const t = data[k];
     const el = document.createElement('div');
     el.style.marginBottom = '8px';
     const date = t.date ? new Date(t.date).toLocaleString() : '';
     el.innerHTML = `<strong>${t.type || t.method || t.service || 'Tx'}</strong><div class="small-note">${date}</div><div>Montan: ${t.amount||t.montan||''} G</div>`;
-    txListEl.appendChild(el);
+    txList.appendChild(el);
   });
 }
 
-/* --- utility navigation --- */
-function goToPayment(){ showOnly(secVerify); alert('Soumèt "Mwen voye minit" pou resevwa kòd sistèm anvan peman.'); }
+/* refresh profile */
+document.getElementById('btnRefreshProfile').addEventListener('click', ()=> loadProfile());
 
-/* --- refresh profile --- */
-function refreshProfile(){ loadProfile(); }
-
-/* --- initial: ensure register shown --- */
-showOnly(secRegister);
+/* initial: show register */
+showOnly(sectionRegister);
 </script>
 </body>
-            </html>
+  </html>
