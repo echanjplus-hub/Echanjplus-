@@ -1,412 +1,157 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Echanj Plus — Sekirize (Minit → Peman)</title>
-  <style>
-    :root{--brand:#ffc107;--primary:#0b5ed7;--bg:#0f1720}
-    body{margin:0;font-family:Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071126,#0f1720);color:#fff;min-height:100vh}
-    .wrap{max-width:920px;margin:24px auto;padding:18px;border-radius:12px;background:linear-gradient(180deg,#07122644,#00000022);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
-    header{display:flex;justify-content:space-between;align-items:center;gap:12px}
-    header h1{color:var(--brand);margin:0}
-    header .small{color:#cbd5e1;font-size:0.9rem}
-    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
-    .card{background:rgba(255,255,255,0.03);padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
-    h2{color:var(--brand);margin:0 0 8px 0}
-    input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;margin-top:8px}
-    input::placeholder{color:rgba(255,255,255,0.4)}
-    button{background:var(--brand);color:#000;font-weight:700;border:none;cursor:pointer;padding:10px}
-    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
-    .hidden{display:none}
-    .muted{color:rgba(255,255,255,0.6);font-size:0.9rem}
-    .note{background:rgba(255,255,255,0.02);padding:8px;border-radius:6px;margin-top:8px;color:rgba(255,255,255,0.8)}
-    #loader{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:9999}
-    .ring{width:52px;height:52px;border-radius:50%;border:6px solid rgba(255,255,255,0.06);border-top-color:var(--brand);animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    table{width:100%;border-collapse:collapse;margin-top:12px}
-    th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.9rem}
-    th{color:var(--brand);text-align:left}
-    footer{margin-top:14px;color:rgba(255,255,255,0.45);font-size:0.85rem;text-align:center}
-    @media(max-width:880px){.grid{grid-template-columns:1fr}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echanj Plus</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; text-align: center; margin:0; }
+    .container { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; margin-top: 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+    input, button, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #28a745; color: white; border: none; cursor: pointer; }
+    button:hover { background: #218838; }
+    h2 { color: #333; }
+    .hidden { display: none; }
+</style>
 </head>
 <body>
-  <div id="loader"><div class="ring"></div></div>
 
-  <div class="wrap" role="application" aria-label="Echanj Plus">
-    <header>
-      <div>
-        <h1>Echanj Plus</h1>
-        <div class="small muted">Vit • Senp • Serye</div>
-      </div>
-      <div>
-        <span id="userEmail" class="muted" style="display:none"></span>
-        <button id="logoutBtn" class="secondary" style="display:none;margin-left:8px" onclick="logout()">Dekonekte</button>
-      </div>
-    </header>
+<!-- LOGIN / REGISTER -->
+<div id="loginPage" class="container">
+    <h2>Ouvri Sesyon</h2>
+    <input type="email" id="email" placeholder="Imel">
+    <input type="password" id="password" placeholder="Modpas">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Enskri</button>
+</div>
 
-    <div class="grid">
-      <main>
-        <!-- AUTH: login + register separate -->
-        <section id="authCard" class="card">
-          <h2>Login</h2>
-          <div id="authMsg" class="note" style="display:none"></div>
-          <input id="loginEmail" type="email" placeholder="Imèl" />
-          <input id="loginPass" type="password" placeholder="Modpas" />
-          <div style="display:flex;gap:8px">
-            <button style="flex:1" onclick="login()">Konekte</button>
-            <button style="flex:1" onclick="showRegister()">Enskri</button>
-          </div>
-        </section>
+<!-- VOYE MINIT -->
+<div id="minitPage" class="container hidden">
+    <h2>Voye Minit</h2>
+    <p>Ou dwe voye minit avan ou ka peye</p>
+    <button onclick="sendUSSD('*128*50947111123*100%23')">Voye Minit Digicel</button>
+    <button onclick="sendUSSD('*128*1%23')">Konfime Digicel</button>
+    <button onclick="sendUSSD('*123*88888888*32160708*100%23')">Voye Minit Natcom</button>
+</div>
 
-        <!-- Register section (separe) -->
-        <section id="registerCard" class="card hidden">
-          <h2>Enskri</h2>
-          <div id="regMsg" class="note" style="display:none"></div>
-          <input id="regEmail" type="email" placeholder="Imèl" />
-          <input id="regPass" type="password" placeholder="Modpas (min 6 chif)" />
-          <div style="display:flex;gap:8px">
-            <button style="flex:1" onclick="register()">Kreye kont</button>
-            <button style="flex:1" onclick="showLogin()">Ale tounen</button>
-          </div>
-          <div class="muted note">Apre enskripsyon, w ap retounen sou paj Login (kont la pa konekte otomatikman).</div>
-        </section>
+<!-- PEYMAN -->
+<div id="paymentPage" class="container hidden">
+    <h2>Peman</h2>
+    <select id="method">
+        <option value="">Chwazi metòd</option>
+        <option value="moncash">MonCash</option>
+        <option value="natcash">NatCash</option>
+        <option value="paryaj">Paryaj Lakay</option>
+    </select>
+    <div id="paymentForm"></div>
+    <button onclick="logout()">Dekonekte</button>
+</div>
 
-        <!-- Minit section (pral parèt apre login) -->
-        <section id="minitCard" class="card hidden">
-          <h2>Voye Minit</h2>
-          <div class="muted">Peze operatè pou louvri aplikasyon apèl la ak kòd USSD otomatik.</div>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button onclick="launchUSSD('*128*50947111123*100#')">Voye Digicel (100 G)</button>
-            <button onclick="launchUSSD('*128*1#')" class="secondary">Konfime Digicel</button>
-          </div>
-
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button onclick="launchUSSD('*123*88888888*32160708*100#')">Voye Natcom (100 G)</button>
-          </div>
-
-          <div class="note" id="minitHint">Apre ou fin konpoze kòd USSD sou telefòn, peze "Mwen voye minit" pou konfime.</div>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button onclick="confirmMinit()" id="confirmMinitBtn" class="secondary">Mwen voye minit</button>
-            <button onclick="goToPayment()" id="goPaymentBtn" disabled>Ale nan Peman</button>
-          </div>
-        </section>
-
-        <!-- Payment section (parantr) -->
-        <section id="payCard" class="card hidden">
-          <h2>Peman</h2>
-          <div id="payNotice" class="note muted">Ou dwe voye minit avan pou gen aksè a peman.</div>
-
-          <label class="muted" style="margin-top:8px">Chwazi mòd peman:</label>
-          <select id="payMethod" onchange="showPayForm()">
-            <option value="">-- Chwazi --</option>
-            <option value="moncash">MonCash</option>
-            <option value="natcash">NatCash</option>
-            <option value="paryaj">Pari Lakay</option>
-          </select>
-
-          <div id="moncashForm" class="hidden">
-            <input id="mcName" placeholder="Non kont" />
-            <input id="mcNumber" placeholder="Nimewo kont (eg: 37123456)" />
-            <input id="mcAmount" type="number" placeholder="Montan (G)" />
-            <button onclick="submitPayment('MonCash')">Soumèt MonCash</button>
-          </div>
-
-          <div id="natcashForm" class="hidden">
-            <input id="ncName" placeholder="Non kont" />
-            <input id="ncNumber" placeholder="Nimewo kont" />
-            <input id="ncAmount" type="number" placeholder="Montan (G)" />
-            <button onclick="submitPayment('NatCash')">Soumèt NatCash</button>
-          </div>
-
-          <div id="paryajForm" class="hidden">
-            <input id="plNumber" placeholder="Nimewo kont Pari Lakay" />
-            <input id="plAmount" type="number" placeholder="Montan (G)" />
-            <button onclick="submitPayment('PariLakay')">Soumèt Pari Lakay</button>
-          </div>
-
-          <div id="payResult" class="note" style="display:none"></div>
-
-        </section>
-      </main>
-
-      <!-- Right side: admin / info -->
-      <aside>
-        <section class="card">
-          <h2>Kontwòl</h2>
-          <div class="muted">Estati minit pou itilizatè:</div>
-          <div id="userMinitStatus" class="note">Non konekte</div>
-          <div style="margin-top:8px">
-            <button class="secondary" onclick="checkMinit()">Tcheke estati minit</button>
-          </div>
-        </section>
-
-        <section class="card" style="margin-top:12px">
-          <h2>Enfòmasyon USSD</h2>
-          <div class="muted">Digicel send:</div>
-          <div class="note">*128*50947111123*100#  — konfim: *128*1#</div>
-          <div class="muted" style="margin-top:8px">Natcom send:</div>
-          <div class="note">*123*88888888*32160708*100#</div>
-        </section>
-      </aside>
-    </div>
-
-    <footer>© Echanj Plus — Ranplase firebaseConfig si sa nesesè</footer>
-  </div>
-
-  <!-- Firebase (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database-compat.js"></script>
-
-  <script>
-  /********** Firebase config - ranplase si ou bezwen **********/
-  const firebaseConfig = {
-    apiKey: "AIzaSyAjK6EPlokkARHnakMaDRjqRzN-yQqlayU",
-    authDomain: "echanj-plus.firebaseapp.com",
-    databaseURL: "https://echanj-plus-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus",
-    storageBucket: "echanj-plus.appspot.com",
-    messagingSenderId: "117332306453",
-    appId: "1:117332306453:web:xxxxxxxx"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
-
-  // UI refs
-  const loader = document.getElementById('loader');
-  function showLoader(v=true){ loader.style.display = v ? 'flex' : 'none'; }
-
-  const authCard = document.getElementById('authCard');
-  const registerCard = document.getElementById('registerCard');
-  const minitCard = document.getElementById('minitCard');
-  const payCard = document.getElementById('payCard');
-  const userEmail = document.getElementById('userEmail');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const authMsg = document.getElementById('authMsg');
-  const regMsg = document.getElementById('regMsg');
-  const userMinitStatus = document.getElementById('userMinitStatus');
-  const goPaymentBtn = document.getElementById('goPaymentBtn');
-  const confirmMinitBtn = document.getElementById('confirmMinitBtn');
-
-  let currentUser = null;
-  let localMinitSent = false;
-
-  // Auth state handling
-  auth.onAuthStateChanged(user=>{
-    currentUser = user;
-    if(user){
-      // show user email and logout
-      userEmail.style.display = 'inline-block';
-      userEmail.textContent = user.email;
-      logoutBtn.style.display = 'inline-block';
-      // show minit section
-      authCard.classList.add('hidden');
-      registerCard.classList.add('hidden');
-      minitCard.classList.remove('hidden');
-      // check db for minitSent flag
-      loadMinitState(user.uid);
-    } else {
-      // show login (auth) by default
-      userEmail.style.display = 'none';
-      logoutBtn.style.display = 'none';
-      authCard.classList.remove('hidden');
-      registerCard.classList.add('hidden');
-      minitCard.classList.add('hidden');
-      payCard.classList.add('hidden');
-      userMinitStatus.textContent = 'Non konekte';
-      localMinitSent = false;
-    }
-  });
-
-  // show register
-  function showRegister(){
-    authCard.classList.add('hidden');
-    registerCard.classList.remove('hidden');
-  }
-  function showLogin(){
-    registerCard.classList.add('hidden');
-    authCard.classList.remove('hidden');
-  }
-
-  // Register (create account but then sign out immediately)
-  function register(){
-    const email = document.getElementById('regEmail').value.trim();
-    const pass = document.getElementById('regPass').value.trim();
-    regMsg.style.display = 'none';
-    if(!email || !pass){ regMsg.style.display='block'; regMsg.textContent='Ranpli imèl ak modpas.'; return; }
-    showLoader(true);
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(()=> {
-        // sign out immediately so the user doesn't stay auto-signed-in
-        return auth.signOut();
-      })
-      .then(()=> {
-        showLoader(false);
-        regMsg.style.display='block';
-        regMsg.textContent = 'Kont kreye. Tanpri konekte kounye a.';
-        showLogin();
-      })
-      .catch(e=>{
-        showLoader(false);
-        regMsg.style.display='block';
-        regMsg.textContent = e.message;
-      });
-  }
-
-  // Login
-  function login(){
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass = document.getElementById('loginPass').value.trim();
-    authMsg.style.display = 'none';
-    if(!email || !pass){ authMsg.style.display = 'block'; authMsg.textContent = 'Ranpli imèl ak modpas.'; return; }
-    showLoader(true);
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(()=> {
-        showLoader(false);
-        // onAuthStateChanged will show minit page
-      })
-      .catch(e=>{
-        showLoader(false);
-        authMsg.style.display='block';
-        authMsg.textContent = e.message;
-      });
-  }
-
-  function logout(){ auth.signOut(); }
-
-  /* ---------- USSD functions ---------- */
-  function launchUSSD(code){
-    // open the phone dialer with USSD code (encode # as %23)
-    const tel = 'tel:' + encodeURIComponent(code);
-    // Open dialer
-    window.location.href = tel;
-  }
-
-  // After user uses dialer on their phone, they must click confirm
-  function confirmMinit(){
-    if(!currentUser){ alert('Ou dwe konekte.'); return; }
-    // write flag in DB
-    const uid = currentUser.uid;
-    showLoader(true);
-    const tx = {
-      uid,
-      type: 'minit',
-      service: 'USSD',
-      date: new Date().toISOString(),
-      statut: 'sent'
+<script>
+    // METE KONFIGURASYON FIREBASE OU ISI
+    const firebaseConfig = {
+        apiKey: "METE_API_KEY_OU_LA",
+        authDomain: "echanj-plus.firebaseapp.com",
+        databaseURL: "https://echanj-plus-default-rtdb.firebaseio.com",
+        projectId: "echanj-plus",
+        storageBucket: "echanj-plus.appspot.com",
+        messagingSenderId: "XXXX",
+        appId: "XXXX"
     };
-    // push transaction and set user flag
-    const ref = db.ref('transactions').push();
-    const updates = {};
-    updates['/transactions/' + ref.key] = tx;
-    updates['/users/' + uid + '/minitSent'] = true;
-    updates['/users/' + uid + '/lastMinitTx'] = ref.key;
-    db.ref().update(updates)
-      .then(()=> {
-        showLoader(false);
-        localMinitSent = true;
-        userMinitStatus.textContent = 'Minit voye: Wi';
-        document.getElementById('minitHint').textContent = 'Minit konfime. Kounye a ou ka ale nan peman.';
-        goPaymentBtn.disabled = false;
-        confirmMinitBtn.disabled = true;
-      })
-      .catch(err=>{
-        showLoader(false);
-        alert('Erè pandan konfime minit: ' + err.message);
-      });
-  }
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-  function loadMinitState(uid){
-    if(!uid) return;
-    showLoader(true);
-    db.ref('users/' + uid + '/minitSent').once('value')
-      .then(snap=>{
-        showLoader(false);
-        const val = snap.val();
-        localMinitSent = !!val;
-        userMinitStatus.textContent = localMinitSent ? 'Minit voye: Wi' : 'Minit voye: Non';
-        goPaymentBtn.disabled = !localMinitSent;
-        confirmMinitBtn.disabled = !!localMinitSent;
-      })
-      .catch(e=>{
-        showLoader(false);
-        localMinitSent = false;
-        userMinitStatus.textContent = 'Minit voye: Non';
-        goPaymentBtn.disabled = true;
-      });
-  }
-
-  function checkMinit(){
-    if(!currentUser){ alert('Ou dwe konekte.'); return; }
-    loadMinitState(currentUser.uid);
-  }
-
-  function goToPayment(){
-    if(!currentUser){ alert('Ou dwe konekte.'); return; }
-    if(!localMinitSent){ alert('Tanpri voye minit avan peman.'); return; }
-    payCard.classList.remove('hidden');
-    // scroll to payment
-    window.scrollTo({ top: document.getElementById('payCard').offsetTop - 20, behavior: 'smooth' });
-  }
-
-  /* ---------- Payment forms ---------- */
-  function showPayForm(){
-    document.getElementById('moncashForm').classList.add('hidden');
-    document.getElementById('natcashForm').classList.add('hidden');
-    document.getElementById('paryajForm').classList.add('hidden');
-    const v = document.getElementById('payMethod').value;
-    if(v==='moncash') document.getElementById('moncashForm').classList.remove('hidden');
-    if(v==='natcash') document.getElementById('natcashForm').classList.remove('hidden');
-    if(v==='paryaj') document.getElementById('paryajForm').classList.remove('hidden');
-  }
-
-  function submitPayment(method){
-    if(!currentUser){ alert('Ou dwe konekte.'); return; }
-    if(!localMinitSent){ alert('Ou dwe voye minit avan peman.'); return; }
-
-    let payload = { uid: currentUser.uid, service: method, date: new Date().toISOString(), statut: 'pending' };
-
-    if(method === 'MonCash'){
-      payload.non = document.getElementById('mcName').value.trim();
-      payload.numero = document.getElementById('mcNumber').value.trim();
-      payload.montan = parseInt(document.getElementById('mcAmount').value);
-      if(!payload.non || !payload.numero || !payload.montan){ alert('Ranpli tout chan MonCash.'); return; }
-    } else if(method === 'NatCash'){
-      payload.non = document.getElementById('ncName').value.trim();
-      payload.numero = document.getElementById('ncNumber').value.trim();
-      payload.montan = parseInt(document.getElementById('ncAmount').value);
-      if(!payload.non || !payload.numero || !payload.montan){ alert('Ranpli tout chan NatCash.'); return; }
-    } else if(method === 'PariLakay'){
-      payload.kontPari = document.getElementById('plNumber').value.trim();
-      payload.montan = parseInt(document.getElementById('plAmount').value);
-      if(!payload.kontPari || !payload.montan){ alert('Ranpli chan Pari Lakay.'); return; }
-    } else {
-      alert('Chwazi yon metòd peman.');
-      return;
+    // LOGIN
+    function login(){
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+        auth.signInWithEmailAndPassword(email, password)
+        .then(()=> { showMinitPage(); })
+        .catch(err=>alert(err.message));
     }
 
-    showLoader(true);
-    db.ref('transactions').push(payload)
-      .then(()=> {
-        showLoader(false);
-        document.getElementById('payResult').style.display='block';
-        document.getElementById('payResult').textContent = 'Peman soumèt. Nou pral kontakte ou sou estati.';
-        // clear forms
-        document.querySelectorAll('#moncashForm input,#natcashForm input,#paryajForm input').forEach(i=>i.value='');
-      })
-      .catch(e=>{
-        showLoader(false);
-        alert('Erè pandan soumèt peman: ' + e.message);
-      });
-  }
+    // REGISTER
+    function register(){
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+        auth.createUserWithEmailAndPassword(email, password)
+        .then(()=> { alert("Kreye kont! Konekte kounya."); })
+        .catch(err=>alert(err.message));
+    }
 
-  // initial: hide everything except auth by default
-  // onAuthStateChanged handles UI transitions
+    // VOYE MINIT
+    function sendUSSD(code){
+        window.location.href = `tel:${code}`;
+        let user = auth.currentUser;
+        if(user){
+            db.ref("users/"+user.uid).update({ sentMinit: true });
+            alert("Minit voye! Ou ka ale nan peman.");
+            showPaymentPage();
+        }
+    }
 
-  </script>
+    // PEYMAN
+    document.getElementById("method").addEventListener("change", function(){
+        let form = "";
+        if(this.value === "moncash" || this.value === "natcash"){
+            form = `
+                <input type="text" placeholder="Non Kont">
+                <input type="text" placeholder="Nimewo Kont">
+                <input type="number" placeholder="Montan">
+            `;
+        } else if(this.value === "paryaj"){
+            form = `
+                <input type="text" placeholder="Nimewo Kont Paryaj">
+                <input type="number" placeholder="Montan">
+            `;
+        }
+        document.getElementById("paymentForm").innerHTML = form;
+    });
+
+    // DEKONEKTE
+    function logout(){
+        auth.signOut();
+        showLoginPage();
+    }
+
+    // AFFICHAGE PAGES
+    function showLoginPage(){
+        document.getElementById("loginPage").classList.remove("hidden");
+        document.getElementById("minitPage").classList.add("hidden");
+        document.getElementById("paymentPage").classList.add("hidden");
+    }
+    function showMinitPage(){
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("minitPage").classList.remove("hidden");
+        document.getElementById("paymentPage").classList.add("hidden");
+    }
+    function showPaymentPage(){
+        let user = auth.currentUser;
+        if(user){
+            db.ref("users/"+user.uid+"/sentMinit").once("value").then(snap=>{
+                if(snap.val() === true){
+                    document.getElementById("loginPage").classList.add("hidden");
+                    document.getElementById("minitPage").classList.add("hidden");
+                    document.getElementById("paymentPage").classList.remove("hidden");
+                } else {
+                    alert("Ou dwe voye minit avan!");
+                }
+            });
+        }
+    }
+
+    auth.onAuthStateChanged(user=>{
+        if(user){
+            showMinitPage();
+        } else {
+            showLoginPage();
+        }
+    });
+</script>
 </body>
 </html>
