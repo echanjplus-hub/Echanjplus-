@@ -1,556 +1,567 @@
 <!doctype html>
-<html lang="ht">
+<html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Echanj Plus — Dashboard</title>
+
+  <!-- Modern, clean CSS (pro 2025 style) -->
   <style>
     :root{
-      --bg:#071226; --card:#0f1720; --accent:#ffc107; --muted:#cfcfcf;
-      --glass: rgba(255,255,255,0.03);
+      --bg1: #071827;
+      --bg2: #021826;
+      --card: rgba(255,255,255,0.03);
+      --muted: #9fb3c8;
+      --accent: linear-gradient(135deg,#06b6d4,#7c3aed);
+      --glass: rgba(255,255,255,0.02);
+      --accent-txt: #041b1f;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 14px;
+      --shadow: 0 8px 30px rgba(2,6,23,0.6);
+      font-synthesis: none;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Segoe UI,Arial;background:linear-gradient(180deg,#071226,#06121a);color:#fff;min-height:100vh}
-    .app{max-width:1100px;margin:24px auto;padding:18px}
-    header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
-    .brand{color:var(--accent);font-weight:800;font-size:1.4rem}
-    .small{font-size:0.95rem;color:var(--muted)}
-    .layout{display:grid;grid-template-columns:260px 1fr;gap:16px}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}}
-    .panel{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 12px 30px rgba(0,0,0,0.5)}
-    nav button{display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
-    nav button.active{background:rgba(255,193,7,0.12);color:var(--accent);font-weight:700}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e8f3fb}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1200px;margin:28px auto;padding:20px;display:grid;grid-template-columns:360px 1fr;gap:20px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.02)}
+    /* Left column (auth / user) */
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+    .logo{
+      width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#7c3aed);
+      display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:white;box-shadow:0 8px 24px rgba(7,24,39,0.6)
+    }
+    h1{margin:0;font-size:20px}
+    .lead{color:var(--muted);margin:4px 0 12px 0}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select{
+      width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
+      background:transparent;color:inherit;margin-bottom:10px;outline:none;font-size:14px;
+    }
+    .btn{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:0;font-weight:700;cursor:pointer;
+      background:linear-gradient(90deg,#06b6d4,#7c3aed);color:var(--accent-txt);
+    }
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);font-weight:600}
+    .small{font-size:13px;color:var(--muted)}
     .hidden{display:none}
-    h2{margin:0;color:var(--accent)}
-    input,select,textarea,button{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;font-size:15px}
-    input::placeholder{color:rgba(255,255,255,0.45)}
-    .btn{background:var(--accent);color:#000;border:none;cursor:pointer;font-weight:700;padding:10px;border-radius:8px}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
-    .note{background:var(--glass);padding:10px;border-radius:8px;margin-top:8px;color:var(--muted)}
-    .row{display:flex;gap:8px}
-    .row button{flex:1}
-    code{background:rgba(255,255,255,0.04);padding:2px 6px;border-radius:6px}
-    .msg{padding:8px;border-radius:6px;margin-top:8px}
-    .err{background:#4a0000;color:#ffd1d1}
-    .ok{background:#063;color:#c9ffd6}
-    .tx-list{max-height:260px;overflow:auto;margin-top:8px}
-    .profile-field{display:flex;gap:8px;align-items:center;margin-top:8px}
-    .profile-field strong{width:110px;color:var(--muted)}
-    footer{margin-top:16px;text-align:center;color:rgba(255,255,255,0.35)}
-    .top-actions{display:flex;gap:8px;align-items:center}
-    @media(max-width:540px){.row{flex-direction:column}}
+    /* Dashboard (right) */
+    .header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+    .tabs{display:flex;gap:8px}
+    .tab{padding:8px 12px;border-radius:10px;background:var(--glass);cursor:pointer;color:var(--muted);font-weight:600}
+    .tab.active{background:linear-gradient(90deg,#042f34,#0b2f52);color:#e8f3fb;box-shadow:inset 0 -4px 18px rgba(0,0,0,0.2)}
+    .balance-box{display:flex;flex-direction:column;align-items:flex-end}
+    .balance{font-size:28px;font-weight:800}
+    .content{padding-top:8px}
+    .profile-row{display:flex;gap:12px;align-items:center}
+    .avatar{width:80px;height:80px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:30px;color:white;font-weight:800}
+    .box{background:rgba(255,255,255,0.02);padding:14px;border-radius:12px}
+    .ussd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .ussd-btn{display:inline-flex;align-items:center;justify-content:center;padding:14px;border-radius:12px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,0.04)}
+    .ussd-digicel{background:linear-gradient(90deg,#0ea5a4,#0891b2);color:#042027}
+    .ussd-natcom{background:linear-gradient(90deg,#7c3aed,#06b6d4);color:#041827}
+    .recent-item{padding:10px;border-radius:10px;border-bottom:1px solid rgba(255,255,255,0.02)}
+    .muted{color:var(--muted)}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+    @media (max-width:980px){.wrap{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div>
-        <div class="brand">Echanj Plus</div>
-        <div class="small">Vit • Senp • Serye</div>
-      </div>
-      <div class="top-actions">
-        <div id="userEmail" class="small hidden"></div>
-        <button id="btnLogout" class="btn-ghost hidden">Dekonekte</button>
-      </div>
-    </header>
-
-    <div class="layout">
-      <!-- NAV -->
-      <aside class="panel">
-        <nav>
-          <button id="nav_send" class="active">Voye Minit (USSD)</button>
-          <button id="nav_payment">Peman</button>
-          <button id="nav_profile">Profil</button>
-          <button id="nav_transactions">Tranzaksyon</button>
-        </nav>
-        <div class="note">
-          Ou dwe konekte anvan w itilize sit la. Si ou pa konekte, paj login / enskripsyon ap parèt otomatikman.
+  <div class="wrap">
+    <!-- LEFT: Auth / User -->
+    <div>
+      <div class="card">
+        <div class="brand">
+          <div class="logo">EP</div>
+          <div>
+            <h1>Echanj Plus</h1>
+            <div class="lead">Sekirize · Senp · Rapid</div>
+          </div>
         </div>
-      </aside>
 
-      <!-- MAIN -->
-      <main>
-        <!-- AUTH (login/signup) -->
-        <section id="authPanel" class="panel">
-          <h2>Konekte oswa Enskri (Obligatwa)</h2>
-          <div id="authForms">
-            <!-- Signup -->
-            <div id="signupView">
-              <div class="note">Kreye kont ak imel & modpas oswa konekte ak Google.</div>
-              <input id="su_email" type="email" placeholder="Imel" />
-              <input id="su_pass" type="password" placeholder="Modpas (min 6)" />
-              <div class="row">
-                <button id="btnSignup" class="btn">Enskri</button>
-                <button id="btnGoogle" class="btn-ghost">Konekte ak Google</button>
-              </div>
-              <div class="small" style="margin-top:8px">Ou gen kont? <span id="showLogin" class="link-like" style="color:var(--accent);cursor:pointer">Konekte</span></div>
-              <div id="authMsg" class="msg hidden"></div>
+        <!-- AUTH (visible when not logged) -->
+        <div id="authSection">
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <button id="tabLogin" class="tab active" style="padding:8px 10px">Login</button>
+            <button id="tabRegister" class="tab" style="padding:8px 10px">Register</button>
+          </div>
+
+          <div id="formLogin">
+            <label>Imèl</label>
+            <input id="loginEmail" type="email" placeholder="ou@example.com" />
+            <label>Modpas</label>
+            <input id="loginPassword" type="password" placeholder="••••••••" />
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button id="btnLogin" class="btn">Login</button>
+              <button id="btnGoogle" class="btn ghost">Google</button>
             </div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button id="btnForgot" class="btn ghost">Mwen bliye modpas</button>
+            </div>
+            <p class="small" style="margin-top:10px">Ou dwe konekte pou gen aksè. Pa gen lòt pati ki disponib san koneksyon.</p>
+          </div>
 
-            <!-- Login -->
-            <div id="loginView" class="hidden">
-              <div class="note">Konekte ak imel & modpas</div>
-              <input id="li_email" type="email" placeholder="Imel" />
-              <input id="li_pass" type="password" placeholder="Modpas" />
-              <div class="row">
-                <button id="btnLogin" class="btn">Konekte</button>
-                <button id="showSignup" class="btn-ghost">Tounen Enskri</button>
-              </div>
-              <div class="small" style="margin-top:8px">Oublie modpas? <span id="btnReset" class="link-like" style="color:var(--accent);cursor:pointer">Reinitialiser</span></div>
-              <div id="loginMsg" class="msg hidden"></div>
+          <div id="formRegister" class="hidden">
+            <label>Imèl</label>
+            <input id="regEmail" type="email" placeholder="ou@example.com" />
+            <label>Modpas (min 6 karaktè)</label>
+            <input id="regPassword" type="password" />
+            <label>Konfime modpas</label>
+            <input id="regPassword2" type="password" />
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="btnRegister" class="btn">Kreye kont</button>
+              <button id="btnToLogin" class="btn ghost">Ann tounen</button>
+            </div>
+            <p class="small" style="margin-top:10px">Apre enskripsyon, konekte pou kontinye.</p>
+          </div>
+        </div>
+
+        <!-- USER SUMMARY (visible when logged) -->
+        <div id="userSummary" class="hidden" style="margin-top:8px">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div id="miniAvatar" class="avatar">U</div>
+            <div>
+              <div id="miniName" style="font-weight:800">User</div>
+              <div id="miniEmail" class="muted">email@example.com</div>
             </div>
           </div>
-        </section>
-
-        <!-- Send Minit -->
-        <section id="sendPanel" class="panel hidden">
-          <h2>Voye Minit</h2>
-          <div class="note">Chwazi operatè, antre montan, epi peze “Konpoze USSD” pou louvri app apèl la. Apre w fin voye minit sou rezo a, retounen epi klike "Mwen voye minit".</div>
-
-          <label class="small">Operatè</label>
-          <select id="operator">
-            <option value="">-- Chwazi --</option>
-            <option value="digicel">Digicel (100 - 1000 G)</option>
-            <option value="natcom">Natcom (100 - 500 G)</option>
-          </select>
-
-          <label class="small">Montan (G)</label>
-          <input id="amount" type="number" placeholder="Eg: 100" min="100" />
-
-          <div class="row">
-            <button id="btnCompose" class="btn">Konpoze USSD</button>
-            <button id="btnConfirmUSSD" class="btn-ghost">Konfime Digicel</button>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="btnLogout" class="btn ghost">Logout</button>
+            <button id="gotoProfile" class="btn">Profile</button>
           </div>
+        </div>
 
-          <div class="row" style="margin-top:8px">
-            <button id="btnIHaveSent" class="btn-ghost">Mwen voye minit</button>
-            <button id="btnGoPayment" class="btn-ghost" disabled>Ale nan Peman</button>
-          </div>
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.02);margin:16px 0">
 
-          <div id="sendMsg" class="msg hidden"></div>
+        <div class="small muted">
+          Asire w aktive <strong>Email/Password</strong> ak <strong>Google</strong> nan Firebase Console → Authentication → Sign-in method.
+        </div>
+      </div>
 
-          <div class="note" style="margin-top:10px">
-            <strong>USSD egzak (eg):</strong><br/>
-            Digicel: <code>*128*50947111123*100#</code> — Konfime: <code>*128*1#</code><br/>
-            Natcom: <code>*123*88888888*32160708*100#</code>
-          </div>
-        </section>
-
-        <!-- Payment (disabled until minit sent & verified) -->
-        <section id="paymentPanel" class="panel hidden">
-          <h2>Peman</h2>
-          <div id="payNotice" class="note">Ou dwe voye minit epi mete kòd sistèm lan pou gen aksè peman. (Kòd voye pa sistèm sou WhatsApp/SMS apre ou klike "Mwen voye minit").</div>
-
-          <label class="small">Chwazi metòd</label>
-          <select id="payMethod">
-            <option value="">-- Chwazi --</option>
-            <option value="moncash">MonCash</option>
-            <option value="natcash">NatCash</option>
-            <option value="paryaj">Paryaj Lakay</option>
-          </select>
-
-          <div id="payForm"></div>
-          <div id="payResult" class="msg hidden"></div>
-        </section>
-
-        <!-- Profile -->
-        <section id="profilePanel" class="panel hidden">
-          <h2>Profil Ou</h2>
-          <div class="note">Ou ka modifye enfòmasyon sa yo.</div>
-          <div class="profile-field"><strong>Non:</strong><input id="pf_first" placeholder="Non" /></div>
-          <div class="profile-field"><strong>Prenon:</strong><input id="pf_last" placeholder="Prenon" /></div>
-          <div class="profile-field"><strong>Telefòn:</strong><input id="pf_phone" placeholder="37123456 (san +509)" /></div>
-          <div class="profile-field"><strong>Imel:</strong><input id="pf_email" disabled /></div>
-          <div style="margin-top:10px" class="row">
-            <button id="btnSaveProfile" class="btn">Sove</button>
-            <button id="btnRefreshProfile" class="btn-ghost">Refresh</button>
-          </div>
-          <div id="profileMsg" class="msg hidden"></div>
-        </section>
-
-        <!-- Transactions -->
-        <section id="txPanel" class="panel hidden">
-          <h2>Tranzaksyon Ou</h2>
-          <div id="txList" class="tx-list note">Chajman..</div>
-        </section>
-
-      </main>
+      <div style="margin-top:14px" class="card">
+        <h3 style="margin:0 0 8px 0">Not pou admin</h3>
+        <div class="small muted">Pou pi bon pèfòmans, konsidere mete tranzaksyon tou anba <code>users/{uid}/transactions</code> (kòd sa a fè sa otomatikman).</div>
+      </div>
     </div>
 
-    <footer class="small">© Echanj Plus</footer>
+    <!-- RIGHT: Dashboard -->
+    <div>
+      <div class="header">
+        <div>
+          <div class="small muted">Dashboard</div>
+          <div id="welcome" style="font-weight:800">Byenveni</div>
+        </div>
+
+        <div class="balance-box">
+          <div class="small muted">Minit sou kont</div>
+          <div id="balance" class="balance">0</div>
+          <div id="accountUid" class="small muted">UID: -</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="tabs" id="dashTabs">
+            <div class="tab active" data-tab="profile">Profile</div>
+            <div class="tab" data-tab="about">About</div>
+            <div class="tab" data-tab="ussd">USSD Transactions</div>
+          </div>
+          <div class="small muted">Sekirize — sèlman itilizatè otantifye ka wè sa</div>
+        </div>
+
+        <div class="content">
+          <!-- PROFILE TAB -->
+          <div id="tab-profile">
+            <div class="profile-row">
+              <div id="bigAvatar" class="avatar">U</div>
+              <div style="flex:1">
+                <label>Non konplè</label>
+                <input id="p_name" placeholder="Ex.: Aristor" />
+                <label>Nimewo telefòn (+509...)</label>
+                <input id="p_phone" placeholder="+50947111123" />
+                <label>Sèks</label>
+                <select id="p_gender">
+                  <option value="">Chwazi</option>
+                  <option value="Gason">Gason</option>
+                  <option value="Fanm">Fanm</option>
+                </select>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button id="saveProfile" class="btn">Sove Profil</button>
+                </div>
+                <div class="small muted" style="margin-top:8px">Apre sove, done yo disponib nan baz done pou rapò.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ABOUT TAB -->
+          <div id="tab-about" class="hidden">
+            <div class="box">
+              <h3>Sou Echanj Plus</h3>
+              <p class="muted">Echanj Plus pèmèt itilizatè achte / voye minit epi swiv balans yo fasil. Tout tranzaksyon anrejistre ak done ki nesesè pou audit. Sit la mande otantifikasyon avan aksè.</p>
+            </div>
+          </div>
+
+          <!-- USSD TAB -->
+          <div id="tab-ussd" class="hidden">
+            <div class="box">
+              <h4>Otomatik USSD</h4>
+              <div class="ussd-grid" style="margin-bottom:12px">
+                <!-- Use tel: links and encode # as %23 -->
+                <a id="digicelLaunch" class="ussd-btn ussd-digicel" href="tel:*128*50947111123*100%23">Digicel — *128*50947111123*100#</a>
+                <a id="digicelConfirm" class="ussd-btn ussd-digicel" href="tel:*128*1%23">Konfime Digicel — *128*1#</a>
+                <a id="natcomLaunch" class="ussd-btn ussd-natcom" href="tel:*123*88888888*32160708*100%23">Natcom — *123*88888888*32160708*100#</a>
+                <button id="copyCodes" class="ussd-btn" style="background:transparent;border:1px dashed rgba(255,255,255,0.06);color:var(--muted)">Kopye kòd</button>
+              </div>
+
+              <h4>Anrejistre yon tranzaksyon</h4>
+              <label>Kod (eg. ARS)</label>
+              <input id="t_kod" placeholder="ARS" />
+              <label>Frais</label>
+              <input id="t_frais" placeholder="15" />
+              <label>Montan (minit)</label>
+              <input id="t_montan" placeholder="100" />
+              <label>Non</label>
+              <input id="t_non" placeholder="Ex.: Aristor" />
+              <label>Telephone</label>
+              <input id="t_phone" placeholder="+50947111123" />
+              <label>Statut</label>
+              <select id="t_statut">
+                <option>Ankour</option>
+                <option>Fini</option>
+                <option>Echwe</option>
+              </select>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <button id="btnRecord" class="btn">Anrejistre Tranzaksyon</button>
+                <button id="btnClear" class="btn ghost">Efase fòm</button>
+              </div>
+              <div class="small muted" style="margin-top:8px">Apre anrejistreman, total minit itilizatè a ap ajou otomatikman.</div>
+            </div>
+
+            <div style="margin-top:12px" class="box">
+              <h4>Resan tranzaksyon</h4>
+              <div id="recentList" class="muted small">Pa gen tranzaksyon ankò.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>© Echanj Plus — Tout dwa rezève</footer>
+    </div>
   </div>
 
-  <!-- Firebase modular SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged,
-      sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getDatabase,
-      ref,
-      set,
-      push,
-      get,
-      child,
-      query,
-      orderByChild,
-      equalTo
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    /* ========== CONFIG - modify if needed ========== */
+  <script>
+    /***** FIREBASE CONFIG *****
+     Replace values if yours are different. You told me you already provided config — kept it here.
+    *****************************/
     const firebaseConfig = {
-      apiKey: "AIzaSyAjK6EPlokkARHnakMaDRjqRzN-yQqlayU",
-      authDomain: "echanj-plus.firebaseapp.com",
-      projectId: "echanj-plus",
-      storageBucket: "echanj-plus.firebasestorage.app",
-      messagingSenderId: "117332306453",
-      appId: "1:117332306453:web:41d04226aa15ca5c3fbc1c",
-      measurementId: "G-LPGLMCR7HP"
+      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+      authDomain: "echanj-plus-778cd.firebaseapp.com",
+      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+      projectId: "echanj-plus-778cd",
+      storageBucket: "echanj-plus-778cd.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdef123456"
     };
-    const BACKEND_URL = "http://192.168.43.118:3000"; // change if needed
-    const SYSTEM_WHATSAPP = "50947111123"; // no plus
 
-    /* ============================================ */
+    // Init Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-
-    // UI helpers
+    // Helpers
     const $ = id => document.getElementById(id);
-    const panels = {
-      auth: $('authPanel'),
-      send: $('sendPanel'),
-      payment: $('paymentPanel'),
-      profile: $('profilePanel'),
-      tx: $('txPanel')
-    };
-    const navButtons = {
-      send: $('nav_send'),
-      payment: $('nav_payment'),
-      profile: $('nav_profile'),
-      tx: $('nav_transactions')
-    };
+    const show = (id, yes=true) => { const el = $(id); if(!el) return; el.classList.toggle('hidden', !yes); }
+    const setText = (id, txt) => { const e = $(id); if(e) e.textContent = txt; };
 
-    // initial view: show auth
-    function showPanel(panel){
-      // enforce mandatory auth: if not logged in, always show authPanel
-      if(!currentUser) { // will be updated via onAuthStateChanged
-        panels.auth.classList.remove('hidden');
-        panels.send.classList.add('hidden');
-        panels.payment.classList.add('hidden');
-        panels.profile.classList.add('hidden');
-        panels.tx.classList.add('hidden');
-        return;
-      }
-      // show requested panel
-      panels.auth.classList.add('hidden');
-      panels.send.classList.add('hidden');
-      panels.payment.classList.add('hidden');
-      panels.profile.classList.add('hidden');
-      panels.tx.classList.add('hidden');
-      panel.classList.remove('hidden');
-      // update nav active
-      Object.values(navButtons).forEach(b=>b.classList.remove('active'));
-      if(panel === panels.send) navButtons.send.classList.add('active');
-      if(panel === panels.payment) navButtons.payment.classList.add('active');
-      if(panel === panels.profile) navButtons.profile.classList.add('active');
-      if(panel === panels.tx) navButtons.tx.classList.add('active');
-    }
+    // AUTH UI controls
+    const authSection = $('authSection');
+    const userSummary = $('userSummary');
 
-    // nav listeners
-    navButtons.send.addEventListener('click', ()=> showPanel(panels.send));
-    navButtons.payment.addEventListener('click', async ()=>{
-      // verify minit sent or verified? we simply show panel but also check later on actions
-      showPanel(panels.payment);
-    });
-    navButtons.profile.addEventListener('click', ()=> showPanel(panels.profile));
-    navButtons.tx.addEventListener('click', ()=> { loadTransactions(); showPanel(panels.tx); });
+    // Tab switching auth
+    $('tabLogin').addEventListener('click', ()=>{ $('tabLogin').classList.add('active'); $('tabRegister').classList.remove('active'); show('formLogin', true); show('formRegister', false); });
+    $('tabRegister').addEventListener('click', ()=>{ $('tabRegister').classList.add('active'); $('tabLogin').classList.remove('active'); show('formRegister', true); show('formLogin', false); });
+    $('btnToLogin').addEventListener('click', ()=>{ $('tabLogin').click(); });
 
-    // Auth UI
-    $('showLogin').addEventListener('click', ()=> { $('signupView').classList.add('hidden'); $('loginView').classList.remove('hidden'); });
-    $('showSignup').addEventListener('click', ()=> { $('loginView').classList.add('hidden'); $('signupView').classList.remove('hidden'); });
-
-    // Signup
-    $('btnSignup').addEventListener('click', async ()=>{
-      setMsg('authMsg');
-      const email = $('su_email').value.trim();
-      const pass  = $('su_pass').value;
-      if(!email || pass.length < 6){ setMsg('authMsg','Ranpli imèl ak modpas (min 6 chars).','err'); return; }
-      try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        setMsg('authMsg','Kont kreye. Tanpri konekte.', 'ok');
-        $('su_email').value=''; $('su_pass').value='';
-        $('signupView').classList.add('hidden'); $('loginView').classList.remove('hidden');
-      } catch(e){
-        setMsg('authMsg', e.message, 'err');
-      }
+    // Dashboard tabs
+    document.querySelectorAll('#dashTabs .tab').forEach(t=>{
+      t.addEventListener('click', ()=> {
+        document.querySelectorAll('#dashTabs .tab').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        const tab = t.dataset.tab;
+        ['profile','about','ussd'].forEach(name=> show('tab-'+name, name===tab));
+      });
     });
 
-    // Google sign-in
-    $('btnGoogle').addEventListener('click', async ()=>{
-      setMsg('authMsg');
-      try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        // onAuthStateChanged will handle redirect
-      } catch(e){
-        setMsg('authMsg', e.message, 'err');
-      }
-    });
-
-    // Login
-    $('btnLogin').addEventListener('click', async ()=>{
-      setMsg('loginMsg');
-      const email = $('li_email').value.trim();
-      const pass  = $('li_pass').value;
-      if(!email || !pass){ setMsg('loginMsg','Ranpli imèl ak modpas','err'); return; }
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        // onAuthStateChanged will redirect
-      } catch(e){
-        setMsg('loginMsg', e.message, 'err');
-      }
-    });
-
-    // Reset password
-    $('btnReset').addEventListener('click', async ()=>{
-      const email = prompt('Antre imel ou pou resevwa lyen reinitializasyon:');
-      if(!email) return;
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert('Lyenn reset te voye sou imel la.');
-      } catch(e){
-        alert('Erè: ' + e.message);
-      }
-    });
-
-    // Logout
-    $('btnLogout').addEventListener('click', async ()=> {
-      await signOut(auth);
-    });
-
-    // small helper to show messages
-    function setMsg(id, text='', kind=''){
-      const el = $(id);
-      if(!el) return;
-      if(!text){ el.classList.add('hidden'); el.textContent=''; return; }
-      el.textContent = text;
-      el.classList.remove('hidden');
-      el.classList.remove('err','ok');
-      if(kind === 'err') el.classList.add('err');
-      if(kind === 'ok') el.classList.add('ok');
-    }
-
-    // AUTH STATE
-    let currentUser = null;
-    onAuthStateChanged(auth, async user => {
-      currentUser = user;
-      if(user){
-        $('userEmail').textContent = user.email || user.phoneNumber || 'Itilizatè';
-        $('userEmail').classList.remove('hidden');
-        $('btnLogout').classList.remove('hidden');
-        // show dashboard (send)
-        await loadProfile();
-        await loadTransactions();
-        showPanel(panels.send);
-      } else {
-        // show auth view
-        $('userEmail').classList.add('hidden');
-        $('btnLogout').classList.add('hidden');
-        setMsg('authMsg'); setMsg('loginMsg');
-        $('signupView').classList.remove('hidden'); $('loginView').classList.add('hidden');
-        showPanel(panels.auth);
-      }
-    });
-
-    /* =========================
-       SEND MINIT (USSD) LOGIC
-       ========================= */
-    $('btnCompose').addEventListener('click', ()=>{
-      setMsg('sendMsg');
-      const op = $('operator').value;
-      const amt = parseInt($('amount').value);
-      if(!op){ setMsg('sendMsg','Chwazi operatè a.','err'); return; }
-      if(!amt || amt < 100){ setMsg('sendMsg','Antre montan valab (min 100).','err'); return; }
-      if(op === 'digicel' && (amt < 100 || amt > 1000)){ setMsg('sendMsg','Digicel: limit 100 - 1000 G','err'); return; }
-      if(op === 'natcom' && (amt < 100 || amt > 500)){ setMsg('sendMsg','Natcom: limit 100 - 500 G','err'); return; }
-      let ussd = op === 'digicel' ? `*128*50947111123*${amt}#` : `*123*88888888*32160708*${amt}#`;
-      // open dialer
-      window.location.href = 'tel:' + encodeURIComponent(ussd);
-    });
-
-    $('btnConfirmUSSD').addEventListener('click', ()=>{
-      // digicel confirm code
-      window.location.href = 'tel:' + encodeURIComponent('*128*1#');
-    });
-
-    // After user claims they sent minit
-    $('btnIHaveSent').addEventListener('click', async ()=>{
-      setMsg('sendMsg');
-      if(!currentUser){ alert('Ou dwe konekte.'); return; }
-      const op = $('operator').value;
-      const amt = parseInt($('amount').value);
-      if(!op || !amt){ setMsg('sendMsg','Ranpli operatè ak montan anvan.', 'err'); return; }
-      // save transaction
-      try {
-        const txRef = push(ref(db, 'transactions'));
-        const txObj = { uid: currentUser.uid, service: op, amount: amt, status: 'sent', date: Date.now() };
-        await set(txRef, txObj);
-        // mark user has sent minit
-        await set(ref(db, 'users/' + currentUser.uid + '/minitSent'), true);
-        // call backend to generate system code (optional) - only if BACKEND_URL configured
-        if(BACKEND_URL){
-          try {
-            const profSnap = await get(child(ref(db), `users/${currentUser.uid}/profile`));
-            const prof = profSnap.val() || {};
-            const to = prof.phone ? (prof.phone.startsWith('509') ? '+'+prof.phone : '+509'+prof.phone) : null;
-            const resp = await fetch(BACKEND_URL + '/generate-code', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ uid: currentUser.uid, to })});
-            const j = await resp.json();
-            if(j && j.ok) setMsg('sendMsg','Kòd sistèm lan voye sou WhatsApp/SMS. Antre li pou verifye epi jwenn aksè peman.','ok');
-            else setMsg('sendMsg','Pa rive voye kòd la: ' + (j && j.error ? j.error : 'erè sèvè'),'err');
-          } catch(e){
-            setMsg('sendMsg','Erè kontakte backend: ' + e.message,'err');
-          }
-        } else {
-          setMsg('sendMsg','Tranzaksyon an anrejistre. (BACKEND pa configuré pou kòd sistèm)','ok');
-        }
-        $('btnGoPayment').disabled = false;
-      } catch(e){
-        setMsg('sendMsg','Erè rekò: ' + e.message,'err');
-      }
-    });
-
-    // go to payment (disable if user hasn't sent minit)
-    $('btnGoPayment').addEventListener('click', async ()=>{
-      if(!currentUser) return alert('Ou dwe konekte.');
-      const snap = await get(child(ref(db), `users/${currentUser.uid}/minitSent`));
-      const sent = snap.exists() ? snap.val() : false;
-      if(!sent) return alert('Al voye minit lan avan ou antre nan peman.');
-      showPanel(panels.payment);
-    });
-
-    /* =========================
-       PAYMENT FORM RENDER & SUBMIT
-       ========================= */
-    window.renderPayForm = function(){
-      const m = $('payMethod').value;
-      const holder = $('payForm');
-      holder.innerHTML = '';
-      if(m === 'moncash' || m === 'natcash'){
-        holder.innerHTML = `
-          <input id="p_name" placeholder="Non kont" />
-          <input id="p_num" placeholder="Nimewo kont" />
-          <input id="p_amount" type="number" placeholder="Montan (G)" />
-          <button id="btnSubmitPay" class="btn">Soumèt Peman</button>
-        `;
-        document.getElementById('btnSubmitPay').addEventListener('click', ()=> submitPayment(m));
-      } else if(m === 'paryaj'){
-        holder.innerHTML = `
-          <input id="p_num" placeholder="Nimewo kont" />
-          <input id="p_amount" type="number" placeholder="Montan (G)" />
-          <button id="btnSubmitPay" class="btn">Soumèt Pari Lakay</button>
-        `;
-        document.getElementById('btnSubmitPay').addEventListener('click', ()=> submitPayment('paryaj'));
-      }
-    };
-    $('payMethod').addEventListener('change', renderPayForm);
-
-    async function submitPayment(method){
-      if(!currentUser) return alert('Ou dwe konekte.');
-      // basic checks
-      const pnum = (document.getElementById('p_num')||{}).value || '';
-      const pamount = parseInt((document.getElementById('p_amount')||{}).value || 0);
-      if(!pnum || !pamount) return alert('Ranpli tout chan peman yo.');
-      try {
-        const txRef = push(ref(db, 'transactions'));
-        const payload = { uid: currentUser.uid, method, num: pnum, amount: pamount, date: Date.now(), status: 'pending' };
-        await set(txRef, payload);
-        // open whatsapp to system
-        const msg = `EchanjPlus\nUid:${currentUser.uid}\nMetòd:${method}\nKont:${pnum}\nMontan:${pamount} G\nTx:${txRef.key}`;
-        window.open(`https://wa.me/${SYSTEM_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
-        $('payResult').classList.remove('hidden'); $('payResult').textContent = 'Peman soumèt. Nou voye detay sou WhatsApp sistèm pou konfime.';
-        loadTransactions();
-      } catch(e){
-        alert('Erè soumèt peman: ' + e.message);
-      }
-    }
-
-    /* =========================
-       PROFILE LOAD / SAVE
-       ========================= */
-    $('btnSaveProfile').addEventListener('click', async ()=>{
-      if(!currentUser) return alert('Ou dwe konekte.');
-      const first = $('pf_first').value.trim();
-      const last  = $('pf_last').value.trim();
-      let phone = $('pf_phone').value.trim().replace(/\D/g,'');
-      if(phone && !phone.startsWith('509')) phone = '509' + phone; // store without plus
-      if(!first || !last) return setMsg('profileMsg','Ranpli non ak prenon','err');
-      try {
-        await set(ref(db, `users/${currentUser.uid}/profile`), { first, last, phone, email: currentUser.email || null, updated: Date.now() });
-        setMsg('profileMsg','Profil an sove.','ok');
-      } catch(e){
-        setMsg('profileMsg','Erè sove: ' + e.message,'err');
-      }
-    });
-
-    $('btnRefreshProfile').addEventListener('click', loadProfile);
-
-    async function loadProfile(){
-      if(!currentUser) return;
-      try {
-        const snap = await get(child(ref(db), `users/${currentUser.uid}/profile`));
-        const p = snap.exists() ? snap.val() : {};
-        $('pf_first').value = p.first || '';
-        $('pf_last').value = p.last || '';
-        $('pf_phone').value = p.phone ? (p.phone.startsWith('509') ? p.phone.slice(3) : p.phone) : '';
-        $('pf_email').value = currentUser.email || '';
-      } catch(e){
-        console.error('loadProfile err', e);
-      }
-    }
-
-    /* =========================
-       TRANSACTIONS LOAD
-       ========================= */
-    async function loadTransactions(){
-      if(!currentUser){ $('txList').innerHTML = 'Pa gen itilizatè'; return; }
-      const q = query(ref(db, 'transactions'), orderByChild('uid'), equalTo(currentUser.uid));
-      try {
-        const snap = await get(q);
-        const data = snap.exists() ? snap.val() : {};
-        $('txList').innerHTML = '';
-        const keys = Object.keys(data || {});
-        if(keys.length === 0){ $('txList').innerHTML = '<div class="note">Pa gen tranzaksyon</div>'; return; }
-        keys.reverse().forEach(k=>{
-          const t = data[k];
-          const div = document.createElement('div');
-          div.style.padding='8px'; div.style.borderBottom='1px solid rgba(255,255,255,0.03)';
-          const date = t.date ? new Date(t.date).toLocaleString() : '';
-          div.innerHTML = `<strong>${t.service || t.method || 'Tx'}</strong> <div class="small">${date}</div><div>Montan: ${t.amount || t.amount || ''} G</div><div class="small">Statut: ${t.status||''}</div>`;
-          $('txList').appendChild(div);
+    /******** AUTH ACTIONS ********/
+    $('btnRegister').addEventListener('click', async ()=>{
+      const email = $('regEmail').value.trim();
+      const pw = $('regPassword').value;
+      const pw2 = $('regPassword2').value;
+      if(!email || !pw) return alert('Mete imèl ak modpas.');
+      if(pw.length < 6) return alert('Modpas dwe gen omwen 6 karaktè.');
+      if(pw !== pw2) return alert('Modpas yo pa menm.');
+      try{
+        const cred = await auth.createUserWithEmailAndPassword(email, pw);
+        // create minimal profile
+        await db.ref('users/' + cred.user.uid).set({
+          email,
+          createdAt: Date.now(),
+          minutes: 0
         });
-      } catch(e){
-        console.error('err tx', e);
-        $('txList').innerHTML = '<div class="note">Erè chaje tranzaksyon</div>';
+        alert('Kont kreye. Konekte kounye a.');
+        $('tabLogin').click();
+      }catch(err){
+        alert('Erè: ' + err.message);
       }
+    });
+
+    $('btnLogin').addEventListener('click', async ()=>{
+      const email = $('loginEmail').value.trim();
+      const pw = $('loginPassword').value;
+      if(!email || !pw) return alert('Mete imèl ak modpas.');
+      try{
+        await auth.signInWithEmailAndPassword(email, pw);
+      }catch(err){
+        alert('Erè login: ' + err.message);
+      }
+    });
+
+    $('btnGoogle').addEventListener('click', async ()=>{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try{
+        const result = await auth.signInWithPopup(provider);
+        const u = result.user;
+        // ensure DB record
+        const ref = db.ref('users/' + u.uid);
+        const snap = await ref.once('value');
+        if(!snap.exists()){
+          await ref.set({ email: u.email, name: u.displayName || '', createdAt: Date.now(), minutes: 0 });
+        }
+      }catch(err){
+        alert('Google login erè: ' + err.message);
+      }
+    });
+
+    $('btnForgot').addEventListener('click', async ()=>{
+      const email = $('loginEmail').value.trim();
+      if(!email) return alert('Mete imèl anwo a pou rekiperasyon.');
+      try{
+        await auth.sendPasswordResetEmail(email);
+        alert('Imèl rekiperasyon voye.');
+      }catch(err){
+        alert('Erè: ' + err.message);
+      }
+    });
+
+    $('btnLogout').addEventListener('click', ()=> auth.signOut());
+    $('gotoProfile').addEventListener('click', ()=> { document.querySelector('[data-tab="profile"]').click(); });
+
+    /******** AUTH STATE ********/
+    let currentUid = null;
+    let transactionsRef = null;
+    let userRef = null;
+
+    auth.onAuthStateChanged(async user=>{
+      if(user){
+        currentUid = user.uid;
+        // UI swap
+        show('authSection', false);
+        show('userSummary', true);
+        $('miniAvatar').textContent = (user.displayName ? user.displayName[0].toUpperCase() : user.email[0].toUpperCase());
+        $('miniName').textContent = (user.displayName || user.email.split('@')[0]);
+        $('miniEmail').textContent = user.email;
+        setText('welcome', 'Byenveni, ' + (user.displayName || user.email.split('@')[0]));
+        setText('accountUid', 'UID: ' + user.uid);
+
+        // load profile & subscribe
+        loadUserProfile(user.uid);
+        subscribeUserData(user.uid);
+      } else {
+        currentUid = null;
+        show('authSection', true);
+        show('userSummary', false);
+        // reset dashboard
+        setText('balance','0');
+        setText('welcome','Otantifikasyon oblije');
+        setText('accountUid','UID: -');
+        $('recentList').textContent = 'Pa gen tranzaksyon ankò.';
+        // detach listeners
+        if(transactionsRef) transactionsRef.off();
+        if(userRef) userRef.off();
+      }
+    });
+
+    /******** PROFILE ********/
+    $('saveProfile').addEventListener('click', async ()=>{
+      if(!currentUid) return alert('Ou dwe konekte.');
+      const name = $('p_name').value.trim();
+      const phone = $('p_phone').value.trim();
+      const gender = $('p_gender').value;
+      if(!name || !phone) return alert('Non ak telefòn obligatwa.');
+      try{
+        await db.ref('users/' + currentUid).update({ name, phone, gender });
+        // update auth displayName
+        const u = auth.currentUser;
+        if(u) await u.updateProfile({ displayName: name }).catch(()=>{});
+        $('miniName').textContent = name;
+        $('miniAvatar').textContent = name[0].toUpperCase();
+        $('bigAvatar').textContent = name[0].toUpperCase();
+        alert('Profil sove.');
+      }catch(err){
+        alert('Erè sove profil: ' + err.message);
+      }
+    });
+
+    async function loadUserProfile(uid){
+      const snap = await db.ref('users/' + uid).once('value');
+      const data = snap.val() || {};
+      $('p_name').value = data.name || '';
+      $('p_phone').value = data.phone || '';
+      $('p_gender').value = data.gender || '';
+      $('balance').textContent = (data.minutes || 0);
     }
 
-    // initial state
-    showPanel(panels.auth);
+    /******** TRANSACTIONS ********/
+    function genTxtId(){
+      const d = new Date();
+      const Y = d.getFullYear().toString();
+      const M = String(d.getMonth()+1).padStart(2,'0');
+      const D = String(d.getDate()).padStart(2,'0');
+      const t = String(d.getTime()).slice(-7);
+      return `TX-${Y}${M}${D}-${t}`;
+    }
 
-    // expose firebase objects for debug (remove in production)
-    window._auth = auth;
-    window._db = db;
+    $('btnRecord').addEventListener('click', async ()=>{
+      if(!currentUid) return alert('Ou dwe konekte.');
+      const kod = $('t_kod').value.trim() || 'ARS';
+      const fraisRaw = $('t_frais').value.trim();
+      const montanRaw = $('t_montan').value.trim();
+      const non = $('t_non').value.trim() || '';
+      const phone = $('t_phone').value.trim() || '';
+      const statut = $('t_statut').value || 'Ankour';
 
+      const frais = Number(fraisRaw || 0);
+      const montan = Number(montanRaw || 0);
+      if(Number.isNaN(frais) || Number.isNaN(montan)) return alert('Frais ak montan dwe chif.');
+
+      const txtid = genTxtId();
+      const date = Date.now();
+      const payload = { txtid, kod, date, frais, montan, non, statut, telephone: phone, uid: currentUid };
+
+      try{
+        // Write global transactions and user's transaction (double-write for easier queries)
+        const updates = {};
+        updates['/transactions/' + txtid] = payload;
+        updates['/users/' + currentUid + '/transactions/' + txtid] = payload;
+        await db.ref().update(updates);
+
+        // Atomically update user's minutes total
+        const minutesRef = db.ref('users/' + currentUid + '/minutes');
+        await minutesRef.transaction(current => {
+          current = current || 0;
+          return current + montan;
+        });
+
+        alert('Tranzaksyon anrejistre: ' + txtid);
+        // clear fields
+        $('t_kod').value=''; $('t_frais').value=''; $('t_montan').value=''; $('t_non').value=''; $('t_phone').value='';
+      }catch(err){
+        alert('Erè anrejistre: ' + err.message);
+      }
+    });
+
+    $('btnClear').addEventListener('click', ()=>{
+      ['t_kod','t_frais','t_montan','t_non','t_phone'].forEach(id=>$(id).value='');
+    });
+
+    // Subscribe to user's minutes and recent transactions
+    function subscribeUserData(uid){
+      // detach if existed
+      if(userRef) userRef.off();
+      if(transactionsRef) transactionsRef.off();
+
+      userRef = db.ref('users/' + uid);
+      userRef.on('value', snap=>{
+        const data = snap.val() || {};
+        $('balance').textContent = (data.minutes || 0);
+      });
+
+      // listen recent under /users/{uid}/transactions
+      transactionsRef = db.ref('users/' + uid + '/transactions');
+      transactionsRef.on('value', snap=>{
+        const all = snap.val() || {};
+        const arr = Object.values(all).sort((a,b)=>b.date - a.date).slice(0,10);
+        if(arr.length === 0){
+          $('recentList').textContent = 'Pa gen tranzaksyon ankò.';
+        } else {
+          $('recentList').innerHTML = arr.map(t=>{
+            const d = new Date(t.date);
+            return `<div class="recent-item">
+              <div style="font-weight:700">${t.txtid} — ${t.kod} — ${t.montan} min</div>
+              <div class="muted small">${d.toLocaleString()} • ${t.non || '—'} • ${t.telephone || '—'} • ${t.statut || '—'}</div>
+            </div>`;
+          }).join('');
+        }
+      });
+    }
+
+    /******** USSD helpers (copy fallback) ********/
+    $('copyCodes').addEventListener('click', ()=>{
+      const codes = [
+        'Digicel: *128*50947111123*100#',
+        'Konfime Digicel: *128*1#',
+        'Natcom: *123*88888888*32160708*100#'
+      ].join('\\n');
+      navigator.clipboard?.writeText(codes).then(()=> alert('Kòd yo kopie nan clipboard')).catch(()=> alert('Kopi echwe — soumèt manyèlman: \\n' + codes));
+    });
+
+    // UX: clicking tel on desktop may not work; we also handle click to copy if tel can't open
+    ['digicelLaunch','digicelConfirm','natcomLaunch'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('click', (ev)=>{
+        // mobile will try to open dialer; on desktop fallback to copying code
+        // allow default anchor behaviour, but also try to copy textual code as fallback after short delay
+        const href = el.getAttribute('href') || '';
+        const textual = el.textContent || href;
+        setTimeout(()=> {
+          // if navigator.platform indicates desktop, copy textual
+          const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+          if(!isMobile){
+            navigator.clipboard?.writeText(textual).then(()=> alert('Kòd kopie: ' + textual));
+          }
+        }, 300);
+      });
+    });
+
+    /******** NOTES ON SECURITY (pou Firebase Realtime Database rules) ********
+     Pi bon pratik:
+     - Mete tranzaksyon anba users/{uid}/transactions pou fasil règleman.
+     - Egzanp règle senp (modifye selon bezwen):
+     {
+       "rules": {
+         "users": {
+           "$uid": {
+             ".read": "auth != null && auth.uid === $uid",
+             ".write": "auth != null && auth.uid === $uid"
+           }
+         },
+         "transactions": {
+           ".read": "auth != null",
+           ".write": "auth != null"
+         }
+       }
+     }
+     Pou plis sekirite, limite ekriti pou verifye newData.child('uid').val() === auth.uid.
+    ************************************/
   </script>
 </body>
-</html>
+  </html>
