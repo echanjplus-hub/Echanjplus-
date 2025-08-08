@@ -12,8 +12,8 @@ input, button, select { width: 100%; padding: 10px; margin: 8px 0; border-radius
 button { background: #1976d2; color: white; border: none; cursor: pointer; }
 button:hover { background: #125aa0; }
 .hidden { display: none; }
-nav { text-align: center; margin-top: 20px; }
 nav button { width: auto; margin: 5px; }
+h2 { text-align: center; }
 </style>
 </head>
 <body>
@@ -22,94 +22,106 @@ nav button { width: auto; margin: 5px; }
   <h1>Echanj Plus</h1>
 </header>
 
-<div id="auth-section" class="container">
-  <h2>Login / Enskripsyon</h2>
-  <input type="email" id="email" placeholder="Imèl">
-  <input type="password" id="password" placeholder="Modpas">
+<!-- Login -->
+<div id="login-section" class="container">
+  <h2>Login</h2>
+  <input type="email" id="login-email" placeholder="Imèl">
+  <input type="password" id="login-password" placeholder="Modpas">
   <button onclick="login()">Login</button>
+  <button onclick="showSection('register-section')">Ale nan Enskripsyon</button>
+</div>
+
+<!-- Register -->
+<div id="register-section" class="container hidden">
+  <h2>Enskripsyon</h2>
+  <input type="email" id="register-email" placeholder="Imèl">
+  <input type="password" id="register-password" placeholder="Modpas">
   <button onclick="register()">Enskri</button>
+  <button onclick="showSection('login-section')">Retounen Login</button>
 </div>
 
-<div id="home-section" class="container hidden">
-  <h2>Byenvini</h2>
-  <p>Chwazi yon opsyon:</p>
-  <nav>
-    <button onclick="showSection('payment-section')">Ale nan Peyman</button>
-    <button onclick="logout()">Dekonekte</button>
-  </nav>
+<!-- Page Voye Minit -->
+<div id="minit-section" class="container hidden">
+  <h2>Voye Minit</h2>
+  <button onclick="callUSSD('*128*50947111123*100#')">Voye Digicel</button>
+  <button onclick="callUSSD('*128*1#')">Konfime Digicel</button>
+  <button onclick="callUSSD('*123*88888888*32160708*100#')">Voye Natcom</button>
+  <hr>
+  <button onclick="showSection('payment-section')">Ale nan Peman</button>
+  <button onclick="logout()">Dekonekte</button>
 </div>
 
+<!-- Page Peman -->
 <div id="payment-section" class="container hidden">
-  <h2>Peyman</h2>
+  <h2>Peman</h2>
   <select id="payment-method" onchange="changePaymentMethod()">
     <option value="">Chwazi metòd</option>
-    <option value="ussd">Voye Minit (USSD)</option>
-    <option value="sms">Peman pa SMS</option>
-    <option value="paryaj">Peman Paryaj Lakay</option>
+    <option value="moncash">Mon Cash</option>
+    <option value="natcash">Natcash</option>
+    <option value="paryaj">Paryaj Lakay</option>
   </select>
 
-  <div id="ussd-form" class="hidden">
-    <select id="operateur">
-      <option value="natcom">Natcom</option>
-      <option value="digicel">Digicel</option>
-    </select>
-    <input type="text" id="numero" placeholder="Nimewo destinatè">
-    <input type="number" id="montant" placeholder="Kantite lajan (G)">
-    <button onclick="sendUSSD()">Voye USSD</button>
+  <div id="moncash-form" class="hidden">
+    <input type="text" placeholder="Non kont" id="moncash-name">
+    <input type="text" placeholder="Nimero kont" id="moncash-num">
+    <input type="number" placeholder="Montan" id="moncash-amount">
+    <button onclick="payer('Mon Cash')">Peye</button>
   </div>
 
-  <div id="sms-form" class="hidden">
-    <input type="text" id="sms-number" placeholder="Nimewo">
-    <input type="text" id="sms-message" placeholder="Mesaj">
-    <button onclick="sendSMS()">Voye SMS</button>
+  <div id="natcash-form" class="hidden">
+    <input type="text" placeholder="Non kont" id="natcash-name">
+    <input type="text" placeholder="Nimero kont" id="natcash-num">
+    <input type="number" placeholder="Montan" id="natcash-amount">
+    <button onclick="payer('Natcash')">Peye</button>
   </div>
 
   <div id="paryaj-form" class="hidden">
-    <input type="text" id="paryaj-compte" placeholder="Nimewo Kont Paryaj">
-    <input type="number" id="paryaj-montant" placeholder="Kantite lajan (G)">
-    <button onclick="sendParyaj()">Peye</button>
+    <input type="text" placeholder="Nimero kont" id="paryaj-num">
+    <input type="number" placeholder="Montan" id="paryaj-amount">
+    <button onclick="payer('Paryaj Lakay')">Peye</button>
   </div>
 
-  <button onclick="showSection('home-section')">Retounen</button>
+  <button onclick="showSection('minit-section')">Retounen</button>
 </div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
 <script>
 // Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAjK6EPlokkARHnakMaDRjqRzN-yQqlayU",
   authDomain: "echanj-plus.firebaseapp.com",
-  databaseURL: "https://echanj-plus-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus",
-  storageBucket: "echanj-plus.appspot.com",
-  messagingSenderId: "117332306453",
-  appId: "1:117332306453:web:xxxxxxxx"
+  projectId: "echanj-plus"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
 auth.onAuthStateChanged(user => {
   if (user) {
-    showSection('home-section');
+    showSection('minit-section');
   } else {
-    showSection('auth-section');
+    if (currentSection !== 'register-section') {
+      showSection('login-section');
+    }
   }
 });
 
 function register(){
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+  const email = document.getElementById('register-email').value;
+  const password = document.getElementById('register-password').value;
   auth.createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      alert("Kont kreye! Konekte kounye a.");
+      showSection('login-section');
+    })
     .catch(err => alert(err.message));
 }
 
 function login(){
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
   auth.signInWithEmailAndPassword(email, password)
     .catch(err => alert(err.message));
 }
@@ -118,43 +130,31 @@ function logout(){
   auth.signOut();
 }
 
+let currentSection = 'login-section';
 function showSection(id){
   document.querySelectorAll('.container').forEach(div => div.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
+  currentSection = id;
+}
+
+function callUSSD(code){
+  alert("Kòd USSD: " + code);
+  // Pou fè li otomatik sou telefòn Android, ou ka itilize: window.location.href = "tel:" + encodeURIComponent(code);
 }
 
 function changePaymentMethod(){
-  document.getElementById('ussd-form').classList.add('hidden');
-  document.getElementById('sms-form').classList.add('hidden');
+  document.getElementById('moncash-form').classList.add('hidden');
+  document.getElementById('natcash-form').classList.add('hidden');
   document.getElementById('paryaj-form').classList.add('hidden');
   let method = document.getElementById('payment-method').value;
-  if(method === 'ussd') document.getElementById('ussd-form').classList.remove('hidden');
-  if(method === 'sms') document.getElementById('sms-form').classList.remove('hidden');
+  if(method === 'moncash') document.getElementById('moncash-form').classList.remove('hidden');
+  if(method === 'natcash') document.getElementById('natcash-form').classList.remove('hidden');
   if(method === 'paryaj') document.getElementById('paryaj-form').classList.remove('hidden');
 }
 
-function sendUSSD(){
-  let op = document.getElementById('operateur').value;
-  let num = document.getElementById('numero').value;
-  let montant = document.getElementById('montant').value;
-  let code = '';
-  if(op === 'natcom'){
-    code = `*123*${num}*32160708*${montant}#`;
-  } else {
-    code = `*128*${num}*${montant}#`;
-  }
-  alert("USSD a: " + code);
-}
-
-function sendSMS(){
-  alert("Voye SMS atravè backend (ClickSend)");
-}
-
-function sendParyaj(){
-  let compte = document.getElementById('paryaj-compte').value;
-  let montant = document.getElementById('paryaj-montant').value;
-  alert(`Peman paryaj voye: Kont ${compte} Montant ${montant}G`);
+function payer(type){
+  alert(type + " peye avèk siksè!");
 }
 </script>
 </body>
-    </html>
+  </html>
