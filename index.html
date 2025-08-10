@@ -1,432 +1,437 @@
 <!doctype html>
 <html lang="ht">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Echanj Plus — Demo</title>
-  <style>
-    /* ---------- STYLE (clean, responsive) ---------- */
-    :root{
-      --bg:#071022; --card:#0b1220; --accent:#ffc107; --muted:#9aa4b2; --primary:#2563EB;
-      --radius:12px; --maxw:1060px; font-family:Inter,system-ui,Arial,sans-serif;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8}
-    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.02)}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand img{height:44px}
-    .brand h1{margin:0;color:var(--accent);font-size:18px}
-    .container{max-width:var(--maxw);margin:22px auto;padding:0 16px}
-    .layout{display:grid;grid-template-columns:1fr 380px;gap:18px}
-    .card{background:var(--card);padding:18px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03)}
-    h2{margin:0 0 12px 0;color:var(--accent)}
-    label{display:block;color:var(--muted);font-size:13px;margin-top:10px}
-    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;margin-top:8px}
-    .row{display:flex;gap:8px;align-items:center}
-    .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
-    .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
-    .btn-danger{background:#ef4444;color:#fff}
-    .small{font-size:13px;color:var(--muted);margin-top:8px}
-    .tx-list{max-height:320px;overflow:auto;margin-top:10px}
-    .tx-item{padding:10px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid rgba(255,255,255,0.02)}
-    footer{margin:26px 0;text-align:center;color:var(--muted)}
-    .hidden{display:none}
-    @media (max-width:980px){.layout{grid-template-columns:1fr}.row{flex-direction:column}}
-    /* small helper */
-    .muted-err{color:#ff9999}
-    .muted-ok{color:#9fe7a4}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Echanj Plus</title>
+<style>
+  :root{
+    --bg:#071022; --card:#0b1220; --accent:#ffc107; --muted:#9aa4b2; --primary:#2563EB;
+    --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8}
+  .wrap{max-width:980px;margin:28px auto;padding:16px;gap:16px;display:grid;grid-template-columns:1fr 380px}
+  header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:12px 0}
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand h1{margin:0;color:var(--accent);font-size:20px}
+  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+  h2{margin:0 0 10px 0;color:var(--accent)}
+  label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
+  input,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px}
+  .row{display:flex;gap:8px}
+  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .small{font-size:13px;color:var(--muted);margin-top:8px}
+  .tx-list{max-height:320px;overflow:auto;margin-top:10px}
+  .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+  .center{grid-column:1/-1;display:flex;gap:8px;justify-content:center;margin-top:6px}
+  @media (max-width:980px){.wrap{grid-template-columns:1fr;padding:12px}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <img src="assets/logo-echanj.svg" alt="Echanj Plus" onerror="this.style.display='none'"/>
-      <h1>Echanj Plus</h1>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center">
-      <div id="userEmail" class="small"></div>
-      <button id="btnAuth" class="btn btn-ghost">Konekte / Enskri</button>
-      <button id="btnLogout" class="btn btn-ghost hidden">Dekonekte</button>
-    </div>
-  </header>
 
-  <main class="container">
-    <!-- AUTH CARD (default visible) -->
-    <section id="authCard" class="card">
-      <h2>Konekte / Enskri</h2>
-      <p class="small">Antre imèl ak modpas (Email / Password). Si w poko gen kont, klike "Enskri".</p>
+<header style="padding:0 16px;">
+  <div class="brand">
+    <!-- optional: place your logo at assets/logo-echanj.svg -->
+    <img src="assets/logo-echanj.svg" alt="logo" style="height:44px" onerror="this.style.display='none'"/>
+    <h1>Echanj Plus</h1>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div id="userEmail" class="small"></div>
+    <button id="openAuthBtn" class="btn btn-ghost">Konekte / Enskri</button>
+    <button id="logoutBtn" class="btn btn-ghost" style="display:none">Dekonekte</button>
+  </div>
+</header>
 
-      <label>Imèl</label>
+<div class="wrap">
+  <!-- Left: Send minutes -->
+  <section id="minutesCard" class="card">
+    <h2>Voye Minit (USSD)</h2>
+    <div class="small">Sistèm nimewo fiks: Digicel <strong>47111123</strong> • Natcom <strong>32160708</strong></div>
+
+    <label>Telefòn (ou) — fòma +509XXXXXXXX</label>
+    <input id="senderPhone" placeholder="+509XXXXXXXX" />
+
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <select id="operatorSelect" style="flex:1">
+        <option value="digicel">Digicel</option>
+        <option value="natcom">Natcom</option>
+      </select>
+      <input id="minutesInput" type="number" placeholder="100" style="width:120px" min="1"/>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button id="dialBtn" class="btn btn-primary">Dial & Voye</button>
+      <button id="previewUSSD" class="btn btn-ghost">Preview</button>
+    </div>
+
+    <div class="small" style="margin-top:10px">
+      Frè sistèm (17.5%): <strong id="feeMinutes">—</strong> • Total: <strong id="totalMinutes">—</strong>
+    </div>
+  </section>
+
+  <!-- Right: Payments & transactions -->
+  <aside class="card">
+    <h2>Peman</h2>
+
+    <label>Chwazi metòd</label>
+    <select id="payMethod">
+      <option value="">-- Chwazi --</option>
+      <option value="moncash">MonCash</option>
+      <option value="natcash">NatCash</option>
+      <option value="paryajlakay">Paryaj Lakay</option>
+      <option value="paryajpam">Paryaj Pam</option>
+    </select>
+
+    <div id="payFields" style="margin-top:10px"></div>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button id="submitPay" class="btn btn-primary" style="flex:1">Soumèt & WhatsApp</button>
+      <button id="previewPay" class="btn btn-ghost">Preview</button>
+    </div>
+
+    <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)">
+
+    <h3 style="margin:0 0 8px 0;color:var(--accent);font-size:15px">Tranzaksyon Ou</h3>
+    <div id="txList" class="tx-list"><div class="small">Pa gen tranzaksyon chaje.</div></div>
+
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button id="exportBtn" class="btn btn-ghost" style="flex:1">Export CSV</button>
+      <button id="clearBtn" class="btn btn-ghost">Clear UI</button>
+    </div>
+  </aside>
+
+  <!-- Full-width: Auth overlay (modal-like) -->
+  <section id="authOverlay" class="card" style="display:none;grid-column:1/-1">
+    <h2>Konekte / Enskri</h2>
+    <div style="max-width:720px;margin-top:10px">
+      <label>Mode</label>
+      <select id="authMode"><option value="login">Konekte</option><option value="register">Enskri</option></select>
+
+      <label>Email</label>
       <input id="authEmail" type="email" placeholder="imel@egzanp.com" />
 
       <label>Modpas</label>
-      <input id="authPass" type="password" placeholder="Min 6 karaktè" />
+      <input id="authPass" type="password" placeholder="Modpas (min 6)" />
 
-      <div class="row" style="margin-top:12px">
-        <button id="btnLogin" class="btn btn-primary" style="flex:1">Konekte</button>
-        <button id="btnShowRegister" class="btn btn-ghost" style="flex:1">Enskri</button>
-      </div>
-
-      <div id="registerArea" class="hidden">
-        <label>Non konplè</label>
-        <input id="regName" placeholder="Non ou" />
+      <div id="extraRegister" style="display:none">
+        <label>Non</label>
+        <input id="authName" placeholder="Non konplè" />
         <label>Telefòn (+509...)</label>
-        <input id="regPhone" placeholder="+509XXXXXXXX" />
-        <div class="row" style="margin-top:12px">
-          <button id="btnRegister" class="btn btn-primary" style="flex:1">Kreye Kont</button>
-          <button id="btnCancelRegister" class="btn btn-ghost" style="flex:1">Anile</button>
-        </div>
+        <input id="authPhone" placeholder="+509XXXXXXXX" />
       </div>
 
-      <p id="authMsg" class="small" style="min-height:1.2em"></p>
-    </section>
-
-    <!-- APP LAYOUT (hidden until login) -->
-    <div id="appLayout" class="layout hidden">
-      <!-- Left -->
-      <section class="card">
-        <h2>Dashboard</h2>
-        <p class="small">Frè sistèm: <strong>17.5%</strong></p>
-
-        <div style="display:flex;gap:10px;margin-top:10px">
-          <button id="btnOpenSend" class="btn btn-primary" style="flex:1">Voye Minit</button>
-          <button id="btnOpenPay" class="btn btn-ghost" style="flex:1">Peman</button>
-        </div>
-
-        <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)">
-
-        <h3 style="color:var(--accent);margin:0 0 8px 0">USSD Rapid</h3>
-        <div class="row">
-          <button id="btnDigicelQuick" class="btn btn-primary" style="flex:1">Digicel Dial (100)</button>
-          <button id="btnDigicelConfirm" class="btn btn-ghost" style="flex:1">Konfime Digicel</button>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <button id="btnNatcomQuick" class="btn btn-primary" style="flex:1">Natcom Dial (100)</button>
-        </div>
-
-        <!-- Send minutes panel -->
-        <div id="sendPanel" class="hidden" style="margin-top:14px">
-          <h3 style="color:var(--accent)">Voye Minit</h3>
-          <label>Telefòn ou (sender) +509...</label>
-          <input id="senderPhone" placeholder="+509XXXXXXXX" />
-          <div class="row" style="margin-top:8px">
-            <select id="operatorSelect" style="flex:1">
-              <option value="digicel">Digicel</option>
-              <option value="natcom">Natcom</option>
-            </select>
-            <input id="minutesInput" type="number" placeholder="100" style="width:120px" min="1"/>
-          </div>
-          <div class="small" style="margin-top:10px">Frè: <strong id="minutesFee">—</strong> • Total: <strong id="minutesTotal">—</strong></div>
-          <div class="row" style="margin-top:12px">
-            <button id="btnDialAndSave" class="btn btn-primary" style="flex:1">Dial & Save Tx</button>
-            <button id="btnPreviewUSSD" class="btn btn-ghost">Preview</button>
-          </div>
-        </div>
-
-        <!-- Pay panel -->
-        <div id="payPanel" class="hidden" style="margin-top:14px">
-          <h3 style="color:var(--accent)">Peman</h3>
-          <label>Metòd Peman</label>
-          <select id="payMethod">
-            <option value="">-- Chwazi --</option>
-            <option value="moncash">MonCash</option>
-            <option value="natcash">NatCash</option>
-            <option value="parayajlakay">Paryaj Lakay</option>
-            <option value="parayajpam">Paryaj Pam</option>
-          </select>
-
-          <div id="payFields" style="margin-top:10px"></div>
-
-          <div class="row" style="margin-top:12px">
-            <button id="btnSubmitPay" class="btn btn-primary" style="flex:1">Soumèt & WhatsApp</button>
-            <button id="btnPreviewPay" class="btn btn-ghost">Preview</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Right -->
-      <aside class="card">
-        <h2>Tranzaksyon Ou</h2>
-        <div id="txList" class="tx-list"><div class="small">Pa gen tranzaksyon ankò.</div></div>
-
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button id="btnExport" class="btn btn-ghost" style="flex:1">Export CSV</button>
-          <button id="btnClear" class="btn btn-ghost">Clear UI</button>
-        </div>
-
-        <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)">
-
-        <h3 style="color:var(--accent)">Balans Sistèm</h3>
-        <div class="small">Digicel: <strong id="balDigicel">—</strong></div>
-        <div class="small">Natcom: <strong id="balNatcom">—</strong></div>
-      </aside>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="authAction" class="btn btn-primary">Konekte</button>
+        <button id="guestBtn" class="btn btn-ghost">Teste kòm Guest</button>
+      </div>
+      <div id="authMsg" class="small" style="margin-top:10px"></div>
     </div>
-  </main>
+  </section>
 
-  <footer><small style="color:#9aa4b2">© Echanj Plus</small></footer>
+  <div class="center" style="grid-column:1/-1">
+    <small style="color:var(--muted)">© Echanj Plus</small>
+  </div>
+</div>
 
-  <!-- ===== Firebase modular SDK (type=module) ===== -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+<!-- Firebase modular SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // ---------- CONFIG (use your Firebase project config) ----------
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-      authDomain: "echanj-plus-778cd.firebaseapp.com",
-      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-      projectId: "echanj-plus-778cd",
-      storageBucket: "echanj-plus-778cd.firebasestorage.app",
-      messagingSenderId: "111144762929",
-      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-      measurementId: "G-J1BQRF32ZW"
-    };
+  // ---------- CONFIG (use your config) ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    projectId: "echanj-plus-778cd",
+    storageBucket: "echanj-plus-778cd.firebasestorage.app",
+    messagingSenderId: "111144762929",
+    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+    measurementId: "G-J1BQRF32ZW"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
 
-    // init
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+  // ---------- constants ----------
+  const SYSTEM_DIGICEL = '47111123';
+  const SYSTEM_NATCOM  = '32160708';
+  const NATCOM_MIDDLE  = '88888888';
+  const WA_NUMBER      = '50947111123'; // change to system WhatsApp if needed
+  const FEE_RATE = 0.175; // 17.5%
 
-    // system constants
-    const SYSTEM_DIGICEL = '47111123';
-    const SYSTEM_NATCOM  = '32160708';
-    const NATCOM_MIDDLE  = '88888888';
-    const WA_NUMBER = '50947111123'; // change to your system WA number if needed
+  // ---------- elements ----------
+  const openAuthBtn = document.getElementById('openAuthBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userEmailEl = document.getElementById('userEmail');
+  const authOverlay = document.getElementById('authOverlay');
+  const authMode = document.getElementById('authMode');
+  const authEmail = document.getElementById('authEmail');
+  const authPass = document.getElementById('authPass');
+  const extraRegister = document.getElementById('extraRegister');
+  const authName = document.getElementById('authName');
+  const authPhone = document.getElementById('authPhone');
+  const authAction = document.getElementById('authAction');
+  const authMsg = document.getElementById('authMsg');
+  const guestBtn = document.getElementById('guestBtn');
 
-    // elements
-    const authCard = document.getElementById('authCard');
-    const authMsg = document.getElementById('authMsg');
-    const registerArea = document.getElementById('registerArea');
-    const btnShowRegister = document.getElementById('btnShowRegister');
-    const btnCancelRegister = document.getElementById('btnCancelRegister'); // may be null in DOM
-    const btnLogin = document.getElementById('btnLogin');
-    const btnRegister = document.getElementById('btnRegister');
-    const appLayout = document.getElementById('appLayout');
-    const userEmailEl = document.getElementById('userEmail');
-    const btnAuth = document.getElementById('btnAuth');
-    const btnLogout = document.getElementById('btnLogout');
+  const senderPhone = document.getElementById('senderPhone');
+  const operatorSelect = document.getElementById('operatorSelect');
+  const minutesInput = document.getElementById('minutesInput');
+  const dialBtn = document.getElementById('dialBtn');
+  const previewUSSD = document.getElementById('previewUSSD');
+  const feeMinutes = document.getElementById('feeMinutes');
+  const totalMinutes = document.getElementById('totalMinutes');
 
-    const btnOpenSend = document.getElementById('btnOpenSend');
-    const btnOpenPay = document.getElementById('btnOpenPay');
-    const sendPanel = document.getElementById('sendPanel');
-    const payPanel = document.getElementById('payPanel');
+  const payMethod = document.getElementById('payMethod');
+  const payFields = document.getElementById('payFields');
+  const submitPay = document.getElementById('submitPay');
+  const previewPay = document.getElementById('previewPay');
 
-    const senderPhone = document.getElementById('senderPhone');
-    const operatorSelect = document.getElementById('operatorSelect');
-    const minutesInput = document.getElementById('minutesInput');
-    const minutesFee = document.getElementById('minutesFee');
-    const minutesTotal = document.getElementById('minutesTotal');
-    const btnDialAndSave = document.getElementById('btnDialAndSave');
-    const btnPreviewUSSD = document.getElementById('btnPreviewUSSD');
+  const txList = document.getElementById('txList');
+  const exportBtn = document.getElementById('exportBtn');
+  const clearBtn = document.getElementById('clearBtn');
 
-    const payMethod = document.getElementById('payMethod');
-    const payFields = document.getElementById('payFields');
-    const btnSubmitPay = document.getElementById('btnSubmitPay');
-    const btnPreviewPay = document.getElementById('btnPreviewPay');
+  // ---------- helpers ----------
+  function calcFee(v){ return Math.round(Number(v) * FEE_RATE); }
+  function uid(n=6){ return Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n); }
+  function showAuth(){ authOverlay.style.display = 'block'; authMsg.textContent = ''; }
+  function hideAuth(){ authOverlay.style.display = 'none'; }
+  function requireAuth(){ if(!currentUser){ showAuth(); authMsg.style.color='salmon'; authMsg.textContent='Ou dwe konekte pou kontinye.'; return false } return true; }
 
-    const txList = document.getElementById('txList');
-    const btnExport = document.getElementById('btnExport');
-    const btnClear = document.getElementById('btnClear');
+  // ---------- auth UI ----------
+  openAuthBtn.addEventListener('click', ()=> showAuth());
+  authMode.addEventListener('change', ()=> {
+    extraRegister.style.display = authMode.value === 'register' ? 'block' : 'none';
+    authAction.textContent = authMode.value === 'register' ? 'Enskri' : 'Konekte';
+  });
 
-    const btnDigicelQuick = document.getElementById('btnDigicelQuick');
-    const btnDigicelConfirm = document.getElementById('btnDigicelConfirm');
-    const btnNatcomQuick = document.getElementById('btnNatcomQuick');
-
-    const balDigicelEl = document.getElementById('balDigicel');
-    const balNatcomEl = document.getElementById('balNatcom');
-
-    // helpers
-    const calcFee = amount => Math.round(Number(amount) * 0.175);
-    const uid = (n=6) => Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n);
-
-    // UI bindings
-    btnShowRegister.addEventListener('click', ()=> registerArea.classList.remove('hidden'));
-    // cancel register might not exist in some layouts, add safe handler
-    if(btnCancelRegister) btnCancelRegister.addEventListener('click', ()=> registerArea.classList.add('hidden'));
-    btnAuth.addEventListener('click', ()=> { authCard.scrollIntoView({behavior:'smooth'}); });
-
-    // AUTH actions
-    btnLogin.addEventListener('click', async ()=>{
-      authMsg.textContent = '';
-      const email = document.getElementById('authEmail').value.trim();
-      const pass = document.getElementById('authPass').value;
-      if(!email || !pass){ authMsg.style.color='salmon'; authMsg.textContent='Tanpri ranpli imèl ak modpas.'; return; }
-      try{
-        await signInWithEmailAndPassword(auth, email, pass);
-        authMsg.textContent = '';
-      }catch(err){
-        console.error(err);
-        authMsg.style.color='salmon';
-        authMsg.textContent = err.message;
-      }
-    });
-
-    btnRegister.addEventListener('click', async ()=>{
-      authMsg.textContent = '';
-      const email = document.getElementById('authEmail').value.trim();
-      const pass = document.getElementById('authPass').value;
-      const name = document.getElementById('regName').value.trim();
-      const phone = document.getElementById('regPhone').value.trim();
-      if(!email || !pass || !name){ authMsg.style.color='salmon'; authMsg.textContent='Ranpli tout chan enskripsyon yo.'; return; }
-      try{
+  authAction.addEventListener('click', async ()=>{
+    authMsg.textContent = ''; authMsg.style.color='inherit';
+    const email = authEmail.value.trim(); const pass = authPass.value;
+    if(!email || !pass){ authMsg.style.color='salmon'; authMsg.textContent = 'Ranpli imèl ak modpas.'; return; }
+    try{
+      if(authMode.value === 'register'){
         const cred = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(cred.user, { displayName: name }).catch(()=>null);
-        await set(ref(db, `users/${cred.user.uid}`), { name, email, phone: phone || '' });
-        authMsg.style.color='lightgreen';
-        authMsg.textContent = 'Enskripsyon fèt — w ap redireksyon...';
-      }catch(err){
-        console.error(err);
-        authMsg.style.color='salmon';
-        authMsg.textContent = err.message;
+        await updateProfile(cred.user, { displayName: authName.value || null }).catch(()=>null);
+        await set(ref(db, `users/${cred.user.uid}`), { name: authName.value || '', email, phone: authPhone.value || '' });
+        hideAuth();
+      } else {
+        await signInWithEmailAndPassword(auth, email, pass);
+        hideAuth();
       }
-    });
+    }catch(err){ authMsg.style.color='salmon'; authMsg.textContent = err.message; }
+  });
 
-    btnLogout.addEventListener('click', async ()=>{
-      await signOut(auth);
+  guestBtn.addEventListener('click', ()=> {
+    // guest mode: no DB writes; limited testing
+    currentUser = { uid: 'guest-' + uid(4), email: 'guest@example.com', isGuest: true };
+    userEmailEl.textContent = 'Guest';
+    logoutBtn.style.display = 'inline-block';
+    hideAuth();
+    renderTxList([]);
+  });
+
+  logoutBtn.addEventListener('click', async ()=> {
+    await signOut(auth).catch(()=>null);
+    currentUser = null;
+    userEmailEl.textContent = '';
+    logoutBtn.style.display = 'none';
+    showAuth();
+  });
+
+  // ---------- auth state ----------
+  let currentUser = null;
+  onAuthStateChanged(auth, async user => {
+    if(user){
+      currentUser = user;
+      userEmailEl.textContent = user.email || user.displayName || 'Itilizatè';
+      logoutBtn.style.display = 'inline-block';
+      hideAuth();
+      await loadTransactions();
+    } else {
+      currentUser = null;
       userEmailEl.textContent = '';
-      btnLogout.classList.add('hidden');
-      btnAuth.classList.remove('hidden');
-      appLayout.classList.add('hidden');
-      authCard.classList.remove('hidden');
-    });
-
-    // auth observer
-    let currentUser = null;
-    onAuthStateChanged(auth, async user => {
-      if(user){
-        currentUser = user;
-        userEmailEl.textContent = user.email || user.displayName || user.uid;
-        btnLogout.classList.remove('hidden');
-        btnAuth.classList.add('hidden');
-        authCard.classList.add('hidden');
-        appLayout.classList.remove('hidden');
-        // hide subpanels
-        sendPanel.classList.add('hidden');
-        payPanel.classList.add('hidden');
-        // load balances & transactions
-        await loadSystemBalances();
-        await loadTransactions();
-      } else {
-        currentUser = null;
-        userEmailEl.textContent = '';
-        btnLogout.classList.add('hidden');
-        btnAuth.classList.remove('hidden');
-        authCard.classList.remove('hidden');
-        appLayout.classList.add('hidden');
-      }
-    });
-
-    // Dashboard actions
-    document.getElementById('btnOpenSend').addEventListener('click', ()=> {
-      sendPanel.classList.remove('hidden'); payPanel.classList.add('hidden'); minutesInput.focus();
-    });
-    document.getElementById('btnOpenPay').addEventListener('click', ()=> {
-      payPanel.classList.remove('hidden'); sendPanel.classList.add('hidden'); payMethod.focus();
-    });
-
-    // Quick USSD buttons
-    document.getElementById('btnDigicelQuick').addEventListener('click', ()=> {
-      const ussd = `*128*509${SYSTEM_DIGICEL}*100#`;
-      window.location.href = 'tel:' + encodeURIComponent(ussd);
-    });
-    document.getElementById('btnDigicelConfirm').addEventListener('click', ()=> {
-      const ussd = `*128*1#`;
-      window.location.href = 'tel:' + encodeURIComponent(ussd);
-    });
-    document.getElementById('btnNatcomQuick').addEventListener('click', ()=> {
-      const ussd = `*123*${NATCOM_MIDDLE}*${SYSTEM_NATCOM}*100#`;
-      window.location.href = 'tel:' + encodeURIComponent(ussd);
-    });
-
-    // minutes preview
-    minutesInput.addEventListener('input', ()=> {
-      const v = Number(minutesInput.value || 0);
-      if(!v){ minutesFee.textContent = '—'; minutesTotal.textContent = '—'; return; }
-      const fee = calcFee(v);
-      minutesFee.textContent = fee + ' HTG';
-      minutesTotal.textContent = (v + fee) + ' HTG';
-    });
-
-    function buildUSSD(operator, amount){
-      if(operator === 'digicel') return `*128*509${SYSTEM_DIGICEL}*${amount}#`;
-      return `*123*${NATCOM_MIDDLE}*${SYSTEM_NATCOM}*${amount}#`;
+      logoutBtn.style.display = 'none';
+      // force login overlay
+      showAuth();
+      renderTxList([]);
     }
+  });
 
-    document.getElementById('btnPreviewUSSD').addEventListener('click', ()=> {
-      const op = operatorSelect.value;
-      const amt = minutesInput.value;
-      if(!amt) return alert('Antre kantite/minit.');
-      alert('USSD Preview:\n' + buildUSSD(op, amt));
+  // ---------- minutes fee preview ----------
+  function updateMinutesPreview(){
+    const v = Number(minutesInput.value || 0);
+    if(!v){ feeMinutes.textContent = '—'; totalMinutes.textContent = '—'; return; }
+    const fee = calcFee(v);
+    feeMinutes.textContent = fee + ' HTG';
+    totalMinutes.textContent = (v + fee) + ' HTG';
+  }
+  minutesInput.addEventListener('input', updateMinutesPreview);
+
+  // ---------- build USSD ----------
+  function buildUSSD(op, amount){
+    if(op === 'digicel') return `*128*509${SYSTEM_DIGICEL}*${amount}#`;
+    return `*123*${NATCOM_MIDDLE}*${SYSTEM_NATCOM}*${amount}#`;
+  }
+
+  // ---------- USSD preview & dial ----------
+  previewUSSD.addEventListener('click', ()=>{
+    const op = operatorSelect.value, amt = minutesInput.value;
+    if(!amt) return alert('Antre kantite minit / montan.');
+    const ussd = buildUSSD(op, amt);
+    alert('USSD preview:\n' + ussd);
+  });
+
+  dialBtn.addEventListener('click', async ()=>{
+    if(!requireAuth()) return;
+    const op = operatorSelect.value;
+    const amt = Number(minutesInput.value);
+    const sender = senderPhone.value.trim();
+    if(!sender || !/^\+?\d{8,15}$/.test(sender)) return alert('Antre nimewo sender (+509...)');
+    if(!amt || amt <= 0) return alert('Antre yon montan/minit valid.');
+
+    // prepare tx
+    const fee = calcFee(amt);
+    const total = amt + fee;
+    const tx = { id:null, uid: currentUser.uid, type:'send_minutes', operator: op, from: sender, to: op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM, minutes: amt, amount: amt, fee, total, ts: Date.now(), status:'pending' };
+
+    try{
+      const txRef = push(ref(db, `transactions/${currentUser.uid}`));
+      tx.id = txRef.key;
+      await set(txRef, tx);
+      // open dialer on mobile
+      const ussd = buildUSSD(op, amt);
+      window.location.href = 'tel:' + encodeURIComponent(ussd);
+      await loadTransactions();
+    }catch(e){ console.error(e); alert('Erè sove tranzaksyon: ' + e.message); }
+  });
+
+  // ---------- payments UI ----------
+  payMethod.addEventListener('change', ()=> {
+    const m = payMethod.value; payFields.innerHTML = '';
+    if(!m) return;
+    if(m==='moncash' || m==='natcash'){
+      payFields.innerHTML = `
+        <label>Non kont</label><input id="pay_name" placeholder="Non kont" />
+        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont" />
+        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan" />
+        <div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>`;
+    } else {
+      payFields.innerHTML = `
+        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont" />
+        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan" />
+        <div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>`;
+    }
+    const payAmt = document.getElementById('pay_amount');
+    payAmt?.addEventListener('input', ()=> {
+      const v = Number(payAmt.value||0); const f = calcFee(v);
+      document.getElementById('payFee').textContent = f + ' HTG';
+      document.getElementById('payTotal').textContent = (v + f) + ' HTG';
     });
+  });
 
-    // save send minutes + open dialer
-    btnDialAndSave.addEventListener('click', async ()=>{
-      if(!currentUser){ alert('Ou dwe konekte.'); return; }
-      const sender = senderPhone.value.trim();
-      const op = operatorSelect.value;
-      const amt = Number(minutesInput.value);
-      if(!sender || !/^\+?\d{8,15}$/.test(sender)) return alert('Antre nimewo +509XXXXXXXX');
-      if(!amt || amt <= 0) return alert('Antre yon kantite valid.');
+  previewPay.addEventListener('click', ()=> {
+    if(!payMethod.value) return alert('Chwazi metòd');
+    const name = document.getElementById('pay_name')?.value||'';
+    const number = document.getElementById('pay_number')?.value||'';
+    const amount = document.getElementById('pay_amount')?.value||'';
+    if(!number || !amount) return alert('Ranpli chan yo');
+    alert(`Preview\nMetòd: ${payMethod.value}\nNon: ${name}\nNimewo: ${number}\nMontan: ${amount} HTG`);
+  });
 
-      const fee = calcFee(amt);
-      const total = amt + fee;
-      const tx = { id:null, uid: currentUser.uid, type:'send_minutes', operator: op, from: sender, to: (op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM), minutes: amt, amount: amt, fee, total, ts: Date.now(), status:'pending' };
+  submitPay.addEventListener('click', async ()=> {
+    if(!requireAuth()) return;
+    if(!payMethod.value) return alert('Chwazi metòd peman.');
+    const name = document.getElementById('pay_name')?.value||'';
+    const number = document.getElementById('pay_number')?.value||'';
+    const amount = Number(document.getElementById('pay_amount')?.value||0);
+    if(!number || amount<=0) return alert('Ranpli chan yo ak montan valid.');
 
-      try{
-        const txRef = push(ref(db, `transactions/${currentUser.uid}`));
-        tx.id = txRef.key;
-        await set(txRef, tx);
-        // open dialer (only works on mobile)
-        const ussd = buildUSSD(op, amt);
-        window.location.href = 'tel:' + encodeURIComponent(ussd);
-        await loadTransactions();
-      }catch(err){
-        console.error(err); alert('Erè pandan sove tranzaksyon: ' + err.message);
-      }
+    const fee = calcFee(amount); const total = amount + fee;
+    const tx = { id:null, uid: currentUser.uid, type:'payment', method: payMethod.value, name, number, amount, fee, total, ts: Date.now(), status:'pending' };
+    try{
+      const txRef = push(ref(db, `transactions/${currentUser.uid}`));
+      tx.id = txRef.key;
+      await set(txRef, tx);
+
+      // open WhatsApp to system number, include tx.id
+      const text = `EchanjPlus - Nouvo Peman
+Metòd: ${tx.method}
+Non: ${tx.name}
+Nimewo: ${tx.number}
+Montan: ${tx.amount} HTG
+Frè: ${tx.fee} HTG
+Total: ${tx.total} HTG
+TxID: ${tx.id}
+From: ${encodeURIComponent(currentUser.email || currentUser.uid)}`;
+      window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+      await loadTransactions();
+      alert('Peman sove epi WhatsApp ap louvri.');
+    }catch(e){ console.error(e); alert('Erè sove peman: ' + e.message); }
+  });
+
+  // ---------- load transactions ----------
+  async function loadTransactions(){
+    txList.innerHTML = '<div class="small">Loading...</div>';
+    if(!currentUser){ txList.innerHTML = '<div class="small">Ou poko konekte.</div>'; return; }
+    try{
+      const snap = await get(ref(db, `transactions/${currentUser.uid}`));
+      const val = snap.exists()? snap.val() : {};
+      const arr = Object.values(val || {}).sort((a,b)=>b.ts - a.ts);
+      renderTxList(arr);
+    }catch(e){ console.error(e); txList.innerHTML = '<div class="small">Erè chaje tranzaksyon.</div>'; }
+  }
+
+  function renderTxList(arr){
+    txList.innerHTML = '';
+    if(!arr.length){ txList.innerHTML = '<div class="small">Pa gen tranzaksyon.</div>'; return; }
+    arr.forEach(t=>{
+      const d = new Date(t.ts);
+      const el = document.createElement('div'); el.className = 'tx-item';
+      el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>${t.type==='payment'?'Peman':'Voye Minit'}</strong>
+          <div class="small">${t.method||t.operator||''} ${t.to? '→ ' + t.to : ''}</div>
+          <div class="small">${t.amount} • Frais: ${t.fee || 0} • Total: ${t.total || t.amount}</div>
+          <div class="small">${d.toLocaleString()}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700">${t.status}</div>
+          <div class="small">${String(t.id).slice(0,10)}</div>
+        </div>
+      </div>`;
+      txList.appendChild(el);
     });
+  }
 
-    // payment dynamic form
-    payMethod.addEventListener('change', ()=> {
-      const m = payMethod.value;
-      payFields.innerHTML = '';
-      if(!m) return;
-      if(m === 'moncash' || m === 'natcash'){
-        payFields.innerHTML = `
-          <label>Non kont</label><input id="pay_name" placeholder="Non kont" />
-          <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont" />
-          <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan" />
-          <div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>
-        `;
-      } else {
-        payFields.innerHTML = `
-          <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont" />
-          <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan" />
-          <div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>
-        `;
-      }
-      const pa = document.getElementById('pay_amount');
-      if(pa) pa.addEventListener('input', ()=> {
-        const v = Number(pa.value || 0);
-        document.getElementById('payFee').textContent = calcFee(v) + ' HTG';
-        document.getElementById('payTotal').textContent = (v + calcFee(v)) + ' HTG';
-      });
-    });
+  // export CSV
+  exportBtn.addEventListener('click', async ()=> {
+    if(!currentUser) return alert('Ou dwe konekte');
+    const snap = await get(ref(db, `transactions/${currentUser.uid}`));
+    const val = snap.exists()? snap.val() : {};
+    const arr = Object.values(val || {}).sort((a,b)=>b.ts - a.ts);
+    if(!arr.length) return alert('Pa gen tranzaksyon pou ekspòte');
+    const header = ['id','type','method','operator','from','to','amount','fee','total','status','ts'];
+    const rows = arr.map(r => [r.id||'', r.type||'', r.method||'', r.operator||'', r.from||'', r.to||'', r.amount||'', r.fee||'', r.total||'', r.status||'', new Date(r.ts).toISOString()]);
+    const csv = [header.join(',')].concat(rows.map(r => r.map(c => {
+      const s = String(c).replace(/"/g,'""'); return /[,"\n]/.test(s) ? `"${s}"` : s;
+    }).join(','))).join('\n');
+    const blob = new Blob([csv], { type:'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `tx_${currentUser.uid}.csv`; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+  });
 
-    btnPreviewPay.addEventListener('click', ()=> {
-      if(!payMethod.value) return alert('Chwazi metòd.');
-      const name = document.getElementById('pay_name')?.value || '';
-      const number = document.getElementById('pay_number')?.value || '';
-      const amount = document.getElementById('pay_amount')?.value || '';
-      if(!number || !amount) return alert('Ranpli chan yo.');
-      alert(`Preview\nMetòd: ${payMethod.value}\nNon: ${name}\nNimewo: ${number}\nMontan: ${amount} HTG`);
-    });
+  clearBtn.addEventListener('click', ()=> { if(confirm('Netwaye lis sou UI? (DB rete entak)')) txList.innerHTML=''; });
 
-    // submit payment: save tx + open WhatsApp
-    btnSubmitPay.addEventListener('click', async ()=>{
-      if(!currentUser){ alert('Ou dwe konekte.'); return; }
-      if(!payMethod.value) return alert('Chwazi metòd peman.');
-      const name = document.getElementById('pay_name')?.value || '';
-      const number = document.getElementById('pay_number')?.value || '';
-      const amount = Number(do
+  // initial
+  hideAuth();
+  // show overlay if not logged in will be handled by onAuthStateChanged
+</script>
+</body>
+  </html>
