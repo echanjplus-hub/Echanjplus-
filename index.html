@@ -1,145 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Echanj Plus</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echanj Plus 🌟</title>
 <style>
-  :root{
+  :root {
     --bg:#071022; --card:#0b1220; --accent:#ffc107; --muted:#9aa4b2; --primary:#2563EB;
     --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
   }
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8}
-  header{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1100px;margin:0 auto}
-  .brand{display:flex;gap:12px;align-items:center}
-  .brand h1{margin:0;color:var(--accent);font-size:20px}
-  .main{max-width:1100px;margin:18px auto;padding:16px;display:grid;grid-template-columns:1fr 380px;gap:16px}
-  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03)}
-  h2{margin:0 0 10px 0;color:var(--accent)}
-  label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
-  input,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px}
-  .row{display:flex;gap:8px}
-  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
-  .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
-  .small{font-size:13px;color:var(--muted);margin-top:8px}
-  .tx-list{max-height:320px;overflow:auto;margin-top:10px}
-  .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
-  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999}
-  .auth-card{width:360px;background:linear-gradient(180deg,#081226,#0b1726);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
-  .muted{color:var(--muted)}
-  @media (max-width:980px){.main{grid-template-columns:1fr;padding:12px}}
+  *{box-sizing:border-box;}
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8;}
+  header{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1100px;margin:0 auto;}
+  .brand{display:flex;gap:12px;align-items:center;}
+  .brand h1{margin:0;color:var(--accent);font-size:20px;}
+  .main{max-width:1100px;margin:18px auto;padding:16px;}
+  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);margin-bottom:16px;}
+  h2{margin:0 0 10px 0;color:var(--accent);}
+  label{display:block;color:var(--muted);font-size:13px;margin-top:8px;}
+  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px;}
+  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700;margin-top:10px;}
+  .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff;}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);}
+  .small{font-size:13px;color:var(--muted);margin-top:8px;}
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;}
+  .auth-card{width:360px;background:linear-gradient(180deg,#081226,#0b1726);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);}
+  .steps{display:flex;justify-content:space-between;margin:20px 0;}
+  .step{flex:1;text-align:center;}
+  .step span{display:block;width:30px;height:30px;border-radius:50%;background:#333;line-height:30px;color:#fff;margin:0 auto 4px;}
+  .step.active span{background:var(--accent);}
+  .muted{color:var(--muted);}
 </style>
 </head>
 <body>
 
 <header>
   <div class="brand">
-    <img src="assets/logo-echanj.svg" alt="logo" style="height:44px" onerror="this.style.display='none'"/>
-    <h1>Echanj Plus</h1>
+    <h1>🌟 Echanj Plus</h1>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <div id="userEmail" class="small"></div>
-    <button id="openAuth" class="btn btn-ghost">Konekte / Enskri</button>
-    <button id="logout" class="btn btn-ghost" style="display:none">Dekonekte</button>
+    <button id="logoutBtn" class="btn btn-ghost" style="display:none">Dekonekte</button>
   </div>
 </header>
 
 <main class="main">
-  <!-- Left: Send minutes -->
-  <section class="card">
-    <h2>Voye Minit (USSD)</h2>
-    <div class="small">Sistèm nimewo fiks: Digicel <strong>47111123</strong> • Natcom <strong>32160708</strong></div>
 
+  <!-- Etap 1: Voye minit -->
+  <div class="card" id="step1">
+    <h2>1️⃣ Voye Minit (USSD)</h2>
     <label>Telefòn (ou) — fòma +509XXXXXXXX</label>
     <input id="sender" placeholder="+509XXXXXXXX"/>
+    <label>Operatè</label>
+    <select id="operator">
+      <option value="digicel">Digicel</option>
+      <option value="natcom">Natcom</option>
+    </select>
+    <label>Montan/minit</label>
+    <input id="amount" type="number" placeholder="100"/>
+    <div class="small">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Total: <strong id="totalMin">—</strong></div>
+    <button id="sendUSSD" class="btn btn-primary">Voye Konpoze</button>
+  </div>
 
-    <div class="row" style="margin-top:10px">
-      <select id="operator" style="flex:1">
-        <option value="digicel">Digicel</option>
-        <option value="natcom">Natcom</option>
-      </select>
-      <input id="amount" type="number" placeholder="100" style="width:120px" min="1"/>
-    </div>
+  <!-- Etap 2: Komantè -->
+  <div class="card" id="step2" style="display:none;">
+    <h2>2️⃣ Kite Komantè pou Sistèm</h2>
+    <textarea id="comment" rows="4" placeholder="Ekri komantè ou la..."></textarea>
+    <button id="submitComment" class="btn btn-primary">Soumèt Komantè</button>
+  </div>
 
-    <div class="row" style="margin-top:12px">
-      <button id="dial" class="btn btn-primary">Dial & Voye</button>
-      <button id="previewDial" class="btn btn-ghost">Preview</button>
-    </div>
-
-    <div class="small" style="margin-top:10px">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Total: <strong id="totalMin">—</strong></div>
-  </section>
-
-  <!-- Right: Payments and tx list -->
-  <aside class="card">
-    <h2>Peman</h2>
+  <!-- Etap 3: Peman -->
+  <div class="card" id="step3" style="display:none;">
+    <h2>3️⃣ Peman</h2>
     <label>Chwazi metòd</label>
     <select id="payMethod">
       <option value="">-- Chwazi --</option>
       <option value="moncash">MonCash</option>
       <option value="natcash">NatCash</option>
-      <option value="parayajlakay">Paryaj Lakay</option>
-      <option value="parayajpam">Paryaj Pam</option>
+      <option value="paryajlakay">Paryaj Lakay</option>
+      <option value="paryajpam">Paryaj Pam</option>
     </select>
+    <div id="payFields"></div>
+    <button id="sendPay" class="btn btn-primary">Soumèt & WhatsApp</button>
+  </div>
 
-    <div id="payFields" style="margin-top:10px"></div>
-
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="sendPay" class="btn btn-primary" style="flex:1">Soumèt & WhatsApp</button>
-      <button id="previewPay" class="btn btn-ghost">Preview</button>
-    </div>
-
-    <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)">
-
-    <h3 style="margin:0 0 8px 0;color:var(--accent);font-size:15px">Tranzaksyon Ou</h3>
-    <div id="txList" class="tx-list"><div class="small">Pa gen tranzaksyon chaje.</div></div>
-
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button id="exportCsv" class="btn btn-ghost" style="flex:1">Export CSV</button>
-      <button id="clearUi" class="btn btn-ghost">Clear UI</button>
-    </div>
-  </aside>
-
-  <!-- Full width: footer spacing (optional) -->
 </main>
 
-<!-- Auth overlay - mandatory before access -->
-<div id="authOverlay" class="overlay" style="display:none">
+<!-- Auth overlay -->
+<div id="authOverlay" class="overlay">
   <div class="auth-card">
-    <h2 style="margin:0 0 6px 0;color:var(--accent)">Obligatwa — Konekte / Enskri</h2>
-    <div class="small muted">Ou dwe konekte pou itilize Echanj Plus. Si ou pa gen kont, enskri kounye a.</div>
-
-    <label style="margin-top:12px">Mode</label>
-    <select id="authMode"><option value="login">Konekte</option><option value="register">Enskri</option></select>
-
+    <h2 style="color:var(--accent)">Obligatwa — Konekte / Enskri</h2>
+    <label>Mode</label>
+    <select id="authMode">
+      <option value="login">Konekte</option>
+      <option value="register">Enskri</option>
+    </select>
     <label>Email</label>
     <input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
-
     <label>Modpas</label>
     <input id="authPass" type="password" placeholder="Min 6 karaktè"/>
-
     <div id="registerExtra" style="display:none">
       <label>Non (opsyonèl)</label>
       <input id="authName" placeholder="Non konplè"/>
       <label>Telefòn (+509...)</label>
       <input id="authPhone" placeholder="+509XXXXXXXX"/>
     </div>
-
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="authAction" class="btn btn-primary">Konekte</button>
-      <button id="guest" class="btn btn-ghost">Teste kòm Guest</button>
-    </div>
+    <button id="authAction" class="btn btn-primary">Konekte</button>
     <div id="authMsg" class="small" style="margin-top:8px"></div>
   </div>
 </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
 
-  // ---------- config (your config) ----------
+<script>
+  // ---------- firebase config ----------
   const firebaseConfig = {
     apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
     authDomain: "echanj-plus-778cd.firebaseapp.com",
@@ -150,277 +127,163 @@
     appId: "1:111144762929:web:e64ce9a6da65781c289f10",
     measurementId: "G-J1BQRF32ZW"
   };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
+  let currentUser = null;
 
-  // ---------- constants ----------
-  const SYSTEM_DIGICEL = '47111123';
-  const SYSTEM_NATCOM  = '32160708';
-  const NATCOM_MIDDLE  = '88888888';
-  const WA_NUMBER      = '50947111123'; // system whatsapp number - change if needed
-  const FEE_RATE = 0.175; // 17.5%
-
-  // ---------- elements ----------
-  const openAuth = document.getElementById('openAuth');
-  const logoutBtn = document.getElementById('logout');
-  const userEmail = document.getElementById('userEmail');
   const authOverlay = document.getElementById('authOverlay');
   const authMode = document.getElementById('authMode');
   const authEmail = document.getElementById('authEmail');
   const authPass = document.getElementById('authPass');
-  const registerExtra = document.getElementById('registerExtra');
   const authName = document.getElementById('authName');
   const authPhone = document.getElementById('authPhone');
+  const registerExtra = document.getElementById('registerExtra');
   const authAction = document.getElementById('authAction');
   const authMsg = document.getElementById('authMsg');
-  const guestBtn = document.getElementById('guest');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userEmail = document.getElementById('userEmail');
+
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const step3 = document.getElementById('step3');
 
   const sender = document.getElementById('sender');
   const operator = document.getElementById('operator');
   const amount = document.getElementById('amount');
-  const dial = document.getElementById('dial');
-  const previewDial = document.getElementById('previewDial');
   const feeMin = document.getElementById('feeMin');
   const totalMin = document.getElementById('totalMin');
+  const sendUSSD = document.getElementById('sendUSSD');
+
+  const comment = document.getElementById('comment');
+  const submitComment = document.getElementById('submitComment');
 
   const payMethod = document.getElementById('payMethod');
   const payFields = document.getElementById('payFields');
   const sendPay = document.getElementById('sendPay');
-  const previewPay = document.getElementById('previewPay');
 
-  const txList = document.getElementById('txList');
-  const exportCsv = document.getElementById('exportCsv');
-  const clearUi = document.getElementById('clearUi');
-
-  // ---------- helpers ----------
-  function calcFee(v){ return Math.round(Number(v) * FEE_RATE); }
-  function uid(n=6){ return Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n); }
-  function showOverlay(){ authOverlay.style.display = 'flex'; authMsg.textContent=''; }
-  function hideOverlay(){ authOverlay.style.display = 'none'; }
-  function requireAuth(){ if(!currentUser){ showOverlay(); authMsg.style.color='salmon'; authMsg.textContent='Ou dwe konekte pou kontinye.'; return false } return true; }
-
-  // ---------- auth UI binding ----------
-  openAuth.addEventListener('click', ()=> showOverlay());
-  logoutBtn.addEventListener('click', async ()=> { await signOut(auth).catch(()=>null); });
-
+  // ---------- auth overlay logic ----------
   authMode.addEventListener('change', ()=> {
-    registerExtra.style.display = authMode.value === 'register' ? 'block' : 'none';
-    authAction.textContent = authMode.value === 'register' ? 'Enskri' : 'Konekte';
+    registerExtra.style.display = authMode.value==='register' ? 'block' : 'none';
+    authAction.textContent = authMode.value==='register' ? 'Enskri' : 'Konekte';
   });
 
-  authAction.addEventListener('click', async ()=>{
-    authMsg.textContent = ''; authMsg.style.color = 'inherit';
-    const email = authEmail.value.trim(); const pass = authPass.value;
-    if(!email || !pass){ authMsg.style.color='salmon'; authMsg.textContent = 'Ranpli imèl ak modpas.'; return; }
-    try{
-      if(authMode.value === 'register'){
-        const cred = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(cred.user, { displayName: authName.value || null }).catch(()=>null);
-        await set(ref(db, `users/${cred.user.uid}`), { name: authName.value || '', email, phone: authPhone.value || '' });
-        hideOverlay();
-      } else {
-        await signInWithEmailAndPassword(auth, email, pass);
-        hideOverlay();
-      }
-    }catch(err){ authMsg.style.color='salmon'; authMsg.textContent = err.message; }
+  authAction.addEventListener('click', ()=>{
+    authMsg.textContent='';
+    const email = authEmail.value.trim();
+    const pass = authPass.value;
+    if(!email || !pass){ authMsg.textContent='Ranpli imèl ak modpas.'; return; }
+    if(authMode.value==='register'){
+      auth.createUserWithEmailAndPassword(email,pass)
+      .then(userCred=>{
+        const user = userCred.user;
+        user.updateProfile({displayName: authName.value || null});
+        db.ref('users/'+user.uid).set({name: authName.value,email,phone:authPhone.value});
+      })
+      .catch(err=> authMsg.textContent = err.message);
+    }else{
+      auth.signInWithEmailAndPassword(email,pass)
+      .catch(err=> authMsg.textContent = err.message);
+    }
   });
 
-  guestBtn.addEventListener('click', ()=> {
-    // limited guest token for testing (no DB writes tied to firebase auth)
-    currentUser = { uid: 'guest-'+uid(4), email: 'guest@example.com', isGuest: true };
-    userEmail.textContent = 'Guest';
-    logoutBtn.style.display = 'inline-block';
-    hideOverlay();
-    renderTxList([]);
-  });
+  logoutBtn.addEventListener('click', ()=> auth.signOut());
 
-  // ---------- auth state ----------
-  let currentUser = null;
-  onAuthStateChanged(auth, async user => {
+  auth.onAuthStateChanged(user=>{
     if(user){
       currentUser = user;
-      userEmail.textContent = user.email || user.displayName || 'Itilizatè';
-      logoutBtn.style.display = 'inline-block';
-      hideOverlay();
-      await loadTx();
-    } else {
-      currentUser = null;
-      userEmail.textContent = '';
-      logoutBtn.style.display = 'none';
-      // force login overlay
-      showOverlay();
-      renderTxList([]);
+      userEmail.textContent = user.email || user.displayName;
+      logoutBtn.style.display='inline-block';
+      authOverlay.style.display='none';
+      step1.style.display='block';
+    }else{
+      currentUser=null;
+      userEmail.textContent='';
+      logoutBtn.style.display='none';
+      authOverlay.style.display='flex';
+      step1.style.display='block';
+      step2.style.display='none';
+      step3.style.display='none';
     }
   });
 
-  // ---------- minutes fee preview ----------
-  function updateMinPreview(){
-    const v = Number(amount.value || 0);
-    if(!v){ feeMin.textContent = '—'; totalMin.textContent = '—'; return; }
-    const fee = calcFee(v);
-    feeMin.textContent = fee + ' HTG';
-    totalMin.textContent = (v + fee) + ' HTG';
-  }
-  amount.addEventListener('input', updateMinPreview);
-
-  // ---------- build USSD ----------
-  function buildUSSD(op, amt){
-    if(op === 'digicel') return `*128*509${SYSTEM_DIGICEL}*${amt}#`;
-    return `*123*${NATCOM_MIDDLE}*${SYSTEM_NATCOM}*${amt}#`;
-  }
-
-  // ---------- preview & dial ----------
-  previewDial.addEventListener('click', ()=>{
-    const op = operator.value, amt = amount.value;
-    if(!amt) return alert('Antre kantite/minit oswa montan.');
-    const ussd = buildUSSD(op, amt);
-    alert('USSD preview:\n' + ussd);
+  // ---------- USSD fee calculation ----------
+  amount.addEventListener('input', ()=>{
+    const v = Number(amount.value);
+    if(!v){ feeMin.textContent='—'; totalMin.textContent='—'; return; }
+    const fee = Math.round(v*0.175);
+    feeMin.textContent=fee+' HTG';
+    totalMin.textContent=(v+fee)+' HTG';
   });
 
-  dial.addEventListener('click', async ()=>{
-    if(!requireAuth()) return;
-    const op = operator.value;
-    const amt = Number(amount.value);
+  // ---------- send USSD ----------
+  sendUSSD.addEventListener('click', ()=>{
+    if(!currentUser) return alert('Ou dwe konekte.');
     const from = sender.value.trim();
-    if(!from || !/^\+?\d{8,15}$/.test(from)) return alert('Antre nimewo sender (+509...)');
-    if(!amt || amt <= 0) return alert('Antre yon montan/minit valid.');
-
-    const fee = calcFee(amt), total = amt + fee;
-    const tx = { id:null, uid: currentUser.uid, type:'send_minutes', operator: op, from, to: op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM, minutes: amt, amount: amt, fee, total, ts: Date.now(), status:'pending' };
-
-    try{
-      const txRef = push(ref(db, `transactions/${currentUser.uid}`));
-      tx.id = txRef.key;
-      await set(txRef, tx);
-      // open dialer on mobile
-      const ussd = buildUSSD(op, amt);
-      window.location.href = 'tel:' + encodeURIComponent(ussd);
-      await loadTx();
-    }catch(e){ console.error(e); alert('Erè sove tranzaksyon: ' + e.message); }
+    const amt = Number(amount.value);
+    if(!from || !amt) return alert('Ranpli chan yo kòrèk.');
+    // Save transaction to Firebase
+    const txRef = db.ref('transactions/'+currentUser.uid).push();
+    txRef.set({
+      type:'send_minutes',operator:operator.value,from,to:'system',amount:amt,
+      fee:Math.round(amt*0.175),total:amt+Math.round(amt*0.175),
+      status:'pending',ts:Date.now()
+    });
+    // Show emoji check
+    alert('✅ Konpoze voye avèk siksè!');
+    step2.style.display='block';
+    step1.style.display='none';
   });
 
-  // ---------- payments UI ----------
-  payMethod.addEventListener('change', ()=> {
-    const m = payMethod.value; payFields.innerHTML = '';
+  // ---------- submit comment ----------
+  submitComment.addEventListener('click', ()=>{
+    const txt = comment.value.trim();
+    if(!txt) return alert('Ekri yon komantè.');
+    db.ref('comments/'+currentUser.uid).push({text:txt,ts:Date.now()});
+    alert('✅ Komantè anrejistre.');
+    step3.style.display='block';
+    step2.style.display='none';
+  });
+
+  // ---------- payment fields ----------
+  payMethod.addEventListener('change', ()=>{
+    const m = payMethod.value; payFields.innerHTML='';
     if(!m) return;
+    let html='';
     if(m==='moncash' || m==='natcash'){
-      payFields.innerHTML = `
-        <label>Non kont</label><input id="pay_name" placeholder="Non kont" />
-        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont" />
-        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan" />
-        <div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>`;
+      html=`
+        <label>Non kont</label><input id="pay_name" placeholder="Non kont"/>
+        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont"/>
+        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan"/>`;
     } else {
-      payFields.innerHTML = `
-        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont" />
-        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan" />
-        <div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>`;
+      html=`
+        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont"/>
+        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan"/>`;
     }
-    const payAmt = document.getElementById('pay_amount');
-    payAmt?.addEventListener('input', ()=> {
-      const v = Number(payAmt.value||0); const f = calcFee(v);
-      document.getElementById('payFee').textContent = f + ' HTG';
-      document.getElementById('payTotal').textContent = (v + f) + ' HTG';
+    html+=`<div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>`;
+    payFields.innerHTML=html;
+    const amtInput=document.getElementById('pay_amount');
+    amtInput.addEventListener('input',()=>{
+      const v=Number(amtInput.value||0);
+      const f=Math.round(v*0.175);
+      document.getElementById('payFee').textContent=f+' HTG';
+      document.getElementById('payTotal').textContent=(v+f)+' HTG';
     });
   });
 
-  previewPay.addEventListener('click', ()=> {
-    if(!payMethod.value) return alert('Chwazi metòd');
-    const name = document.getElementById('pay_name')?.value||'';
-    const number = document.getElementById('pay_number')?.value||'';
-    const amountVal = document.getElementById('pay_amount')?.value||'';
-    if(!number || !amountVal) return alert('Ranpli chan yo');
-    alert(`Preview\nMetòd: ${payMethod.value}\nNon: ${name}\nNimewo: ${number}\nMontan: ${amountVal} HTG`);
+  sendPay.addEventListener('click',()=>{
+    if(!currentUser) return alert('Ou dwe konekte.');
+    const name=document.getElementById('pay_name')?.value||'';
+    const number=document.getElementById('pay_number')?.value||'';
+    const amountVal=Number(document.getElementById('pay_amount')?.value||0);
+    if(!number||amountVal<=0) return alert('Ranpli chan yo ak montan valab.');
+    const txRef = db.ref('transactions/'+currentUser.uid).push();
+    txRef.set({type:'payment',method:payMethod.value,name,number,amount:amountVal,fee:Math.round(amountVal*0.175),total:amountVal+Math.round(amountVal*0.175),status:'pending',ts:Date.now()});
+    alert('✅ Peman anrejistre. Ou ka kontinye sou WhatsApp.');
   });
 
-  sendPay.addEventListener('click', async ()=> {
-    if(!requireAuth()) return;
-    if(!payMethod.value) return alert('Chwazi metòd peman.');
-    const name = document.getElementById('pay_name')?.value||'';
-    const number = document.getElementById('pay_number')?.value||'';
-    const amountVal = Number(document.getElementById('pay_amount')?.value||0);
-    if(!number || amountVal<=0) return alert('Ranpli chan yo ak montan valid.');
-
-    const fee = calcFee(amountVal); const total = amountVal + fee;
-    const tx = { id:null, uid: currentUser.uid, type:'payment', method: payMethod.value, name, number, amount: amountVal, fee, total, ts: Date.now(), status:'pending' };
-    try{
-      const txRef = push(ref(db, `transactions/${currentUser.uid}`));
-      tx.id = txRef.key;
-      await set(txRef, tx);
-
-      // open WhatsApp to system number, include tx.id
-      const text = `EchanjPlus - Nouvo Peman
-Metòd: ${tx.method}
-Non: ${tx.name}
-Nimewo: ${tx.number}
-Montan: ${tx.amount} HTG
-Frè: ${tx.fee} HTG
-Total: ${tx.total} HTG
-TxID: ${tx.id}
-From: ${encodeURIComponent(currentUser.email || currentUser.uid)}`;
-      window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
-      await loadTx();
-      alert('Peman sove epi WhatsApp ap louvri.');
-    }catch(e){ console.error(e); alert('Erè sove peman: ' + e.message); }
-  });
-
-  // ---------- load transactions ----------
-  async function loadTx(){
-    txList.innerHTML = '<div class="small">Loading...</div>';
-    if(!currentUser){ txList.innerHTML = '<div class="small">Ou poko konekte.</div>'; return; }
-    try{
-      const snap = await get(ref(db, `transactions/${currentUser.uid}`));
-      const val = snap.exists()? snap.val() : {};
-      const arr = Object.values(val || {}).sort((a,b)=>b.ts - a.ts);
-      renderTx(arr);
-    }catch(e){ console.error(e); txList.innerHTML = '<div class="small">Erè chaje tranzaksyon.</div>'; }
-  }
-
-  function renderTx(arr){
-    txList.innerHTML = '';
-    if(!arr.length){ txList.innerHTML = '<div class="small">Pa gen tranzaksyon.</div>'; return; }
-    arr.forEach(t=>{
-      const d = new Date(t.ts);
-      const el = document.createElement('div'); el.className = 'tx-item';
-      el.innerHTML = `<div style="display:flex;justify-content:space-between">
-        <div>
-          <strong>${t.type==='payment'?'Peman':'Voye Minit'}</strong>
-          <div class="small">${t.method||t.operator||''} ${t.to? '→ ' + t.to : ''}</div>
-          <div class="small">${t.amount} • Frais: ${t.fee || 0} • Total: ${t.total || t.amount}</div>
-          <div class="small">${d.toLocaleString()}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-weight:700">${t.status}</div>
-          <div class="small">${String(t.id).slice(0,10)}</div>
-        </div>
-      </div>`;
-      txList.appendChild(el);
-    });
-  }
-
-  // ---------- export csv & clear UI ----------
-  exportCsv.addEventListener('click', async ()=>{
-    if(!currentUser) return alert('Ou dwe konekte');
-    const snap = await get(ref(db, `transactions/${currentUser.uid}`));
-    const val = snap.exists()? snap.val() : {};
-    const arr = Object.values(val || {}).sort((a,b)=>b.ts - a.ts);
-    if(!arr.length) return alert('Pa gen tranzaksyon pou ekspòte');
-    const header = ['id','type','method','operator','from','to','amount','fee','total','status','ts'];
-    const rows = arr.map(r => [r.id||'', r.type||'', r.method||'', r.operator||'', r.from||'', r.to||'', r.amount||'', r.fee||'', r.total||'', r.status||'', new Date(r.ts).toISOString()]);
-    const csv = [header.join(',')].concat(rows.map(r => r.map(c => {
-      const s = String(c).replace(/"/g,'""'); return /[,"\n]/.test(s) ? `"${s}"` : s;
-    }).join(','))).join('\n');
-    const blob = new Blob([csv], { type:'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `tx_${currentUser.uid}.csv`; a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),2000);
-  });
-
-  clearUi.addEventListener('click', ()=> { if(confirm('Netwaye lis sou UI? (DB rete entak)')) txList.innerHTML=''; });
-
-  // initial state: show overlay (auth enforced)
-  showOverlay();
 </script>
+
 </body>
   </html>
