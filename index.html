@@ -1,289 +1,1052 @@
 <!DOCTYPE html>
+
 <html lang="ht">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Echanj Plus 🌟</title>
+
 <style>
+
   :root {
+
     --bg:#071022; --card:#0b1220; --accent:#ffc107; --muted:#9aa4b2; --primary:#2563EB;
+
     --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
+
   }
+
   *{box-sizing:border-box;}
+
   body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8;}
+
   header{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1100px;margin:0 auto;}
+
   .brand{display:flex;gap:12px;align-items:center;}
+
   .brand h1{margin:0;color:var(--accent);font-size:20px;}
+
   .main{max-width:1100px;margin:18px auto;padding:16px;}
+
   .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);margin-bottom:16px;}
+
   h2{margin:0 0 10px 0;color:var(--accent);}
+
   label{display:block;color:var(--muted);font-size:13px;margin-top:8px;}
+
   input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px;}
+
   .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700;margin-top:10px;}
+
   .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff;}
+
   .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);}
+
   .small{font-size:13px;color:var(--muted);margin-top:8px;}
+
   .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;}
+
   .auth-card{width:360px;background:linear-gradient(180deg,#081226,#0b1726);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);}
+
   .steps{display:flex;justify-content:space-between;margin:20px 0;}
+
   .step{flex:1;text-align:center;}
+
   .step span{display:block;width:30px;height:30px;border-radius:50%;background:#333;line-height:30px;color:#fff;margin:0 auto 4px;}
+
   .step.active span{background:var(--accent);}
+
   .muted{color:var(--muted);}
+
 </style>
+
 </head>
+
 <body>
 
+
+
 <header>
+
   <div class="brand">
+
     <h1>🌟 Echanj Plus</h1>
+
   </div>
+
   <div style="display:flex;gap:8px;align-items:center">
+
     <div id="userEmail" class="small"></div>
+
     <button id="logoutBtn" class="btn btn-ghost" style="display:none">Dekonekte</button>
+
   </div>
+
 </header>
+
+
 
 <main class="main">
 
+
+
   <!-- Etap 1: Voye minit -->
+
   <div class="card" id="step1">
+
     <h2>1️⃣ Voye Minit (USSD)</h2>
+
     <label>Telefòn (ou) — fòma +509XXXXXXXX</label>
+
     <input id="sender" placeholder="+509XXXXXXXX"/>
+
     <label>Operatè</label>
+
     <select id="operator">
+
       <option value="digicel">Digicel</option>
+
       <option value="natcom">Natcom</option>
+
     </select>
+
     <label>Montan/minit</label>
+
     <input id="amount" type="number" placeholder="100"/>
+
     <div class="small">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Total: <strong id="totalMin">—</strong></div>
+
     <button id="sendUSSD" class="btn btn-primary">Voye Konpoze</button>
+
   </div>
+
+
 
   <!-- Etap 2: Komantè -->
+
   <div class="card" id="step2" style="display:none;">
+
     <h2>2️⃣ Kite Komantè pou Sistèm</h2>
+
     <textarea id="comment" rows="4" placeholder="Ekri komantè ou la..."></textarea>
+
     <button id="submitComment" class="btn btn-primary">Soumèt Komantè</button>
+
   </div>
 
+
+
   <!-- Etap 3: Peman -->
+
   <div class="card" id="step3" style="display:none;">
+
     <h2>3️⃣ Peman</h2>
+
     <label>Chwazi metòd</label>
+
     <select id="payMethod">
+
       <option value="">-- Chwazi --</option>
+
       <option value="moncash">MonCash</option>
+
       <option value="natcash">NatCash</option>
+
       <option value="paryajlakay">Paryaj Lakay</option>
+
       <option value="paryajpam">Paryaj Pam</option>
+
     </select>
+
     <div id="payFields"></div>
+
     <button id="sendPay" class="btn btn-primary">Soumèt & WhatsApp</button>
+
   </div>
+
+
 
 </main>
 
+
+
 <!-- Auth overlay -->
+
 <div id="authOverlay" class="overlay">
+
   <div class="auth-card">
+
     <h2 style="color:var(--accent)">Obligatwa — Konekte / Enskri</h2>
+
     <label>Mode</label>
+
     <select id="authMode">
+
       <option value="login">Konekte</option>
+
       <option value="register">Enskri</option>
+
     </select>
+
     <label>Email</label>
+
     <input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
+
     <label>Modpas</label>
+
     <input id="authPass" type="password" placeholder="Min 6 karaktè"/>
+
     <div id="registerExtra" style="display:none">
+
       <label>Non (opsyonèl)</label>
+
       <input id="authName" placeholder="Non konplè"/>
+
       <label>Telefòn (+509...)</label>
+
       <input id="authPhone" placeholder="+509XXXXXXXX"/>
+
     </div>
+
     <button id="authAction" class="btn btn-primary">Konekte</button>
+
     <div id="authMsg" class="small" style="margin-top:8px"></div>
+
   </div>
+
 </div>
 
+
+
 <!-- Firebase CDN -->
+
 <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
 
+
+
 <script>
+
   // ---------- firebase config ----------
+
   const firebaseConfig = {
+
     apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+
     authDomain: "echanj-plus-778cd.firebaseapp.com",
+
     databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+
     projectId: "echanj-plus-778cd",
+
     storageBucket: "echanj-plus-778cd.firebasestorage.app",
+
     messagingSenderId: "111144762929",
+
     appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+
     measurementId: "G-J1BQRF32ZW"
+
   };
+
   firebase.initializeApp(firebaseConfig);
+
   const auth = firebase.auth();
+
   const db = firebase.database();
+
+
 
   let currentUser = null;
 
+
+
   const authOverlay = document.getElementById('authOverlay');
+
   const authMode = document.getElementById('authMode');
+
   const authEmail = document.getElementById('authEmail');
+
   const authPass = document.getElementById('authPass');
+
   const authName = document.getElementById('authName');
+
   const authPhone = document.getElementById('authPhone');
+
   const registerExtra = document.getElementById('registerExtra');
+
   const authAction = document.getElementById('authAction');
+
   const authMsg = document.getElementById('authMsg');
+
   const logoutBtn = document.getElementById('logoutBtn');
+
   const userEmail = document.getElementById('userEmail');
 
+
+
   const step1 = document.getElementById('step1');
+
   const step2 = document.getElementById('step2');
+
   const step3 = document.getElementById('step3');
 
+
+
   const sender = document.getElementById('sender');
+
   const operator = document.getElementById('operator');
+
   const amount = document.getElementById('amount');
+
   const feeMin = document.getElementById('feeMin');
+
   const totalMin = document.getElementById('totalMin');
+
   const sendUSSD = document.getElementById('sendUSSD');
 
+
+
   const comment = document.getElementById('comment');
+
   const submitComment = document.getElementById('submitComment');
 
+
+
   const payMethod = document.getElementById('payMethod');
+
   const payFields = document.getElementById('payFields');
+
   const sendPay = document.getElementById('sendPay');
 
+
+
   // ---------- auth overlay logic ----------
+
   authMode.addEventListener('change', ()=> {
+
     registerExtra.style.display = authMode.value==='register' ? 'block' : 'none';
+
     authAction.textContent = authMode.value==='register' ? 'Enskri' : 'Konekte';
+
   });
 
+
+
   authAction.addEventListener('click', ()=>{
+
     authMsg.textContent='';
+
     const email = authEmail.value.trim();
+
     const pass = authPass.value;
+
     if(!email || !pass){ authMsg.textContent='Ranpli imèl ak modpas.'; return; }
+
     if(authMode.value==='register'){
+
       auth.createUserWithEmailAndPassword(email,pass)
+
       .then(userCred=>{
+
         const user = userCred.user;
+
         user.updateProfile({displayName: authName.value || null});
+
         db.ref('users/'+user.uid).set({name: authName.value,email,phone:authPhone.value});
+
       })
+
       .catch(err=> authMsg.textContent = err.message);
+
     }else{
+
       auth.signInWithEmailAndPassword(email,pass)
+
       .catch(err=> authMsg.textContent = err.message);
+
     }
+
   });
+
+
 
   logoutBtn.addEventListener('click', ()=> auth.signOut());
 
+
+
   auth.onAuthStateChanged(user=>{
+
     if(user){
+
       currentUser = user;
+
       userEmail.textContent = user.email || user.displayName;
+
       logoutBtn.style.display='inline-block';
+
       authOverlay.style.display='none';
+
       step1.style.display='block';
+
     }else{
+
       currentUser=null;
+
       userEmail.textContent='';
+
       logoutBtn.style.display='none';
+
       authOverlay.style.display='flex';
+
       step1.style.display='block';
+
       step2.style.display='none';
+
       step3.style.display='none';
+
     }
+
   });
+
+
 
   // ---------- USSD fee calculation ----------
+
   amount.addEventListener('input', ()=>{
+
     const v = Number(amount.value);
+
     if(!v){ feeMin.textContent='—'; totalMin.textContent='—'; return; }
+
     const fee = Math.round(v*0.175);
+
     feeMin.textContent=fee+' HTG';
+
     totalMin.textContent=(v+fee)+' HTG';
+
   });
+
+
 
   // ---------- send USSD ----------
+
   sendUSSD.addEventListener('click', ()=>{
+
     if(!currentUser) return alert('Ou dwe konekte.');
+
     const from = sender.value.trim();
+
     const amt = Number(amount.value);
+
     if(!from || !amt) return alert('Ranpli chan yo kòrèk.');
+
     // Save transaction to Firebase
+
     const txRef = db.ref('transactions/'+currentUser.uid).push();
+
     txRef.set({
+
       type:'send_minutes',operator:operator.value,from,to:'system',amount:amt,
+
       fee:Math.round(amt*0.175),total:amt+Math.round(amt*0.175),
+
       status:'pending',ts:Date.now()
+
     });
+
     // Show emoji check
+
     alert('✅ Konpoze voye avèk siksè!');
+
     step2.style.display='block';
+
     step1.style.display='none';
+
   });
+
+
+<!DOCTYPE html>
+
+<html lang="ht">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Echanj Plus 🌟</title>
+
+<style>
+
+  :root {
+
+    --bg:#071022; --card:#0b1220; --accent:#ffc107; --muted:#9aa4b2; --primary:#2563EB;
+
+    --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
+
+  }
+
+  *{box-sizing:border-box;}
+
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8;}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1100px;margin:0 auto;}
+
+  .brand{display:flex;gap:12px;align-items:center;}
+
+  .brand h1{margin:0;color:var(--accent);font-size:20px;}
+
+  .main{max-width:1100px;margin:18px auto;padding:16px;}
+
+  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);margin-bottom:16px;}
+
+  h2{margin:0 0 10px 0;color:var(--accent);}
+
+  label{display:block;color:var(--muted);font-size:13px;margin-top:8px;}
+
+  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px;}
+
+  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700;margin-top:10px;}
+
+  .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff;}
+
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);}
+
+  .small{font-size:13px;color:var(--muted);margin-top:8px;}
+
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;}
+
+  .auth-card{width:360px;background:linear-gradient(180deg,#081226,#0b1726);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);}
+
+  .steps{display:flex;justify-content:space-between;margin:20px 0;}
+
+  .step{flex:1;text-align:center;}
+
+  .step span{display:block;width:30px;height:30px;border-radius:50%;background:#333;line-height:30px;color:#fff;margin:0 auto 4px;}
+
+  .step.active span{background:var(--accent);}
+
+  .muted{color:var(--muted);}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header>
+
+  <div class="brand">
+
+    <h1>🌟 Echanj Plus</h1>
+
+  </div>
+
+  <div style="display:flex;gap:8px;align-items:center">
+
+    <div id="userEmail" class="small"></div>
+
+    <button id="logoutBtn" class="btn btn-ghost" style="display:none">Dekonekte</button>
+
+  </div>
+
+</header>
+
+
+
+<main class="main">
+
+
+
+  <!-- Etap 1: Voye minit -->
+
+  <div class="card" id="step1">
+
+    <h2>1️⃣ Voye Minit (USSD)</h2>
+
+    <label>Telefòn (ou) — fòma +509XXXXXXXX</label>
+
+    <input id="sender" placeholder="+509XXXXXXXX"/>
+
+    <label>Operatè</label>
+
+    <select id="operator">
+
+      <option value="digicel">Digicel</option>
+
+      <option value="natcom">Natcom</option>
+
+    </select>
+
+    <label>Montan/minit</label>
+
+    <input id="amount" type="number" placeholder="100"/>
+
+    <div class="small">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Total: <strong id="totalMin">—</strong></div>
+
+    <button id="sendUSSD" class="btn btn-primary">Voye Konpoze</button>
+
+  </div>
+
+
+
+  <!-- Etap 2: Komantè -->
+
+  <div class="card" id="step2" style="display:none;">
+
+    <h2>2️⃣ Kite Komantè pou Sistèm</h2>
+
+    <textarea id="comment" rows="4" placeholder="Ekri komantè ou la..."></textarea>
+
+    <button id="submitComment" class="btn btn-primary">Soumèt Komantè</button>
+
+  </div>
+
+
+
+  <!-- Etap 3: Peman -->
+
+  <div class="card" id="step3" style="display:none;">
+
+    <h2>3️⃣ Peman</h2>
+
+    <label>Chwazi metòd</label>
+
+    <select id="payMethod">
+
+      <option value="">-- Chwazi --</option>
+
+      <option value="moncash">MonCash</option>
+
+      <option value="natcash">NatCash</option>
+
+      <option value="paryajlakay">Paryaj Lakay</option>
+
+      <option value="paryajpam">Paryaj Pam</option>
+
+    </select>
+
+    <div id="payFields"></div>
+
+    <button id="sendPay" class="btn btn-primary">Soumèt & WhatsApp</button>
+
+  </div>
+
+
+
+</main>
+
+
+
+<!-- Auth overlay -->
+
+<div id="authOverlay" class="overlay">
+
+  <div class="auth-card">
+
+    <h2 style="color:var(--accent)">Obligatwa — Konekte / Enskri</h2>
+
+    <label>Mode</label>
+
+    <select id="authMode">
+
+      <option value="login">Konekte</option>
+
+      <option value="register">Enskri</option>
+
+    </select>
+
+    <label>Email</label>
+
+    <input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
+
+    <label>Modpas</label>
+
+    <input id="authPass" type="password" placeholder="Min 6 karaktè"/>
+
+    <div id="registerExtra" style="display:none">
+
+      <label>Non (opsyonèl)</label>
+
+      <input id="authName" placeholder="Non konplè"/>
+
+      <label>Telefòn (+509...)</label>
+
+      <input id="authPhone" placeholder="+509XXXXXXXX"/>
+
+    </div>
+
+    <button id="authAction" class="btn btn-primary">Konekte</button>
+
+    <div id="authMsg" class="small" style="margin-top:8px"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- Firebase CDN -->
+
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+
+
+
+<script>
+
+  // ---------- firebase config ----------
+
+  const firebaseConfig = {
+
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+
+    projectId: "echanj-plus-778cd",
+
+    storageBucket: "echanj-plus-778cd.firebasestorage.app",
+
+    messagingSenderId: "111144762929",
+
+    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+
+    measurementId: "G-J1BQRF32ZW"
+
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+
+  const db = firebase.database();
+
+
+
+  let currentUser = null;
+
+
+
+  const authOverlay = document.getElementById('authOverlay');
+
+  const authMode = document.getElementById('authMode');
+
+  const authEmail = document.getElementById('authEmail');
+
+  const authPass = document.getElementById('authPass');
+
+  const authName = document.getElementById('authName');
+
+  const authPhone = document.getElementById('authPhone');
+
+  const registerExtra = document.getElementById('registerExtra');
+
+  const authAction = document.getElementById('authAction');
+
+  const authMsg = document.getElementById('authMsg');
+
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  const userEmail = document.getElementById('userEmail');
+
+
+
+  const step1 = document.getElementById('step1');
+
+  const step2 = document.getElementById('step2');
+
+  const step3 = document.getElementById('step3');
+
+
+
+  const sender = document.getElementById('sender');
+
+  const operator = document.getElementById('operator');
+
+  const amount = document.getElementById('amount');
+
+  const feeMin = document.getElementById('feeMin');
+
+  const totalMin = document.getElementById('totalMin');
+
+  const sendUSSD = document.getElementById('sendUSSD');
+
+
+
+  const comment = document.getElementById('comment');
+
+  const submitComment = document.getElementById('submitComment');
+
+
+
+  const payMethod = document.getElementById('payMethod');
+
+  const payFields = document.getElementById('payFields');
+
+  const sendPay = document.getElementById('sendPay');
+
+
+
+  // ---------- auth overlay logic ----------
+
+  authMode.addEventListener('change', ()=> {
+
+    registerExtra.style.display = authMode.value==='register' ? 'block' : 'none';
+
+    authAction.textContent = authMode.value==='register' ? 'Enskri' : 'Konekte';
+
+  });
+
+
+
+  authAction.addEventListener('click', ()=>{
+
+    authMsg.textContent='';
+
+    const email = authEmail.value.trim();
+
+    const pass = authPass.value;
+
+    if(!email || !pass){ authMsg.textContent='Ranpli imèl ak modpas.'; return; }
+
+    if(authMode.value==='register'){
+
+      auth.createUserWithEmailAndPassword(email,pass)
+
+      .then(userCred=>{
+
+        const user = userCred.user;
+
+        user.updateProfile({displayName: authName.value || null});
+
+        db.ref('users/'+user.uid).set({name: authName.value,email,phone:authPhone.value});
+
+      })
+
+      .catch(err=> authMsg.textContent = err.message);
+
+    }else{
+
+      auth.signInWithEmailAndPassword(email,pass)
+
+      .catch(err=> authMsg.textContent = err.message);
+
+    }
+
+  });
+
+
+
+  logoutBtn.addEventListener('click', ()=> auth.signOut());
+
+
+
+  auth.onAuthStateChanged(user=>{
+
+    if(user){
+
+      currentUser = user;
+
+      userEmail.textContent = user.email || user.displayName;
+
+      logoutBtn.style.display='inline-block';
+
+      authOverlay.style.display='none';
+
+      step1.style.display='block';
+
+    }else{
+
+      currentUser=null;
+
+      userEmail.textContent='';
+
+      logoutBtn.style.display='none';
+
+      authOverlay.style.display='flex';
+
+      step1.style.display='block';
+
+      step2.style.display='none';
+
+      step3.style.display='none';
+
+    }
+
+  });
+
+
+
+  // ---------- USSD fee calculation ----------
+
+  amount.addEventListener('input', ()=>{
+
+    const v = Number(amount.value);
+
+    if(!v){ feeMin.textContent='—'; totalMin.textContent='—'; return; }
+
+    const fee = Math.round(v*0.175);
+
+    feeMin.textContent=fee+' HTG';
+
+    totalMin.textContent=(v+fee)+' HTG';
+
+  });
+
+
+
+  // ---------- send USSD ----------
+
+  sendUSSD.addEventListener('click', ()=>{
+
+    if(!currentUser) return alert('Ou dwe konekte.');
+
+    const from = sender.value.trim();
+
+    const amt = Number(amount.value);
+
+    if(!from || !amt) return alert('Ranpli chan yo kòrèk.');
+
+    // Save transaction to Firebase
+
+    const txRef = db.ref('transactions/'+currentUser.uid).push();
+
+    txRef.set({
+
+      type:'send_minutes',operator:operator.value,from,to:'system',amount:amt,
+
+      fee:Math.round(amt*0.175),total:amt+Math.round(amt*0.175),
+
+      status:'pending',ts:Date.now()
+
+    });
+
+    // Show emoji check
+
+    alert('✅ Konpoze voye avèk siksè!');
+
+    step2.style.display='block';
+
+    step1.style.display='none';
+
+  });
+
+
 
   // ---------- submit comment ----------
+
   submitComment.addEventListener('click', ()=>{
+
     const txt = comment.value.trim();
+
     if(!txt) return alert('Ekri yon komantè.');
+
     db.ref('comments/'+currentUser.uid).push({text:txt,ts:Date.now()});
+
     alert('✅ Komantè anrejistre.');
+
     step3.style.display='block';
+
     step2.style.display='none';
+
   });
+
+
 
   // ---------- payment fields ----------
+
   payMethod.addEventListener('change', ()=>{
+
     const m = payMethod.value; payFields.innerHTML='';
+
     if(!m) return;
+
     let html='';
+
     if(m==='moncash' || m==='natcash'){
+
       html=`
+
         <label>Non kont</label><input id="pay_name" placeholder="Non kont"/>
+
         <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont"/>
+
         <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan"/>`;
+
     } else {
+
       html=`
+
         <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont"/>
+
         <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan"/>`;
+
     }
+
     html+=`<div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>`;
+
     payFields.innerHTML=html;
+
     const amtInput=document.getElementById('pay_amount');
+
     amtInput.addEventListener('input',()=>{
+
       const v=Number(amtInput.value||0);
+
       const f=Math.round(v*0.175);
+
       document.getElementById('payFee').textContent=f+' HTG';
+
       document.getElementById('payTotal').textContent=(v+f)+' HTG';
+
     });
+
   });
 
+
+
   sendPay.addEventListener('click',()=>{
+
     if(!currentUser) return alert('Ou dwe konekte.');
+
     const name=document.getElementById('pay_name')?.value||'';
+
     const number=document.getElementById('pay_number')?.value||'';
+
     const amountVal=Number(document.getElementById('pay_amount')?.value||0);
+
     if(!number||amountVal<=0) return alert('Ranpli chan yo ak montan valab.');
+
     const txRef = db.ref('transactions/'+currentUser.uid).push();
+
     txRef.set({type:'payment',method:payMethod.value,name,number,amount:amountVal,fee:Math.round(amountVal*0.175),total:amountVal+Math.round(amountVal*0.175),status:'pending',ts:Date.now()});
+
     alert('✅ Peman anrejistre. Ou ka kontinye sou WhatsApp.');
+
   });
+
+
 
 </script>
 
+
+
 </body>
-  </html>
+
+  </html>￼Enter
