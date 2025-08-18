@@ -1,1052 +1,454 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="ht">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Echanj Plus 🌟</title>
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Echanj Plus — Demo</title>
 <style>
-
-  :root {
-
-    --bg:#071022; --card:#0b1220; --accent:#ffc107; --muted:#9aa4b2; --primary:#2563EB;
-
-    --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
-
-  }
-
-  *{box-sizing:border-box;}
-
-  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8;}
-
-  header{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1100px;margin:0 auto;}
-
-  .brand{display:flex;gap:12px;align-items:center;}
-
-  .brand h1{margin:0;color:var(--accent);font-size:20px;}
-
-  .main{max-width:1100px;margin:18px auto;padding:16px;}
-
-  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);margin-bottom:16px;}
-
-  h2{margin:0 0 10px 0;color:var(--accent);}
-
-  label{display:block;color:var(--muted);font-size:13px;margin-top:8px;}
-
-  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px;}
-
-  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700;margin-top:10px;}
-
-  .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff;}
-
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);}
-
-  .small{font-size:13px;color:var(--muted);margin-top:8px;}
-
-  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;}
-
-  .auth-card{width:360px;background:linear-gradient(180deg,#081226,#0b1726);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);}
-
-  .steps{display:flex;justify-content:space-between;margin:20px 0;}
-
-  .step{flex:1;text-align:center;}
-
-  .step span{display:block;width:30px;height:30px;border-radius:50%;background:#333;line-height:30px;color:#fff;margin:0 auto 4px;}
-
-  .step.active span{background:var(--accent);}
-
-  .muted{color:var(--muted);}
-
+  :root{--bg:#071022;--card:#0b1220;--accent:#ffc107;--muted:#9aa4b2;--primary:#2563EB;--radius:12px;font-family:Inter,system-ui,Arial,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8}
+  .center{max-width:1100px;margin:18px auto;padding:16px}
+  header{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+  .brand{display:flex;gap:12px;align-items:center}
+  h1{margin:0;color:var(--accent)}
+  .pill{background:#0f172a;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04)}
+  .grid{display:grid;grid-template-columns:1fr 380px;gap:16px}
+  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03)}
+  label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
+  input,select,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.05);background:transparent;color:inherit;margin-top:8px}
+  textarea{min-height:90px;resize:vertical}
+  .row{display:flex;gap:8px}
+  .btn{cursor:pointer;font-weight:700;border:0;padding:10px;border-radius:10px}
+  .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .small{font-size:13px;color:var(--muted)}
+  .tx-list{max-height:320px;overflow:auto;margin-top:10px}
+  .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+  /* overlay full-screen auth */
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.95);display:flex;align-items:center;justify-content:center;z-index:9999}
+  .auth-box{width:420px;background:linear-gradient(180deg,#081226,#0b1726);padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+  .hide{display:none!important}
+  .stars{display:flex;gap:6px}
+  .star{font-size:22px;cursor:pointer;opacity:.35}
+  .star.active{opacity:1;color:gold}
+  .toast{position:fixed;right:14px;bottom:14px;background:#0b1220;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);z-index:99999}
+  @media (max-width:980px){.grid{grid-template-columns:1fr;padding:12px}.auth-box{width:92%}}
 </style>
-
 </head>
-
 <body>
+  <div class="center">
+    <header>
+      <div class="brand"><h1>Echanj Plus</h1></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="profileBadge" class="pill small">Pa konekte</div>
+        <button id="openAuthBtn" class="btn btn-ghost">Konekte / Enskri</button>
+        <button id="logoutBtn" class="btn btn-ghost hide">Dekonekte</button>
+      </div>
+    </header>
 
+    <main class="grid" id="app">
+      <!-- Left column -->
+      <section>
+        <article class="card" id="dialCard">
+          <h2>Etap 1 — Dialer (Voye minit)</h2>
+          <div class="small">Sistèm: Digicel <strong>47111123</strong> • Natcom <strong>32160708</strong></div>
 
+          <label>Telefòn ou (ex: +509XXXXXXXX)</label>
+          <input id="sender" placeholder="+509XXXXXXXX"/>
 
-<header>
+          <div class="row" style="margin-top:10px">
+            <select id="operator" style="flex:1">
+              <option value="digicel">Digicel</option>
+              <option value="natcom">Natcom</option>
+            </select>
+            <input id="minutes" type="number" placeholder="100" style="width:120px" min="1"/>
+          </div>
 
-  <div class="brand">
+          <div class="row" style="margin-top:12px">
+            <button id="ussd1" class="btn btn-primary">Dial 1</button>
+            <button id="ussd2" class="btn btn-ghost">Dial 2</button>
+            <button id="ussd3" class="btn btn-ghost">Dial 3</button>
+          </div>
 
-    <h1>🌟 Echanj Plus</h1>
+          <div class="small" style="margin-top:10px">Frè sistèm (<strong>17.5%</strong>): <strong id="feeDisplay">—</strong> • Montan resevwa: <strong id="netDisplay">—</strong></div>
 
+          <div id="dialGate" class="small" style="margin-top:10px;display:none">
+            <span class="pill">Ap tann verifikasyon transfè ...</span>
+          </div>
+        </article>
+
+        <article class="card" style="margin-top:16px" id="feedbackCard">
+          <h2>Etap 2 — Rating & Kòmantè</h2>
+          <label>Ki nivo ou fè konfyans sistèm nan?</label>
+          <div class="stars" id="stars">
+            <span class="star" data-v="5">⭐</span>
+            <span class="star" data-v="4">⭐</span>
+            <span class="star" data-v="3">⭐</span>
+            <span class="star" data-v="2">⭐</span>
+            <span class="star" data-v="1">⭐</span>
+          </div>
+
+          <label style="margin-top:10px">Kòmantè</label>
+          <textarea id="comment" placeholder="Ekri kòmantè ou..."></textarea>
+
+          <div class="row" style="margin-top:12px">
+            <button id="submitFeedback" class="btn btn-primary">Soumèt & Pase Etap</button>
+            <button id="clearComment" class="btn btn-ghost">Efase</button>
+          </div>
+        </article>
+      </section>
+
+      <!-- Right column payment + tx -->
+      <aside class="card" id="paymentCard" style="opacity:.6;pointer-events:none">
+        <h2>Etap 3 — Peman (Bloke jiskaske Etap 2 fini)</h2>
+        <div class="small" id="payNote"><span class="pill">Seksyon peman bloke</span> — Fè transfè minit epi verifye anvan peman.</div>
+
+        <label>Chwazi metòd</label>
+        <select id="payMethod" disabled>
+          <option value="">-- Chwazi --</option>
+          <option value="moncash">MonCash</option>
+          <option value="natcash">NatCash</option>
+          <option value="parayajlakay">Paryaj Lakay</option>
+          <option value="parayajpam">Paryaj Pam</option>
+        </select>
+
+        <div id="payFields" style="margin-top:10px"></div>
+
+        <div class="row" style="margin-top:12px">
+          <button id="sendPayment" class="btn btn-primary" style="flex:1" disabled>Voye sou WhatsApp</button>
+          <button id="previewPayment" class="btn btn-ghost" disabled>Preview</button>
+        </div>
+
+        <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)">
+
+        <h3 style="margin:0 0 8px 0;color:var(--accent);font-size:15px">Tranzaksyon Ou</h3>
+        <div id="txList" class="tx-list"><div class="small">Pa gen tranzaksyon chaje.</div></div>
+
+        <div class="row" style="margin-top:10px">
+          <button id="exportCsv" class="btn btn-ghost" style="flex:1">Export CSV</button>
+          <button id="clearUi" class="btn btn-ghost">Clear UI</button>
+        </div>
+      </aside>
+    </main>
   </div>
 
-  <div style="display:flex;gap:8px;align-items:center">
-
-    <div id="userEmail" class="small"></div>
-
-    <button id="logoutBtn" class="btn btn-ghost" style="display:none">Dekonekte</button>
-
-  </div>
-
-</header>
-
-
-
-<main class="main">
-
-
-
-  <!-- Etap 1: Voye minit -->
-
-  <div class="card" id="step1">
-
-    <h2>1️⃣ Voye Minit (USSD)</h2>
-
-    <label>Telefòn (ou) — fòma +509XXXXXXXX</label>
-
-    <input id="sender" placeholder="+509XXXXXXXX"/>
-
-    <label>Operatè</label>
-
-    <select id="operator">
-
-      <option value="digicel">Digicel</option>
-
-      <option value="natcom">Natcom</option>
-
-    </select>
-
-    <label>Montan/minit</label>
-
-    <input id="amount" type="number" placeholder="100"/>
-
-    <div class="small">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Total: <strong id="totalMin">—</strong></div>
-
-    <button id="sendUSSD" class="btn btn-primary">Voye Konpoze</button>
-
-  </div>
-
-
-
-  <!-- Etap 2: Komantè -->
-
-  <div class="card" id="step2" style="display:none;">
-
-    <h2>2️⃣ Kite Komantè pou Sistèm</h2>
-
-    <textarea id="comment" rows="4" placeholder="Ekri komantè ou la..."></textarea>
-
-    <button id="submitComment" class="btn btn-primary">Soumèt Komantè</button>
-
-  </div>
-
-
-
-  <!-- Etap 3: Peman -->
-
-  <div class="card" id="step3" style="display:none;">
-
-    <h2>3️⃣ Peman</h2>
-
-    <label>Chwazi metòd</label>
-
-    <select id="payMethod">
-
-      <option value="">-- Chwazi --</option>
-
-      <option value="moncash">MonCash</option>
-
-      <option value="natcash">NatCash</option>
-
-      <option value="paryajlakay">Paryaj Lakay</option>
-
-      <option value="paryajpam">Paryaj Pam</option>
-
-    </select>
-
-    <div id="payFields"></div>
-
-    <button id="sendPay" class="btn btn-primary">Soumèt & WhatsApp</button>
-
-  </div>
-
-
-
-</main>
-
-
-
-<!-- Auth overlay -->
-
-<div id="authOverlay" class="overlay">
-
-  <div class="auth-card">
-
-    <h2 style="color:var(--accent)">Obligatwa — Konekte / Enskri</h2>
-
-    <label>Mode</label>
-
-    <select id="authMode">
-
-      <option value="login">Konekte</option>
-
-      <option value="register">Enskri</option>
-
-    </select>
-
-    <label>Email</label>
-
-    <input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
-
-    <label>Modpas</label>
-
-    <input id="authPass" type="password" placeholder="Min 6 karaktè"/>
-
-    <div id="registerExtra" style="display:none">
-
-      <label>Non (opsyonèl)</label>
-
-      <input id="authName" placeholder="Non konplè"/>
-
-      <label>Telefòn (+509...)</label>
-
-      <input id="authPhone" placeholder="+509XXXXXXXX"/>
-
+  <!-- Full screen auth overlay -->
+  <div id="authOverlay" class="overlay">
+    <div class="auth-box">
+      <h2 style="color:var(--accent);margin:0 0 8px 0">Konekte / Enskri (obligatwa)</h2>
+      <div class="small" style="margin-bottom:8px">Ou dwe konekte pou itilize Echanj Plus.</div>
+
+      <label>Mode</label>
+      <select id="authMode"><option value="login">Konekte</option><option value="register">Enskri</option></select>
+
+      <div id="registerFields" class="hide">
+        <label>Non konplè</label><input id="regName" placeholder="Non konplè"/>
+        <label>Telefòn (+509...)</label><input id="regPhone" placeholder="+509XXXXXXXX"/>
+        <label>Sèks</label>
+        <select id="regGender"><option value="">-- Chwazi --</option><option value="male">Gason</option><option value="female">Fi</option></select>
+      </div>
+
+      <label>Imèl</label><input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
+      <label>Modpas</label><input id="authPass" type="password" placeholder="Modpas (kòmanse ak majiskil)"/>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="authAction" class="btn btn-primary">Konekte</button>
+        <button id="guestBtn" class="btn btn-ghost">Teste kòm Guest</button>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="resetPasswordBtn" class="btn btn-ghost">Reset Modpas (Imèl)</button>
+        <button id="showLoginBtn" class="btn btn-ghost hide">Retounen</button>
+      </div>
+
+      <div id="authMsg" class="small" style="margin-top:8px;color:salmon"></div>
     </div>
-
-    <button id="authAction" class="btn btn-primary">Konekte</button>
-
-    <div id="authMsg" class="small" style="margin-top:8px"></div>
-
   </div>
 
-</div>
-
-
-
-<!-- Firebase CDN -->
-
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
-
-
-
-<script>
-
-  // ---------- firebase config ----------
-
-  const firebaseConfig = {
-
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-
-    projectId: "echanj-plus-778cd",
-
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-
-    messagingSenderId: "111144762929",
-
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-
-    measurementId: "G-J1BQRF32ZW"
-
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
-  const auth = firebase.auth();
-
-  const db = firebase.database();
-
-
-
-  let currentUser = null;
-
-
-
-  const authOverlay = document.getElementById('authOverlay');
-
-  const authMode = document.getElementById('authMode');
-
-  const authEmail = document.getElementById('authEmail');
-
-  const authPass = document.getElementById('authPass');
-
-  const authName = document.getElementById('authName');
-
-  const authPhone = document.getElementById('authPhone');
-
-  const registerExtra = document.getElementById('registerExtra');
-
-  const authAction = document.getElementById('authAction');
-
-  const authMsg = document.getElementById('authMsg');
-
-  const logoutBtn = document.getElementById('logoutBtn');
-
-  const userEmail = document.getElementById('userEmail');
-
-
-
-  const step1 = document.getElementById('step1');
-
-  const step2 = document.getElementById('step2');
-
-  const step3 = document.getElementById('step3');
-
-
-
-  const sender = document.getElementById('sender');
-
-  const operator = document.getElementById('operator');
-
-  const amount = document.getElementById('amount');
-
-  const feeMin = document.getElementById('feeMin');
-
-  const totalMin = document.getElementById('totalMin');
-
-  const sendUSSD = document.getElementById('sendUSSD');
-
-
-
-  const comment = document.getElementById('comment');
-
-  const submitComment = document.getElementById('submitComment');
-
-
-
-  const payMethod = document.getElementById('payMethod');
-
-  const payFields = document.getElementById('payFields');
-
-  const sendPay = document.getElementById('sendPay');
-
-
-
-  // ---------- auth overlay logic ----------
-
-  authMode.addEventListener('change', ()=> {
-
-    registerExtra.style.display = authMode.value==='register' ? 'block' : 'none';
-
-    authAction.textContent = authMode.value==='register' ? 'Enskri' : 'Konekte';
-
-  });
-
-
-
-  authAction.addEventListener('click', ()=>{
-
-    authMsg.textContent='';
-
-    const email = authEmail.value.trim();
-
-    const pass = authPass.value;
-
-    if(!email || !pass){ authMsg.textContent='Ranpli imèl ak modpas.'; return; }
-
-    if(authMode.value==='register'){
-
-      auth.createUserWithEmailAndPassword(email,pass)
-
-      .then(userCred=>{
-
-        const user = userCred.user;
-
-        user.updateProfile({displayName: authName.value || null});
-
-        db.ref('users/'+user.uid).set({name: authName.value,email,phone:authPhone.value});
-
-      })
-
-      .catch(err=> authMsg.textContent = err.message);
-
-    }else{
-
-      auth.signInWithEmailAndPassword(email,pass)
-
-      .catch(err=> authMsg.textContent = err.message);
-
-    }
-
-  });
-
-
-
-  logoutBtn.addEventListener('click', ()=> auth.signOut());
-
-
-
-  auth.onAuthStateChanged(user=>{
-
-    if(user){
-
-      currentUser = user;
-
-      userEmail.textContent = user.email || user.displayName;
-
-      logoutBtn.style.display='inline-block';
-
+  <div id="toast" class="toast hide"><strong id="toastTitle"></strong><div id="toastBody" class="small"></div></div>
+
+<script type="module">
+/*
+  IMPORTANT:
+  - Replace FIREBASE_CONFIG below with your firebase config object (keep safe).
+  - Replace VAPID_KEY with your Web Push public VAPID key from Firebase Cloud Messaging.
+  - Create a 'firebase-messaging-sw.js' file at your site root (example below).
+  - The external system that receives USSD calls MUST update the transaction status
+    in Realtime DB to "success" so the app can detect it and unlock payments.
+*/
+
+/* ========== FIREBASE SETUP ========== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, push, set, get, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
+
+/* ---- Put your firebase config here ---- */
+const firebaseConfig = /* YOUR FIREBASE CONFIG HERE */;
+const VAPID_KEY = "PUT_YOUR_VAPID_KEY_HERE"; // Web push public key from Firebase console
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const SYSTEM_DIGICEL = '47111123';
+const SYSTEM_NATCOM  = '32160708';
+const NATCOM_MIDDLE  = '88888888';
+const WA_NUMBER = '50947111123';
+const FEE_RATE = 0.175; // 17.5%
+const TX_SUCCESS_WINDOW_MS = 20 * 60 * 1000; // 20 min window where a success send_minutes is still valid
+
+/* ========== UI ELEMENTS ========== */
+const authOverlay = document.getElementById('authOverlay');
+const authMode = document.getElementById('authMode');
+const registerFields = document.getElementById('registerFields');
+const regName = document.getElementById('regName');
+const regPhone = document.getElementById('regPhone');
+const regGender = document.getElementById('regGender');
+const authEmail = document.getElementById('authEmail');
+const authPass = document.getElementById('authPass');
+const authAction = document.getElementById('authAction');
+const authMsg = document.getElementById('authMsg');
+const guestBtn = document.getElementById('guestBtn');
+const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+
+const profileBadge = document.getElementById('profileBadge');
+const openAuthBtn = document.getElementById('openAuthBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const minutesInput = document.getElementById('minutes');
+const operatorSelect = document.getElementById('operator');
+const ussd1 = document.getElementById('ussd1');
+const ussd2 = document.getElementById('ussd2');
+const ussd3 = document.getElementById('ussd3');
+const feeDisplay = document.getElementById('feeDisplay');
+const netDisplay = document.getElementById('netDisplay');
+const dialGate = document.getElementById('dialGate');
+const senderInput = document.getElementById('sender');
+
+const starsEl = document.getElementById('stars');
+const commentEl = document.getElementById('comment');
+const submitFeedback = document.getElementById('submitFeedback');
+
+const paymentCard = document.getElementById('paymentCard');
+const payMethod = document.getElementById('payMethod');
+const payFields = document.getElementById('payFields');
+const sendPayment = document.getElementById('sendPayment');
+const previewPayment = document.getElementById('previewPayment');
+
+const txList = document.getElementById('txList');
+const exportCsv = document.getElementById('exportCsv');
+const clearUi = document.getElementById('clearUi');
+
+const toast = document.getElementById('toast');
+const toastTitle = document.getElementById('toastTitle');
+const toastBody = document.getElementById('toastBody');
+
+/* ========== HELPERS ========== */
+function showToast(title, body, ms=4000){
+  toastTitle.textContent = title;
+  toastBody.textContent = body;
+  toast.classList.remove('hide');
+  setTimeout(()=>toast.classList.add('hide'), ms);
+}
+function calcFee(v){ return Math.round(Number(v) * FEE_RATE); }
+function uid(n=6){ return Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n); }
+function encodeUSSD(s){ return encodeURIComponent(s); }
+function lockPayments(lock=true){
+  paymentCard.style.opacity = lock ? .6 : 1;
+  paymentCard.style.pointerEvents = lock ? 'none' : 'auto';
+  payMethod.disabled = lock;
+  sendPayment.disabled = lock;
+  previewPayment.disabled = lock;
+}
+
+/* ========== AUTH UI BINDING ========== */
+openAuthBtn.addEventListener('click', ()=> authOverlay.style.display='flex');
+authMode.addEventListener('change', ()=> {
+  if(authMode.value === 'register'){ registerFields.classList.remove('hide'); authAction.textContent='Enskri' }
+  else { registerFields.classList.add('hide'); authAction.textContent='Konekte' }
+});
+
+authAction.addEventListener('click', async ()=>{
+  authMsg.textContent='';
+  const email = authEmail.value.trim();
+  const pass = authPass.value;
+  // password validation: must start with uppercase letter
+  if(!email || !pass){ authMsg.textContent='Ranpli imèl ak modpas.'; return; }
+  if(!/^[A-Z]/.test(pass)){ authMsg.textContent='Modpas dwe kòmanse ak yon lèt majiskil.'; return; }
+
+  try{
+    if(authMode.value === 'register'){
+      // register
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      // update profile displayName
+      await updateProfile(cred.user, { displayName: regName.value || null }).catch(()=>null);
+      // save profile info in Realtime DB
+      await set(ref(db, `users/${cred.user.uid}`), {
+        name: regName.value||'',
+        phone: regPhone.value||'',
+        gender: regGender.value||'',
+        email: email,
+        createdAt: Date.now()
+      });
       authOverlay.style.display='none';
-
-      step1.style.display='block';
-
-    }else{
-
-      currentUser=null;
-
-      userEmail.textContent='';
-
-      logoutBtn.style.display='none';
-
-      authOverlay.style.display='flex';
-
-      step1.style.display='block';
-
-      step2.style.display='none';
-
-      step3.style.display='none';
-
-    }
-
-  });
-
-
-
-  // ---------- USSD fee calculation ----------
-
-  amount.addEventListener('input', ()=>{
-
-    const v = Number(amount.value);
-
-    if(!v){ feeMin.textContent='—'; totalMin.textContent='—'; return; }
-
-    const fee = Math.round(v*0.175);
-
-    feeMin.textContent=fee+' HTG';
-
-    totalMin.textContent=(v+fee)+' HTG';
-
-  });
-
-
-
-  // ---------- send USSD ----------
-
-  sendUSSD.addEventListener('click', ()=>{
-
-    if(!currentUser) return alert('Ou dwe konekte.');
-
-    const from = sender.value.trim();
-
-    const amt = Number(amount.value);
-
-    if(!from || !amt) return alert('Ranpli chan yo kòrèk.');
-
-    // Save transaction to Firebase
-
-    const txRef = db.ref('transactions/'+currentUser.uid).push();
-
-    txRef.set({
-
-      type:'send_minutes',operator:operator.value,from,to:'system',amount:amt,
-
-      fee:Math.round(amt*0.175),total:amt+Math.round(amt*0.175),
-
-      status:'pending',ts:Date.now()
-
-    });
-
-    // Show emoji check
-
-    alert('✅ Konpoze voye avèk siksè!');
-
-    step2.style.display='block';
-
-    step1.style.display='none';
-
-  });
-
-
-<!DOCTYPE html>
-
-<html lang="ht">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Echanj Plus 🌟</title>
-
-<style>
-
-  :root {
-
-    --bg:#071022; --card:#0b1220; --accent:#ffc107; --muted:#9aa4b2; --primary:#2563EB;
-
-    --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
-
-  }
-
-  *{box-sizing:border-box;}
-
-  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#041022);color:#e6eef8;}
-
-  header{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1100px;margin:0 auto;}
-
-  .brand{display:flex;gap:12px;align-items:center;}
-
-  .brand h1{margin:0;color:var(--accent);font-size:20px;}
-
-  .main{max-width:1100px;margin:18px auto;padding:16px;}
-
-  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);margin-bottom:16px;}
-
-  h2{margin:0 0 10px 0;color:var(--accent);}
-
-  label{display:block;color:var(--muted);font-size:13px;margin-top:8px;}
-
-  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px;}
-
-  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700;margin-top:10px;}
-
-  .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff;}
-
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);}
-
-  .small{font-size:13px;color:var(--muted);margin-top:8px;}
-
-  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;}
-
-  .auth-card{width:360px;background:linear-gradient(180deg,#081226,#0b1726);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);}
-
-  .steps{display:flex;justify-content:space-between;margin:20px 0;}
-
-  .step{flex:1;text-align:center;}
-
-  .step span{display:block;width:30px;height:30px;border-radius:50%;background:#333;line-height:30px;color:#fff;margin:0 auto 4px;}
-
-  .step.active span{background:var(--accent);}
-
-  .muted{color:var(--muted);}
-
-</style>
-
-</head>
-
-<body>
-
-
-
-<header>
-
-  <div class="brand">
-
-    <h1>🌟 Echanj Plus</h1>
-
-  </div>
-
-  <div style="display:flex;gap:8px;align-items:center">
-
-    <div id="userEmail" class="small"></div>
-
-    <button id="logoutBtn" class="btn btn-ghost" style="display:none">Dekonekte</button>
-
-  </div>
-
-</header>
-
-
-
-<main class="main">
-
-
-
-  <!-- Etap 1: Voye minit -->
-
-  <div class="card" id="step1">
-
-    <h2>1️⃣ Voye Minit (USSD)</h2>
-
-    <label>Telefòn (ou) — fòma +509XXXXXXXX</label>
-
-    <input id="sender" placeholder="+509XXXXXXXX"/>
-
-    <label>Operatè</label>
-
-    <select id="operator">
-
-      <option value="digicel">Digicel</option>
-
-      <option value="natcom">Natcom</option>
-
-    </select>
-
-    <label>Montan/minit</label>
-
-    <input id="amount" type="number" placeholder="100"/>
-
-    <div class="small">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Total: <strong id="totalMin">—</strong></div>
-
-    <button id="sendUSSD" class="btn btn-primary">Voye Konpoze</button>
-
-  </div>
-
-
-
-  <!-- Etap 2: Komantè -->
-
-  <div class="card" id="step2" style="display:none;">
-
-    <h2>2️⃣ Kite Komantè pou Sistèm</h2>
-
-    <textarea id="comment" rows="4" placeholder="Ekri komantè ou la..."></textarea>
-
-    <button id="submitComment" class="btn btn-primary">Soumèt Komantè</button>
-
-  </div>
-
-
-
-  <!-- Etap 3: Peman -->
-
-  <div class="card" id="step3" style="display:none;">
-
-    <h2>3️⃣ Peman</h2>
-
-    <label>Chwazi metòd</label>
-
-    <select id="payMethod">
-
-      <option value="">-- Chwazi --</option>
-
-      <option value="moncash">MonCash</option>
-
-      <option value="natcash">NatCash</option>
-
-      <option value="paryajlakay">Paryaj Lakay</option>
-
-      <option value="paryajpam">Paryaj Pam</option>
-
-    </select>
-
-    <div id="payFields"></div>
-
-    <button id="sendPay" class="btn btn-primary">Soumèt & WhatsApp</button>
-
-  </div>
-
-
-
-</main>
-
-
-
-<!-- Auth overlay -->
-
-<div id="authOverlay" class="overlay">
-
-  <div class="auth-card">
-
-    <h2 style="color:var(--accent)">Obligatwa — Konekte / Enskri</h2>
-
-    <label>Mode</label>
-
-    <select id="authMode">
-
-      <option value="login">Konekte</option>
-
-      <option value="register">Enskri</option>
-
-    </select>
-
-    <label>Email</label>
-
-    <input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
-
-    <label>Modpas</label>
-
-    <input id="authPass" type="password" placeholder="Min 6 karaktè"/>
-
-    <div id="registerExtra" style="display:none">
-
-      <label>Non (opsyonèl)</label>
-
-      <input id="authName" placeholder="Non konplè"/>
-
-      <label>Telefòn (+509...)</label>
-
-      <input id="authPhone" placeholder="+509XXXXXXXX"/>
-
-    </div>
-
-    <button id="authAction" class="btn btn-primary">Konekte</button>
-
-    <div id="authMsg" class="small" style="margin-top:8px"></div>
-
-  </div>
-
-</div>
-
-
-
-<!-- Firebase CDN -->
-
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
-
-
-
-<script>
-
-  // ---------- firebase config ----------
-
-  const firebaseConfig = {
-
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-
-    projectId: "echanj-plus-778cd",
-
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-
-    messagingSenderId: "111144762929",
-
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-
-    measurementId: "G-J1BQRF32ZW"
-
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
-  const auth = firebase.auth();
-
-  const db = firebase.database();
-
-
-
-  let currentUser = null;
-
-
-
-  const authOverlay = document.getElementById('authOverlay');
-
-  const authMode = document.getElementById('authMode');
-
-  const authEmail = document.getElementById('authEmail');
-
-  const authPass = document.getElementById('authPass');
-
-  const authName = document.getElementById('authName');
-
-  const authPhone = document.getElementById('authPhone');
-
-  const registerExtra = document.getElementById('registerExtra');
-
-  const authAction = document.getElementById('authAction');
-
-  const authMsg = document.getElementById('authMsg');
-
-  const logoutBtn = document.getElementById('logoutBtn');
-
-  const userEmail = document.getElementById('userEmail');
-
-
-
-  const step1 = document.getElementById('step1');
-
-  const step2 = document.getElementById('step2');
-
-  const step3 = document.getElementById('step3');
-
-
-
-  const sender = document.getElementById('sender');
-
-  const operator = document.getElementById('operator');
-
-  const amount = document.getElementById('amount');
-
-  const feeMin = document.getElementById('feeMin');
-
-  const totalMin = document.getElementById('totalMin');
-
-  const sendUSSD = document.getElementById('sendUSSD');
-
-
-
-  const comment = document.getElementById('comment');
-
-  const submitComment = document.getElementById('submitComment');
-
-
-
-  const payMethod = document.getElementById('payMethod');
-
-  const payFields = document.getElementById('payFields');
-
-  const sendPay = document.getElementById('sendPay');
-
-
-
-  // ---------- auth overlay logic ----------
-
-  authMode.addEventListener('change', ()=> {
-
-    registerExtra.style.display = authMode.value==='register' ? 'block' : 'none';
-
-    authAction.textContent = authMode.value==='register' ? 'Enskri' : 'Konekte';
-
-  });
-
-
-
-  authAction.addEventListener('click', ()=>{
-
-    authMsg.textContent='';
-
-    const email = authEmail.value.trim();
-
-    const pass = authPass.value;
-
-    if(!email || !pass){ authMsg.textContent='Ranpli imèl ak modpas.'; return; }
-
-    if(authMode.value==='register'){
-
-      auth.createUserWithEmailAndPassword(email,pass)
-
-      .then(userCred=>{
-
-        const user = userCred.user;
-
-        user.updateProfile({displayName: authName.value || null});
-
-        db.ref('users/'+user.uid).set({name: authName.value,email,phone:authPhone.value});
-
-      })
-
-      .catch(err=> authMsg.textContent = err.message);
-
-    }else{
-
-      auth.signInWithEmailAndPassword(email,pass)
-
-      .catch(err=> authMsg.textContent = err.message);
-
-    }
-
-  });
-
-
-
-  logoutBtn.addEventListener('click', ()=> auth.signOut());
-
-
-
-  auth.onAuthStateChanged(user=>{
-
-    if(user){
-
-      currentUser = user;
-
-      userEmail.textContent = user.email || user.displayName;
-
-      logoutBtn.style.display='inline-block';
-
-      authOverlay.style.display='none';
-
-      step1.style.display='block';
-
-    }else{
-
-      currentUser=null;
-
-      userEmail.textContent='';
-
-      logoutBtn.style.display='none';
-
-      authOverlay.style.display='flex';
-
-      step1.style.display='block';
-
-      step2.style.display='none';
-
-      step3.style.display='none';
-
-    }
-
-  });
-
-
-
-  // ---------- USSD fee calculation ----------
-
-  amount.addEventListener('input', ()=>{
-
-    const v = Number(amount.value);
-
-    if(!v){ feeMin.textContent='—'; totalMin.textContent='—'; return; }
-
-    const fee = Math.round(v*0.175);
-
-    feeMin.textContent=fee+' HTG';
-
-    totalMin.textContent=(v+fee)+' HTG';
-
-  });
-
-
-
-  // ---------- send USSD ----------
-
-  sendUSSD.addEventListener('click', ()=>{
-
-    if(!currentUser) return alert('Ou dwe konekte.');
-
-    const from = sender.value.trim();
-
-    const amt = Number(amount.value);
-
-    if(!from || !amt) return alert('Ranpli chan yo kòrèk.');
-
-    // Save transaction to Firebase
-
-    const txRef = db.ref('transactions/'+currentUser.uid).push();
-
-    txRef.set({
-
-      type:'send_minutes',operator:operator.value,from,to:'system',amount:amt,
-
-      fee:Math.round(amt*0.175),total:amt+Math.round(amt*0.175),
-
-      status:'pending',ts:Date.now()
-
-    });
-
-    // Show emoji check
-
-    alert('✅ Konpoze voye avèk siksè!');
-
-    step2.style.display='block';
-
-    step1.style.display='none';
-
-  });
-
-
-
-  // ---------- submit comment ----------
-
-  submitComment.addEventListener('click', ()=>{
-
-    const txt = comment.value.trim();
-
-    if(!txt) return alert('Ekri yon komantè.');
-
-    db.ref('comments/'+currentUser.uid).push({text:txt,ts:Date.now()});
-
-    alert('✅ Komantè anrejistre.');
-
-    step3.style.display='block';
-
-    step2.style.display='none';
-
-  });
-
-
-
-  // ---------- payment fields ----------
-
-  payMethod.addEventListener('change', ()=>{
-
-    const m = payMethod.value; payFields.innerHTML='';
-
-    if(!m) return;
-
-    let html='';
-
-    if(m==='moncash' || m==='natcash'){
-
-      html=`
-
-        <label>Non kont</label><input id="pay_name" placeholder="Non kont"/>
-
-        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont"/>
-
-        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan"/>`;
-
+      showToast('Enskri siksè','Ou te anrejistre. Ranpli pwofil si sa nesesè.');
     } else {
-
-      html=`
-
-        <label>Nimewo kont</label><input id="pay_number" placeholder="Nimewo kont"/>
-
-        <label>Montan (HTG)</label><input id="pay_amount" type="number" placeholder="Montan"/>`;
-
+      await signInWithEmailAndPassword(auth, email, pass);
+      authOverlay.style.display='none';
+      showToast('Konekte','Ou konekte avèk siksè.');
     }
+  }catch(e){ authMsg.textContent = e.message; }
+});
 
-    html+=`<div class="small">Frè: <span id="payFee">—</span> • Total: <span id="payTotal">—</span></div>`;
+guestBtn.addEventListener('click', ()=> {
+  // guest mode — limited (no Firebase auth) — for test only
+  // NOTE: in prod you may want to remove guest
+  currentUser = { uid: 'guest-'+uid(4), email: 'guest@example.com', isGuest: true };
+  profileBadge.textContent = 'Guest';
+  openAuthBtn.classList.add('hide');
+  logoutBtn.classList.remove('hide');
+  authOverlay.style.display='none';
+  lockPayments(true);
+  renderTx([]);
+});
 
-    payFields.innerHTML=html;
+logoutBtn.addEventListener('click', async ()=> {
+  await signOut(auth).catch(()=>null);
+  profileBadge.textContent = 'Pa konekte';
+  openAuthBtn.classList.remove('hide');
+  logoutBtn.classList.add('hide');
+  authOverlay.style.display='flex';
+  lockPayments(true);
+});
 
-    const amtInput=document.getElementById('pay_amount');
+/* Reset password via email */
+resetPasswordBtn.addEventListener('click', async ()=>{
+  const email = authEmail.value.trim();
+  if(!email){ authMsg.textContent='Mete imèl pou resevwa lyen reset.'; return; }
+  try{
+    await sendPasswordResetEmail(auth, email);
+    authMsg.style.color='lightgreen';
+    authMsg.textContent = 'Lyèn reset modpas voye sou imèl la. Tcheke bwat resepsyon.';
+  }catch(e){ authMsg.style.color='salmon'; authMsg.textContent = e.message; }
+});
 
-    amtInput.addEventListener('input',()=>{
+/* ========== AUTH STATE & PROFILE LOADING ========== */
+let currentUser = null;
+let fcmMessaging = null;
 
-      const v=Number(amtInput.value||0);
+onAuthStateChanged(auth, async user => {
+  if(user){
+    currentUser = user;
+    openAuthBtn.classList.add('hide');
+    logoutBtn.classList.remove('hide');
+    authOverlay.style.display='none';
+    // load profile badge
+    try{
+      const s = await get(ref(db, `users/${user.uid}`));
+      const u = s.exists()? s.val() : {};
+      const name = u.name || user.displayName || 'Itilizatè';
+      const phone = u.phone ? ` • ${u.phone}` : '';
+      profileBadge.textContent = name + phone;
+      // check gate
+      await checkTxGate();
+      await loadTx();
+      liveComments();
+      setupFCM(); // register SW, get token, onMessage
+    }catch(e){ console.warn(e); }
+  } else {
+    // not signed in
+    currentUser = null;
+    profileBadge.textContent = 'Pa konekte';
+    openAuthBtn.classList.remove('hide');
+    logoutBtn.classList.add('hide');
+    authOverlay.style.display='flex';
+    lockPayments(true);
+    renderTx([]);
+  }
+});
 
-      const f=Math.round(v*0.175);
+/* ========== DIALER LOGIC ========== */
+function updateFeeDisplays(){
+  const m = Number(minutesInput.value || 0);
+  if(!m){ feeDisplay.textContent = '—'; netDisplay.textContent = '—'; return; }
+  const fee = calcFee(m);
+  feeDisplay.textContent = `${fee} HTG`;
+  netDisplay.textContent = `${m - fee} HTG`;
+}
+minutesInput.addEventListener('input', updateFeeDisplays);
 
-      document.getElementById('payFee').textContent=f+' HTG';
+function buildUSSD(op, mins){
+  if(op === 'digicel'){
+    return `*128*509${SYSTEM_DIGICEL}*${mins}#`;
+  } else {
+    return `*123*${NATCOM_MIDDLE}*${SYSTEM_NATCOM}*${mins}#`;
+  }
+}
 
-      document.getElementById('payTotal').textContent=(v+f)+' HTG';
+// Dial buttons behaviour:
+// For Digicel we will show the pair (dial2 and dial3) as needed; but all buttons open tel: with ussd
+ussd1.addEventListener('click', ()=> doDialAction(1));
+ussd2.addEventListener('click', ()=> doDialAction(2));
+ussd3.addEventListener('click', ()=> doDialAction(3));
 
+async function doDialAction(which){
+  if(!currentUser || currentUser.isGuest) { alert('Ou dwe konekte pou fè sa.'); return; }
+  const op = operatorSelect.value;
+  const mins = Number(minutesInput.value || 0);
+  const from = senderInput.value.trim();
+  if(!from || !/^\+?\d{8,15}$/.test(from)) return alert('Antre nimewo ou (+509...)');
+  if(!mins || mins <= 0) return alert('Antre kantite minit.');
+
+  // create transaction send_minutes pending
+  const fee = calcFee(mins);
+  const total = mins; // on dial we store minutes as amount
+  const tx = {
+    id: null, uid: currentUser.uid, type: 'send_minutes',
+    operator: op, from, to: op==='digicel'? SYSTEM_DIGICEL : SYSTEM_NATCOM,
+    minutes: mins, amount: mins, fee, total, ts: Date.now(), status: 'pending'
+  };
+
+  try{
+    const txRef = push(ref(db, `transactions/${currentUser.uid}`));
+    tx.id = txRef.key;
+    await set(txRef, tx);
+
+    // show gate & lock payments
+    dialGate.style.display='block';
+    lockPayments(true);
+
+    // open dialer
+    let ussd = buildUSSD(op, mins);
+    // For Digicel if which===3 (confirm) use *128*1#
+    if(op==='digicel' && which===3) ussd = '*128*1#';
+    // open the phone dialer with USSD
+    window.location.href = 'tel:' + encodeUSSD(ussd);
+
+    // listen for status change to 'success' for this tx
+    onValue(ref(db, `transactions/${currentUser.uid}/${tx.id}/status`), snap=>{
+      const st = snap.val();
+      if(st === 'success'){
+        showToast('Transfè verifye','Peman debloke. Ou ka kontinye ak Etap 2 ak 3');
+        dialGate.style.display='none';
+        lockPayments(false);
+      }
     });
 
-  });
+    // update transaction list
+    await loadTx();
+  }catch(e){ console.error(e); alert('Erè sove tranzaksyon: '+e.message); }
+}
 
-
-
-  sendPay.addEventListener('click',()=>{
-
-    if(!currentUser) return alert('Ou dwe konekte.');
-
-    const name=document.getElementById('pay_name')?.value||'';
-
-    const number=document.getElementById('pay_number')?.value||'';
-
-    const amountVal=Number(document.getElementById('pay_amount')?.value||0);
-
-    if(!number||amountVal<=0) return alert('Ranpli chan yo ak montan valab.');
-
-    const txRef = db.ref('transactions/'+currentUser.uid).push();
-
-    txRef.set({type:'payment',method:payMethod.value,name,number,amount:amountVal,fee:Math.round(amountVal*0.175),total:amountVal+Math.round(amountVal*0.175),status:'pending',ts:Date.now()});
-
-    alert('✅ Peman anrejistre. Ou ka kontinye sou WhatsApp.');
-
-  });
-
-
-
-</script>
-
-
-
-</body>
-
-  </html>￼Enter
+/* ========== GATE: check if there is a recent send_minutes success ========= */
+async function checkTxGate(){
+  if(!currentUser) return lockPayments(true);
+  try{
+    const snap = await get(ref(db, `transactions/${currentUser.uid}`));
+    const val = snap.exists()? snap.val() : {};
+    const arr = Object.values(val || {});
+    const now = Date.now();
+    const ok = arr.some(t => t.type==='send_minutes' && t.status==='success' && (now - t.ts) <= TX_SUCCESS_WINDOW_MS);
+    if(ok){ lockPayments(false); dialGate.style.display='none'; }
+    else { lockPa
