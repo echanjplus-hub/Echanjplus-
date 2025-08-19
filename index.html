@@ -4,185 +4,174 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Echanj Plus</title>
-  <link rel="icon" type="image/png" href="logo.png">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background: #111;
-      padding: 10px;
-    }
-    header h1 { margin: 0; }
-    .card {
-      background: #222;
-      padding: 20px;
-      margin: 20px auto;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-    }
-    input, button {
-      width: 90%;
-      padding: 10px;
-      margin: 8px;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
-    }
-    button {
-      background: #fff;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover { background: #ccc; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #000; color: #fff; }
+    header { background: #111; padding: 15px; text-align: center; }
+    .container { max-width: 400px; margin: 40px auto; padding: 20px; background: #222; border-radius: 10px; text-align: center; }
+    input { width: 90%; padding: 10px; margin: 8px 0; border-radius: 5px; border: none; }
+    button { width: 95%; padding: 10px; margin-top: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .btn-primary { background: #fff; color: #000; }
+    .btn-secondary { background: #444; color: #fff; }
     .hidden { display: none; }
+    .loader {
+      border: 4px solid #333;
+      border-top: 4px solid #fff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      margin: 10px auto;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    nav { background: #111; padding: 10px; text-align: center; }
+    nav a { margin: 0 10px; color: #fff; text-decoration: none; }
   </style>
 </head>
 <body>
+
   <header>
     <h1>Echanj Plus</h1>
   </header>
 
-  <!-- Login Form -->
-  <div id="login-card" class="card">
-    <h2>Konekte</h2>
-    <input type="email" id="email" placeholder="Imèl">
-    <input type="password" id="password" placeholder="Modpas">
-    <button onclick="login()">Konekte</button>
-    <p>Pa gen kont? <a href="#" onclick="showSignup()">Enskri</a></p>
+  <!-- Login Section -->
+  <div id="loginSection" class="container">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <div class="loader" id="loginLoader"></div>
+    <button class="btn-primary" onclick="login()">Login</button>
+    <p>Pa gen kont? <a href="#" onclick="switchAuth('signup')">Enskri</a></p>
   </div>
 
-  <!-- Signup Form -->
-  <div id="signup-card" class="card hidden">
-    <h2>Enskri</h2>
-    <input type="email" id="signup-email" placeholder="Imèl">
-    <input type="password" id="signup-password" placeholder="Modpas">
-    <button onclick="signup()">Kreye kont</button>
-    <p>Gen kont deja? <a href="#" onclick="showLogin()">Konekte</a></p>
+  <!-- Signup Section -->
+  <div id="signupSection" class="container hidden">
+    <h2>Signup</h2>
+    <input type="text" id="signupName" placeholder="Non konplè" required>
+    <input type="email" id="signupEmail" placeholder="Email" required>
+    <input type="password" id="signupPassword" placeholder="Password" required>
+    <input type="password" id="confirmPassword" placeholder="Konfime Password" required>
+    <div class="loader" id="signupLoader"></div>
+    <button class="btn-secondary" onclick="signup()">Signup</button>
+    <p>Gen kont deja? <a href="#" onclick="switchAuth('login')">Login</a></p>
   </div>
 
   <!-- Dashboard -->
-  <div id="dashboard" class="card hidden">
-    <h2>Dashboard</h2>
-    <p id="user-email"></p>
-    <input type="number" id="amount" placeholder="Antre kantite goud">
-    <p>Frè sistèm (17.5%): <span id="fee">0</span> G</p>
-    <p>Kliyan ap resevwa: <span id="final-amount">0</span> G</p>
-    <button onclick="sendMinutes('digicel')">Voye Minit Digicel</button>
-    <button onclick="sendMinutes('natcom')">Voye Minit Natcom</button>
-    <button onclick="logout()">Dekonekte</button>
+  <div id="dashboard" class="hidden">
+    <nav>
+      <a href="#" onclick="showSection('profile')">Profil</a>
+      <a href="#" onclick="showSection('send')">Voye Minit</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+
+    <div id="profile" class="container">
+      <h2>Profil</h2>
+      <p id="userName"></p>
+      <p id="userEmail"></p>
+    </div>
+
+    <div id="send" class="container hidden">
+      <h2>Voye Minit</h2>
+      <input type="number" id="amount" placeholder="Antre kantite (Gdes)">
+      <button class="btn-primary" onclick="sendDigicel()">Voye sou Digicel</button>
+      <button class="btn-secondary" onclick="sendNatcom()">Voye sou Natcom</button>
+      <p id="calcResult"></p>
+    </div>
   </div>
 
-  <footer>
-    <p>© 2025 Echanj Plus | <a href="https://youtube.com/@echanjplus" target="_blank">YouTube</a> | 
-    <a href="https://www.facebook.com/profile.php?id=61578991569093" target="_blank">Facebook</a></p>
-  </footer>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
-  <script>
-    // Firebase config ou
     const firebaseConfig = {
       apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
       authDomain: "echanj-plus-778cd.firebaseapp.com",
-      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
       projectId: "echanj-plus-778cd",
       storageBucket: "echanj-plus-778cd.appspot.com",
       messagingSenderId: "111144762929",
       appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-      measurementId: "G-J1BQRF32ZW"
     };
 
-    // Inisyalize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    // Montre/Sere form
-    function showSignup() {
-      document.getElementById("login-card").classList.add("hidden");
-      document.getElementById("signup-card").classList.remove("hidden");
-    }
-    function showLogin() {
-      document.getElementById("signup-card").classList.add("hidden");
-      document.getElementById("login-card").classList.remove("hidden");
-    }
+    // Switch between login & signup
+    window.switchAuth = function(type) {
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("signupSection").classList.add("hidden");
+      if(type === "login") document.getElementById("loginSection").classList.remove("hidden");
+      else document.getElementById("signupSection").classList.remove("hidden");
+    };
 
-    // Enskripsyon
-    function signup() {
-      const email = document.getElementById("signup-email").value;
-      const password = document.getElementById("signup-password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => alert("Kont kreye!"))
-        .catch(e => alert(e.message));
-    }
+    // Signup
+    window.signup = function() {
+      const name = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const loader = document.getElementById("signupLoader");
+
+      if(password !== confirmPassword) { alert("Password yo pa menm"); return; }
+
+      loader.style.display = "block";
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+          updateProfile(userCredential.user, { displayName: name });
+          loader.style.display = "none";
+          alert("Kont kreye avèk siksè!");
+        })
+        .catch(err => { loader.style.display = "none"; alert(err.message); });
+    };
 
     // Login
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .catch(e => alert(e.message));
-    }
+    window.login = function() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      const loader = document.getElementById("loginLoader");
+
+      loader.style.display = "block";
+      signInWithEmailAndPassword(auth, email, password)
+        .catch(err => { loader.style.display = "none"; alert(err.message); });
+    };
 
     // Logout
-    function logout() {
-      auth.signOut();
-    }
+    window.logout = function() {
+      signOut(auth);
+    };
 
-    // Suivi login
-    auth.onAuthStateChanged(user => {
+    // Auth State
+    onAuthStateChanged(auth, (user) => {
       if (user) {
-        document.getElementById("login-card").classList.add("hidden");
-        document.getElementById("signup-card").classList.add("hidden");
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("signupSection").classList.add("hidden");
         document.getElementById("dashboard").classList.remove("hidden");
-        document.getElementById("user-email").innerText = "Byenvini: " + user.email;
+        document.getElementById("userEmail").innerText = "Email: " + user.email;
+        document.getElementById("userName").innerText = "Non: " + (user.displayName || "—");
       } else {
         document.getElementById("dashboard").classList.add("hidden");
-        document.getElementById("login-card").classList.remove("hidden");
+        document.getElementById("loginSection").classList.remove("hidden");
       }
     });
 
-    // Kalkil frè
-    document.getElementById("amount").addEventListener("input", () => {
-      let amount = parseFloat(document.getElementById("amount").value) || 0;
-      let fee = (amount * 17.5) / 100;
-      let finalAmount = amount - fee;
-      document.getElementById("fee").innerText = fee.toFixed(2);
-      document.getElementById("final-amount").innerText = finalAmount.toFixed(2);
-    });
+    // Show / Hide Sections
+    window.showSection = function(id) {
+      document.getElementById("profile").classList.add("hidden");
+      document.getElementById("send").classList.add("hidden");
+      document.getElementById(id).classList.remove("hidden");
+    };
 
-    // Voye minit
-    function sendMinutes(operator) {
-      let amount = parseFloat(document.getElementById("amount").value) || 0;
-      let fee = (amount * 17.5) / 100;
-      let finalAmount = amount - fee;
-      let user = auth.currentUser;
+    // Send Minutes
+    window.sendDigicel = function() { calculateAndShow("Digicel", "50947111123"); };
+    window.sendNatcom = function() { calculateAndShow("Natcom", "32160708"); };
 
-      if (!user) return alert("Tanpri konekte!");
-
-      let data = {
-        user: user.email,
-        operator: operator,
-        amount: amount,
-        fee: fee,
-        finalAmount: finalAmount,
-        date: new Date().toISOString()
-      };
-
-      db.ref("transactions").push(data)
-        .then(() => alert("Tranzaksyon an sove!"))
-        .catch(e => alert(e.message));
+    function calculateAndShow(operator, number) {
+      const amount = parseFloat(document.getElementById("amount").value);
+      if (isNaN(amount) || amount <= 0) { alert("Antre yon kantite valid"); return; }
+      const fee = amount * 0.175;
+      const final = amount - fee;
+      document.getElementById("calcResult").innerText =
+        `${operator} | Sistèm: ${number}\nMoun nan ap resevwa: ${final.toFixed(2)} Gdes (apre fre ${fee.toFixed(2)} Gdes)`;
     }
   </script>
 </body>
