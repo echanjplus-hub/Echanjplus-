@@ -5,25 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Echanj Plus</title>
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
-  .full-screen { width:100%; height:100vh; display:flex; justify-content:center; align-items:center; background:#eef2f3; }
-  .card { background:white; padding:20px; border-radius:15px; box-shadow:0 0 15px rgba(0,0,0,0.2); width:90%; max-width:400px; }
-  h2 { text-align:center; margin-bottom:20px; }
-  input, select, textarea { width:100%; padding:10px; margin:5px 0 15px 0; border-radius:5px; border:1px solid #ccc; }
-  button { padding:10px 15px; border:none; border-radius:5px; background:#007bff; color:white; cursor:pointer; margin-top:10px; width:100%; }
-  button:hover { background:#0056b3; }
-  .hidden { display:none; }
-  .stars { display:flex; gap:5px; justify-content:center; margin-bottom:10px; cursor:pointer; }
-  .star { font-size:24px; color:gray; }
-  .star.selected { color:gold; }
-  #loading { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); justify-content:center; align-items:center; color:white; font-size:24px; z-index:999; }
+/* ======= CSS GLOBAL ======= */
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
+.full-screen { width:100%; height:100vh; display:flex; justify-content:center; align-items:center; background:#eef2f3; }
+.card { background:white; padding:20px; border-radius:15px; box-shadow:0 0 15px rgba(0,0,0,0.2); width:90%; max-width:400px; }
+h2 { text-align:center; margin-bottom:20px; }
+input, select, textarea { width:100%; padding:10px; margin:5px 0 15px 0; border-radius:5px; border:1px solid #ccc; }
+button { padding:10px 15px; border:none; border-radius:5px; background:#007bff; color:white; cursor:pointer; margin-top:10px; width:100%; }
+button:hover { background:#0056b3; }
+.hidden { display:none; }
+.stars { display:flex; gap:5px; justify-content:center; margin-bottom:10px; cursor:pointer; }
+.star { font-size:24px; color:gray; }
+.star.selected { color:gold; }
+.loading { display:none; text-align:center; margin-bottom:10px; }
+.logo { text-align:center; margin-bottom:15px; }
+.logo img { width:80px; }
 </style>
 </head>
 <body>
 
-<div id="loading" class="full-screen">Loading...</div>
+<div class="logo"><img src="logo.png" alt="Logo Echanj Plus"></div>
+<div id="loading" class="loading">Chajman...</div>
 
-<!-- Signup Screen -->
+<!-- SIGNUP -->
 <div id="signupScreen" class="full-screen">
   <div class="card">
     <h2>Enskri nan Echanj Plus</h2>
@@ -41,7 +45,7 @@
   </div>
 </div>
 
-<!-- Login Screen -->
+<!-- LOGIN -->
 <div id="loginScreen" class="full-screen hidden">
   <div class="card">
     <h2>Konekte</h2>
@@ -53,7 +57,7 @@
   </div>
 </div>
 
-<!-- Profile Screen -->
+<!-- PROFILE -->
 <div id="profileScreen" class="full-screen hidden">
   <div class="card">
     <h2>Profile Ou</h2>
@@ -68,7 +72,7 @@
   </div>
 </div>
 
-<!-- Dialer Screen -->
+<!-- DIALER -->
 <div id="dialerScreen" class="full-screen hidden">
   <div class="card">
     <h2>Voye Minit</h2>
@@ -83,7 +87,7 @@
   </div>
 </div>
 
-<!-- Comment Screen -->
+<!-- COMMENT -->
 <div id="commentScreen" class="full-screen hidden">
   <div class="card">
     <h2>Evalye Konfyans Sistèm nan</h2>
@@ -99,7 +103,7 @@
   </div>
 </div>
 
-<!-- Payment Screen -->
+<!-- PAYMENT -->
 <div id="paymentScreen" class="full-screen hidden">
   <div class="card">
     <h2>Peman</h2>
@@ -110,8 +114,10 @@
       <option value="paryaj_lakay">Paryaj Lakay</option>
       <option value="paryaj_pam">Paryaj Pam</option>
     </select>
-    <div id="paymentFields"></div>
-    <button onclick="sendPayment()">Voye Peman</button>
+    <input type="text" id="accountName" placeholder="Non kont lan">
+    <input type="tel" id="accountNumber" placeholder="Nimewo kont lan">
+    <input type="number" id="paymentMinutes" placeholder="Montan" readonly>
+    <button onclick="sendPayment()">Voye Peman sou WhatsApp & Firebase</button>
   </div>
 </div>
 
@@ -121,7 +127,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // ===== Firebase Config =====
+  // ====== Firebase Config ======
   const firebaseConfig = {
     apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
     authDomain: "echanj-plus-778cd.firebaseapp.com",
@@ -135,121 +141,104 @@
 
   let currentUser = null;
   let selectedStars = 0;
-  const systemFees = 0.175;
+  const systemFees = 0.175; // 17.5%
   const systemNumbers = { digicel: '+50947111123', natcom: '32160708' };
 
-  // ===== UI Functions =====
-  function showLogin(){ hideAll(); document.getElementById('loginScreen').classList.remove('hidden'); }
-  function showSignup(){ hideAll(); document.getElementById('signupScreen').classList.remove('hidden'); }
-  function showProfile(){ hideAll(); document.getElementById('profileScreen').classList.remove('hidden'); }
-  function showDialer(){ hideAll(); document.getElementById('dialerScreen').classList.remove('hidden'); }
-  function showComment(){ hideAll(); document.getElementById('commentScreen').classList.remove('hidden'); }
-  function showPayment(){ hideAll(); document.getElementById('paymentScreen').classList.remove('hidden'); }
-  function hideAll(){ document.querySelectorAll('.full-screen').forEach(d=>d.classList.add('hidden')); }
+  // ====== UI Functions ======
+  function showLogin(){ document.getElementById('signupScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); }
+  function showSignup(){ document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('signupScreen').classList.remove('hidden'); }
+  function showProfile(){ document.getElementById('profileScreen').classList.remove('hidden'); document.getElementById('signupScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.add('hidden'); }
+  function showDialer(){ document.getElementById('dialerScreen').classList.remove('hidden'); document.getElementById('profileScreen').classList.add('hidden'); }
+  function showComment(){ document.getElementById('commentScreen').classList.remove('hidden'); document.getElementById('dialerScreen').classList.add('hidden'); }
+  function showPayment(){ document.getElementById('paymentScreen').classList.remove('hidden'); document.getElementById('commentScreen').classList.add('hidden'); }
 
-  function showLoading(){ document.getElementById('loading').style.display='flex'; }
-  function hideLoading(){ document.getElementById('loading').style.display='none'; }
-
-  // ===== Auth Functions =====
+  // ====== Auth Functions ======
   function signup(){
-    const name=document.getElementById('fullName').value;
-    const phone=document.getElementById('phone').value;
-    const email=document.getElementById('email').value;
-    const password=document.getElementById('password').value;
-    const gender=document.getElementById('gender').value;
-    if(!name||!phone||!email||!password||!gender){ alert("Ranpli tout chan yo"); return; }
+    const name = document.getElementById('fullName').value;
+    const phone = document.getElementById('phone').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const gender = document.getElementById('gender').value;
+    if(!name || !phone || !email || !password || !gender){ alert("Ranpli tout chan yo"); return; }
     if(!password.match(/^[A-Z]/)){ alert("Modpas dwe kòmanse ak yon gwo lèt"); return; }
-    showLoading();
-    firebase.auth().createUserWithEmailAndPassword(email,password)
-    .then(u=>{
-      currentUser=u.user;
-      firebase.database().ref('users/'+currentUser.uid).set({name,phone,email,gender});
-      hideLoading(); showProfile();
-    }).catch(err=>{ hideLoading(); alert(err.message); });
+    document.getElementById('loading').style.display='block';
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then((userCredential)=>{
+      currentUser = userCredential.user;
+      firebase.database().ref('users/' + currentUser.uid).set({ name, phone, email, gender });
+      document.getElementById('loading').style.display='none';
+      showProfile();
+    }).catch(err=>{ document.getElementById('loading').style.display='none'; alert(err.message); });
   }
 
   function login(){
-    const email=document.getElementById('loginEmail').value;
-    const password=document.getElementById('loginPassword').value;
-    showLoading();
-    firebase.auth().signInWithEmailAndPassword(email,password)
-    .then(u=>{ currentUser=u.user; hideLoading(); showProfile(); })
-    .catch(err=>{ hideLoading(); alert(err.message); });
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    document.getElementById('loading').style.display='block';
+    firebase.auth().signInWithEmailAndPassword(email, password)
+    .then((userCredential)=>{ currentUser = userCredential.user; document.getElementById('loading').style.display='none'; showProfile(); })
+    .catch(err=>{ document.getElementById('loading').style.display='none'; alert(err.message); });
   }
 
   function resetPassword(){
-    const email=prompt("Antre imel ou pou reinitialiser modpas:");
+    const email = prompt("Antre imel ou pou reinitialiser modpas:");
     if(email) firebase.auth().sendPasswordResetEmail(email).then(()=>alert("Imel voye")).catch(err=>alert(err.message));
   }
 
-  // ===== Profile =====
+  // ====== Profile ======
   function saveProfile(){
-    const name=document.getElementById('profileName').value;
-    const phone=document.getElementById('profilePhone').value;
-    const gender=document.getElementById('profileGender').value;
-    if(!name||!phone||!gender){ alert("Ranpli tout chan yo"); return; }
-    firebase.database().ref('users/'+currentUser.uid).update({name,phone,gender});
+    const name = document.getElementById('profileName').value;
+    const phone = document.getElementById('profilePhone').value;
+    const gender = document.getElementById('profileGender').value;
+    if(!name || !phone || !gender){ alert("Ranpli tout chan yo"); return; }
+    firebase.database().ref('users/' + currentUser.uid).update({ name, phone, gender });
     showDialer();
   }
 
-  // ===== Dialer =====
-  document.getElementById('minutes').addEventListener('input',()=>{
-    const mins=parseFloat(document.getElementById('minutes').value)||0;
-    const afterFee=mins*(1-systemFees);
-    document.getElementById('amountReceived').innerText=afterFee.toFixed(2);
+  // ====== Dialer ======
+  document.getElementById('minutes').addEventListener('input', ()=>{
+    const mins = parseFloat(document.getElementById('minutes').value) || 0;
+    const afterFee = mins * (1 - systemFees);
+    document.getElementById('amountReceived').innerText = afterFee.toFixed(2);
+    document.getElementById('paymentMinutes').value = afterFee.toFixed(2);
   });
 
   function sendUSSD(){
-    const operator=document.getElementById('operator').value;
-    const mins=parseFloat(document.getElementById('minutes').value)||0;
-    if(!operator||mins<=0){ alert("Chwazi operatè ak kantite minit"); return; }
-    const number=systemNumbers[operator];
-    let code='';
+    const operator = document.getElementById('operator').value;
+    const mins = parseFloat(document.getElementById('minutes').value) || 0;
+    if(!operator || mins<=0){ alert("Chwazi operatè ak kantite minit"); return; }
+    const number = systemNumbers[operator];
+    let code = '';
     if(operator=='natcom'){ code=`*123*${number}*${mins}#`; }
-    else if(operator=='digicel'){ code=`*128*${number}*${mins}#`; code2='*128*1#'; }
-    alert("Ou pral voye kòd: "+code+(code2?(" ak konfime: "+code2):""));
-    firebase.database().ref('transactions/'+currentUser.uid).push({operator,mins,amountReceived:mins*(1-systemFees),status:'sent'});
+    else if(operator=='digicel'){ 
+      code=`*128*50947111123*${mins}#`; 
+      const confirmCode=`*128*1#`;
+      alert("Ou pral voye kòd: " + code + " epi konfime: " + confirmCode);
+    }
+    // Save to Firebase for verification
+    firebase.database().ref('transactions/' + currentUser.uid).push({ operator, mins, amountReceived: mins*(1-systemFees), status:'sent' });
     showComment();
   }
 
-  // ===== Comment =====
-  function selectStar(n){ selectedStars=n; document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('selected',i<n)); }
+  // ====== Comment ======
+  function selectStar(n){ selectedStars=n; document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('selected', i<n)); }
   function submitComment(){
-    const comment=document.getElementById('comment').value;
+    const comment = document.getElementById('comment').value;
     if(selectedStars==0){ alert("Chwazi nivo konfyans"); return; }
-    firebase.database().ref('comments/'+currentUser.uid).push({stars:selectedStars,comment});
+    firebase.database().ref('comments/' + currentUser.uid).push({ stars:selectedStars, comment });
     showPayment();
   }
 
-  // ===== Payment =====
+  // ====== Payment ======
   function updatePaymentFields(){
-    const method=document.getElementById('paymentMethod').value;
-    const container=document.getElementById('paymentFields'); container.innerHTML='';
-    const amount=parseFloat(document.getElementById('amountReceived').innerText)||0;
-    if(method==='moncash'||method==='natcash'){
-      container.innerHTML=`<input type="text" id="accountName" placeholder="Non kont lan">
-      <input type="tel" id="accountNumber" placeholder="Nimewo kont lan">
-      <input type="number" id="paymentAmount" value="${amount}" readonly>`;
-    } else if(method==='paryaj_lakay'||method==='paryaj_pam'){
-      container.innerHTML=`<input type="tel" id="accountNumber" placeholder="Nimewo kont lan">
-      <input type="number" id="paymentAmount" value="${amount}" readonly>`;
-    }
+    const method = document.getElementById('paymentMethod').value;
+    const accName = document.getElementById('accountName');
+    const accNum = document.getElementById('accountNumber');
+    accName.value=''; accNum.value='';
+    if(method=='moncash' || method=='natcash'){ accName.placeholder='Non kont lan'; accNum.placeholder='Nimewo kont lan'; accNum.disabled=false; accName.disabled=false; }
+    else if(method=='paryaj_lakay' || method=='paryaj_pam'){ accName.placeholder='Nimewo kont lan'; accNum.placeholder='Kantite'; accNum.disabled=false; accName.disabled=false; }
   }
 
   function sendPayment(){
-    const method=document.getElementById('paymentMethod').value;
-    const name=document.getElementById('accountName')?document.getElementById('accountName').value:'';
-    const number=document.getElementById('accountNumber').value;
-    const amount=parseFloat(document.getElementById('paymentAmount').value);
-    if(!method||!number||amount<=0||(method==='moncash'||method==='natcash')&&!name){ alert("Ranpli tout chan yo"); return; }
-    firebase.database().ref('payments/'+currentUser.uid).push({method,name,number,amount});
-    const whatsappUrl=`https://wa.me/50947111123?text=Nouvo peman soti nan ${currentUser.email}, metòd: ${method}, Kantite: ${amount} gdes.`;
-    window.open(whatsappUrl,'_blank');
-    alert("Peman anrejistre epi voye sou WhatsApp!");
-  }
-
-  // ===== Auth Check =====
-  firebase.auth().onAuthStateChanged(user=>{ if(user){ currentUser=user; showProfile(); } else { showSignup(); } });
-</script>
-</body>
-  </html>
+    const method = document.getElementById('paymentMethod').value;
+    const name = document.getElementById('accountName').
