@@ -6,21 +6,21 @@
 <title>Echanj Plus — Tout an 1</title>
 <style>
   :root{
-    --bg:#ffffff; --card:#ffffff; --page:#f7f9fb; --accent:#0ea5ff; --muted:#6b7280;
-    --primary:#0b84ff; --danger:#ef4444; --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
+    --page:#ffffff; --muted:#6b7280; --primary:#0b84ff; --danger:#ef4444; --radius:12px;
+    font-family:Inter,system-ui,Arial,sans-serif;
   }
   *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:var(--page);color:#0f172a}
+  body{margin:0;min-height:100vh;background:#f6f8fb;color:#071022}
   header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#fff;box-shadow:0 2px 8px rgba(2,6,23,0.04)}
   .brand{display:flex;gap:12px;align-items:center}
   .brand h1{margin:0;color:var(--primary);font-size:18px}
   .main{max-width:1100px;margin:22px auto;padding:10px;display:grid;grid-template-columns:1fr 380px;gap:16px}
-  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(2,6,23,0.04)}
+  .card{background:#fff;padding:16px;border-radius:var(--radius);border:1px solid rgba(2,6,23,0.04)}
   h2{margin:0 0 8px 0;color:var(--primary)}
   label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
   input,select,textarea,button{font-family:inherit}
   input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:transparent;color:inherit;margin-top:8px}
-  textarea{min-height:90px;resize:vertical}
+  textarea{min-height:92px;resize:vertical}
   .row{display:flex;gap:8px}
   .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
   .btn-primary{background:linear-gradient(180deg,var(--primary),#0669d9);color:#fff}
@@ -29,12 +29,10 @@
   .tx-list{max-height:320px;overflow:auto;margin-top:10px}
   .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(2,6,23,0.03);margin-bottom:8px;background:linear-gradient(180deg, rgba(2,6,23,0.01), transparent)}
   .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999}
-  .auth-card{width:420px;background:#fff;padding:22px;border-radius:12px;border:1px solid rgba(2,6,23,0.06)}
-  .muted{color:var(--muted)}
-  .full-screen { width:100%; height:100vh; display:flex; justify-content:center; align-items:center; }
+  .auth-card{width:460px;background:#fff;padding:22px;border-radius:12px;border:1px solid rgba(2,6,23,0.06)}
   .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f5f9;border:1px solid rgba(2,6,23,0.04);font-size:13px;color:#0f172a}
   .hide{display:none!important}
-  .toast{position:fixed;right:18px;bottom:18px;background:#0b1220;color:#fff;padding:12px 14px;border-radius:10px;z-index:100000}
+  .toast{position:fixed;right:18px;bottom:18px;background:#0b1220;color:#fff;padding:12px 14px;border-radius:10px;z-index:100000;display:none}
   .profile-badge{display:flex;gap:8px;align-items:center}
   .profile-badge .name{font-weight:700}
   @media (max-width:980px){ .main{grid-template-columns:1fr;padding:12px} .auth-card{width:92%} }
@@ -44,7 +42,7 @@
 
 <header>
   <div class="brand">
-    <img src="" alt="logo" id="logo" style="width:40px;height:40px;border-radius:8px;background:#fff;display:none"/>
+    <img id="logo" src="" alt="logo" style="width:40px;height:40px;border-radius:8px;background:#fff;display:none"/>
     <h1>Echanj Plus</h1>
   </div>
   <div style="display:flex;gap:12px;align-items:center">
@@ -64,7 +62,7 @@
       <h2>Etap 1 — Voye Minit (Dialer)</h2>
       <div class="small">Nimewo sistèm: Digicel <strong>+50947111123</strong> • Natcom <strong>32160708</strong></div>
 
-      <label>Telefòn ou (ou ka kite blan si w anvi)</label>
+      <label>Telefòn (opsyonèl)</label>
       <input id="sender" placeholder="+509XXXXXXXX"/>
 
       <div class="row" style="margin-top:10px">
@@ -110,7 +108,7 @@
   <!-- RIGHT: Payment & Tx -->
   <aside class="card" id="paymentCard">
     <h2>Etap 3 — Peman</h2>
-    <div class="small">Chwazi metòd peman — tout chan yo ap ekri ak otomatik montan kliyan ap resevwa.</div>
+    <div class="small">Chwazi metòd peman — chan yo monte otomatik.</div>
 
     <label>Metòd peman</label>
     <select id="payMethod">
@@ -144,7 +142,7 @@
 <div id="authOverlay" class="overlay">
   <div class="auth-card">
     <h2 style="margin:0 0 6px 0;color:var(--primary)">Obligatwa — Konekte / Enskri</h2>
-    <div class="small muted">Ou dwe konekte pou itilize Echanj Plus. Si ou pa gen kont, enskri kounye a.</div>
+    <div class="small muted">Ou dwe konekte pou itilize Echanj Plus.</div>
 
     <label style="margin-top:12px">Mode</label>
     <select id="authMode"><option value="login">Konekte</option><option value="register">Enskri</option></select>
@@ -172,9 +170,9 @@
   </div>
 </div>
 
-<div id="toast" class="toast hide"></div>
+<div id="toast" class="toast"></div>
 
-<!-- Firebase compat (pi fasil) -->
+<!-- Firebase compat scripts (sa fasil pou entegre) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -182,10 +180,11 @@
 
 <script>
 /* ==========================
-   RANPLASE SA AK KONFIG OU
+   RANPLASE firebaseConfig AK VAPID_KEY
+   Mete pwòp firebaseConfig w la (ou di w gen li).
    ========================== */
 const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw", // ranplase si w bezwen
   authDomain: "echanj-plus-778cd.firebaseapp.com",
   databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
   projectId: "echanj-plus-778cd",
@@ -194,8 +193,7 @@ const firebaseConfig = {
   appId: "1:111144762929:web:e64ce9a6da65781c289f10",
   measurementId: "G-J1BQRF32ZW"
 };
-/* VAPID KEY pou FCM Web push (ranplase ak pwòp VAPID PUBLIC key ou) */
-const VAPID_KEY = "METE_PUBLIC_VAPID_KEY_LA";
+const VAPID_KEY = "METE_PUBLIC_VAPID_KEY_LA"; // ranplase ak key ou si w vle FCM web push
 
 /* ==========================
    INIT FIREBASE
@@ -206,15 +204,12 @@ const db = firebase.database();
 const messaging = firebase.messaging();
 
 /* ==========================
-   CONSTANTS
+   CONSTANTS & UI
    ========================== */
 const SYSTEM_DIGICEL = '+50947111123';
 const SYSTEM_NATCOM = '32160708';
-const FEE_RATE = 0.175; // 17.5%
+const FEE_RATE = 0.175;
 
-/* ==========================
-   UI ELEM
-   ========================== */
 const authOverlay = document.getElementById('authOverlay');
 const authMode = document.getElementById('authMode');
 const registerFields = document.getElementById('registerFields');
@@ -257,126 +252,117 @@ const toastEl = document.getElementById('toast');
 /* ==========================
    HELPERS
    ========================== */
-function toast(msg, t=4000){ toastEl.textContent = msg; toastEl.classList.remove('hide'); setTimeout(()=>toastEl.classList.add('hide'), t); }
+function toast(msg, t=4200){ toastEl.textContent = msg; toastEl.style.display='block'; setTimeout(()=>toastEl.style.display='none', t); }
 function uid(n=6){ return Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n); }
 function calcFee(v){ return Math.round(Number(v) * FEE_RATE); }
-function sanitizeNum(n){ return String(n).replace(/\D/g,''); }
 
 /* ==========================
-   AUTH FLOW
+   AUTH UI / FLOW
    ========================== */
-let currentUser = null;
-function showAuthOverlay(){ authOverlay.style.display='flex'; authMsg.textContent=''; }
-function hideAuthOverlay(){ authOverlay.style.display='none'; }
-
-openAuthBtn.addEventListener('click', showAuthOverlay);
-logoutBtn.addEventListener('click', async ()=>{ await auth.signOut(); toast('Ou dekonekte'); });
-
-authMode.addEventListener('change', ()=> {
+openAuthBtn.addEventListener('click', ()=> authOverlay.style.display='flex');
+authMode.addEventListener('change', ()=>{
   const m = authMode.value;
   registerFields.style.display = m === 'register' ? 'block' : 'none';
   authAction.textContent = m === 'register' ? 'Enskri' : 'Konekte';
   toggleAuth.textContent = m === 'register' ? 'Konekte' : 'Anrejistre';
 });
-
 toggleAuth.addEventListener('click', ()=>{
   authMode.value = authMode.value === 'login' ? 'register' : 'login';
   authMode.dispatchEvent(new Event('change'));
 });
-
-showForgot.addEventListener('click', async (e)=>{
-  e.preventDefault();
-  const email = prompt('Antre imel pou reset modpas:');
-  if(email){ try{ await auth.sendPasswordResetEmail(email); alert('Imel reset voye.'); }catch(err){ alert(err.message); } }
-});
+showForgot.addEventListener('click', async (e)=>{ e.preventDefault(); const email = prompt('Antre imel pou reset modpas:'); if(email) { try{ await auth.sendPasswordResetEmail(email); alert('Imel reset voye.'); }catch(err){ alert(err.message); } } });
 
 authAction.addEventListener('click', async ()=>{
-  authMsg.textContent = ''; authMsg.style.color = 'red';
+  authMsg.textContent = '';
   const mode = authMode.value;
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value;
-  if(!email || !pass){ authMsg.textContent = 'Ranpli imel ak modpas'; return; }
-  if(pass.length < 6){ authMsg.textContent = 'Modpas dwe gen omwen 6 karaktè'; return; }
-  if(!pass.match(/^[A-Z]/)){ authMsg.textContent = 'Modpas dwe kòmanse ak yon lèt majiskil'; return; }
+  if(!email || !pass){ authMsg.textContent='Ranpli imel ak modpas'; return; }
+  if(pass.length < 6){ authMsg.textContent='Modpas minimòm 6 karaktè'; return; }
+  if(!/^[A-Z]/.test(pass)){ authMsg.textContent='Modpas dwe kòmanse ak yon lèt majiskil'; return; }
   try{
     if(mode === 'register'){
       const name = document.getElementById('authName').value.trim();
       const phone = document.getElementById('authPhone').value.trim();
       const gender = document.getElementById('authGender').value;
-      if(!name || !phone || !gender){ authMsg.textContent='Ranpli non, telefòn, ak sèks'; return; }
+      if(!name || !phone || !gender){ authMsg.textContent='Ranpli non, telefòn, sèks'; return; }
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      currentUser = cred.user;
-      // save profile
-      await db.ref(`users/${currentUser.uid}`).set({ name, phone, gender, email, createdAt: Date.now() });
-      hideAuthOverlay();
-      toast('Enskripsyon fini — Byenveni!');
+      const user = cred.user;
+      await db.ref(`users/${user.uid}`).set({ name, phone, gender, email, createdAt: Date.now() });
+      toast('Enskripsyon fini. Byenveni!');
+      authOverlay.style.display='none';
     } else {
       const cred = await auth.signInWithEmailAndPassword(email, pass);
-      currentUser = cred.user;
-      hideAuthOverlay();
       toast('Konekte avèk siksè');
+      authOverlay.style.display='none';
     }
   }catch(err){ authMsg.textContent = err.message; }
 });
 
 guestBtn.addEventListener('click', ()=>{
-  currentUser = { uid: 'guest-'+uid(4), email: 'guest@guest.com', guest: true };
-  hideAuthOverlay();
-  badgeName.textContent = 'Guest';
-  badgePhone.textContent = '';
-  userBadge.style.display='flex';
-  logoutBtn.classList.remove('hide');
-  toast('W ap teste kòm Guest — kèk opsyon limite.');
-  renderTx([]);
+  // guest testing mode
+  const guest = { uid: 'guest-'+uid(4), email: 'guest@example.com' };
+  handleLoggedIn(guest, true);
+  authOverlay.style.display='none';
+  toast('W ap teste kòm Guest — kèk fonksyon limite.');
 });
 
-/* listen auth state */
+/* badge click to edit profile */
+document.getElementById('userBadge').addEventListener('click', async ()=>{
+  const user = auth.currentUser;
+  if(!user || user.uid.startsWith('guest')){ toast('Guest pa ka modifye profile'); return; }
+  try{
+    const s = await db.ref(`users/${user.uid}`).get();
+    const u = s.exists()? s.val() : {};
+    const newName = prompt('Non konplè:', u.name||'');
+    if(newName === null) return;
+    const newPhone = prompt('Telefòn (+509...):', u.phone||'');
+    if(newPhone === null) return;
+    await db.ref(`users/${user.uid}`).update({ name: newName, phone: newPhone });
+    badgeName.textContent = newName;
+    badgePhone.textContent = newPhone;
+    toast('Profile mete ajou');
+  }catch(e){ toast('Erè mete ajou profile'); }
+});
+
+/* auth state listener */
 auth.onAuthStateChanged(async user=>{
   if(user){
-    currentUser = user;
-    logoutBtn.classList.remove('hide');
-    openAuthBtn.style.display='none';
-    // load profile
-    try{
-      const s = await db.ref(`users/${user.uid}`).get();
-      const profile = s.exists()? s.val() : {};
-      badgeName.textContent = profile.name || user.displayName || 'Itilizatè';
-      badgePhone.textContent = profile.phone || '';
-      userBadge.style.display='flex';
-    }catch(e){ console.warn('load profile err', e); }
-
-    hideAuthOverlay();
+    // standard user logged in
+    handleLoggedIn(user, false);
+    authOverlay.style.display='none';
     await loadTx();
-    await liveComments();
-    await trySetupFCM();
+    await setUpFCM();
+    liveComments();
   } else {
-    currentUser = null;
-    userBadge.style.display='none';
-    openAuthBtn.style.display='inline-block';
-    logoutBtn.classList.add('hide');
-    showAuthOverlay();
-    renderTx([]);
+    // logged out
+    document.getElementById('userBadge').style.display='none';
+    document.getElementById('openAuthBtn').style.display='inline-block';
+    document.getElementById('logoutBtn').classList.add('hide');
+    authOverlay.style.display='flex';
+    txList.innerHTML = '<div class="small">Ou poko konekte.</div>';
   }
 });
 
-/* click badge to edit profile */
-userBadge.addEventListener('click', async ()=>{
-  if(!currentUser || currentUser.uid.startsWith('guest')){ toast('Guest pa ka modifye profile'); return; }
-  // fetch profile
-  const s = await db.ref(`users/${currentUser.uid}`).get();
-  const u = s.exists()? s.val() : {};
-  const newName = prompt('Non konplè:', u.name || '');
-  if(newName === null) return;
-  const newPhone = prompt('Telefòn (+509...):', u.phone || '');
-  if(newPhone === null) return;
-  await db.ref(`users/${currentUser.uid}`).update({ name: newName, phone: newPhone });
-  badgeName.textContent = newName;
-  badgePhone.textContent = newPhone;
-  toast('Profile mete ajou');
-});
+function handleLoggedIn(user, isGuest){
+  document.getElementById('openAuthBtn').style.display='none';
+  document.getElementById('logoutBtn').classList.remove('hide');
+  document.getElementById('userBadge').style.display='flex';
+  if(isGuest){
+    badgeName.textContent = 'Guest';
+    badgePhone.textContent = '';
+  } else {
+    // load profile
+    db.ref(`users/${user.uid}`).get().then(s=>{
+      const u = s.exists()? s.val() : {};
+      badgeName.textContent = u.name || user.displayName || 'Itilizatè';
+      badgePhone.textContent = u.phone || '';
+    }).catch(()=>{ badgeName.textContent = user.email || 'Itilizatè'; badgePhone.textContent=''; });
+  }
+}
 
 /* ==========================
-   DIALER LOGIC
+   DIALER + SAVE TRANSACTION
    ========================== */
 function updateFeePreview(){
   const v = Number(amountInput.value || 0);
@@ -388,61 +374,49 @@ function updateFeePreview(){
 amountInput.addEventListener('input', updateFeePreview);
 operatorSelect.addEventListener('change', ()=>{
   const op = operatorSelect.value;
-  if(op === 'digicel'){
-    ussdBtn2.style.display='inline-block';
-    ussdBtn3.style.display='inline-block';
-  } else {
-    ussdBtn2.style.display='none';
-    ussdBtn3.style.display='none';
-  }
-});
-
-previewDial.addEventListener('click', ()=>{
-  const op = operatorSelect.value; const amt = amountInput.value;
-  if(!op || !amt) return alert('Chwazi operatè ak montan');
-  const code = buildUSSD(op, amt, 1);
-  alert('USSD preview: ' + code);
+  if(op === 'digicel'){ ussdBtn2.style.display='inline-block'; ussdBtn3.style.display='inline-block'; }
+  else { ussdBtn2.style.display='none'; ussdBtn3.style.display='none'; }
 });
 
 function buildUSSD(op, amt, step){
-  // step 1 = primary code; for digicel step2 uses amount, step3 confirm
-  if(op === 'natcom'){
-    // *123*88888888*32160708*AMT#
-    return `*123*88888888*${SYSTEM_NATCOM}*${amt}#`;
-  } else if(op === 'digicel'){
-    if(step === 1) return `*128*509${SYSTEM_DIGICEL.replace('+','')}*${amt}#`;
-    if(step === 2) return `*128*509${SYSTEM_DIGICEL.replace('+','')}*${amt}#`; // same as step1 for this example
-    if(step === 3) return `*128*1#`; // confirmation
+  if(op === 'natcom') return `*123*88888888*${SYSTEM_NATCOM}*${amt}#`;
+  if(op === 'digicel'){
+    if(step === 3) return `*128*1#`;
+    return `*128*509${SYSTEM_DIGICEL.replace('+','')}*${amt}#`;
   }
   return '';
 }
 
-/* when user clicks a dial button */
 async function savePendingTx(op, amt){
-  if(!currentUser) return;
-  const tx = { id:null, uid: currentUser.uid, type:'send_minutes', operator: op, from: document.getElementById('sender').value.trim()||'', to: op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM, minutes: Number(amt), fee: calcFee(amt), net: Number(amt)-calcFee(amt), ts: Date.now(), status: 'pending' };
-  const refTx = db.ref(`transactions/${currentUser.uid}`).push();
-  tx.id = refTx.key;
-  await refTx.set(tx);
+  const user = auth.currentUser;
+  if(!user) throw new Error('Ou dwe konekte');
+  const txRef = db.ref(`transactions/${user.uid}`).push();
+  const tx = { id: txRef.key, uid: user.uid, type: 'send_minutes', operator: op, from: document.getElementById('sender').value.trim()||'', to: op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM, minutes: Number(amt), fee: calcFee(amt), net: Number(amt)-calcFee(amt), ts: Date.now(), status: 'pending' };
+  await txRef.set(tx);
   await loadTx();
   return tx;
 }
 
 ussdBtn1.addEventListener('click', async ()=>{
-  if(!currentUser){ toast('Ou dwe konekte'); return; }
-  const op = operatorSelect.value; const amt = amountInput.value;
-  if(!op || !amt) return alert('Chwazi operatè ak montan.');
-  const tx = await savePendingTx(op, amt);
-  const code = buildUSSD(op, amt, 1);
-  // open dialer (mobile) - will only work on mobile devices
-  window.location.href = 'tel:' + encodeURIComponent(code);
-  dialStatusText.textContent = 'Dialer louvri. Siveyans tx pou verifye status...';
-  toast('Dialer ap ouvri sou mobil (si telefòn sipòte).');
-  // listen for status change on this tx
-  db.ref(`transactions/${currentUser.uid}/${tx.id}/status`).on('value', snap=>{
-    const s = snap.val();
-    if(s === 'success'){ dialStatusText.textContent = 'Transfè verifye — ou ka kontinye.'; toast('Transfè verifye!'); }
-  });
+  try{
+    if(!auth.currentUser && !document.getElementById('openAuthBtn').classList.contains('hide')){ toast('Ou dwe konekte'); return; }
+    const op = operatorSelect.value; const amt = amountInput.value;
+    if(!op || !amt) return alert('Chwazi operatè ak montan.');
+    const tx = await savePendingTx(op, amt);
+    const code = buildUSSD(op, amt, 1);
+    // open phone dialer (mobile)
+    window.location.href = 'tel:' + encodeURIComponent(code);
+    dialStatusText.textContent = 'Dialer ouvè. Siveyans tx...';
+    toast('Dialer ap ouvri sou mobil (si telepon sipòte).');
+    // listen for status change on this tx
+    db.ref(`transactions/${auth.currentUser.uid}/${tx.id}/status`).on('value', snap=>{
+      const s = snap.val();
+      if(s === 'success'){ dialStatusText.textContent = 'Transfè verifye — ou ka kontinye.'; toast('Transfè verifye!'); }
+    });
+  }catch(e){ alert(e.message || e); }
 });
 
-ussdBtn2.a
+ussdBtn2.addEventListener('click', ()=>{ const op = operatorSelect.value; const amt = amountInput.value; if(op!=='digicel') return alert('Konpoze 2 se pou Digicel sèlman.'); const code = buildUSSD(op, amt, 2); window.location.href = 'tel:' + encodeURIComponent(code); });
+ussdBtn3.addEventListener('click', ()=>{ const op = operatorSelect.value; if(op!=='digicel') return alert('Konfime se pou Digicel sèlman.'); const code = buildUSSD(op,0,3); window.location.href = 'tel:' + encodeURIComponent(code); });
+
+previewDial.addEventListener('click', ()=>{ const op = operatorSelect.value; const amt = amountInput.value; if(!op||!amt) return alert('Chwazi operatè ak montan'); alert('USSD preview: ' + buildUS
