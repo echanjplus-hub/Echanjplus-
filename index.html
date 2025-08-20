@@ -1,131 +1,136 @@
 <!doctype html>
 <html lang="ht">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Echanj Plus</title>
-  <style>
-    :root{
-      --bg:#ffffff; --card:#ffffff; --accent:#0b61f7; --muted:#6b7280; --primary:#2563EB;
-      --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;background:var(--bg);color:#0f172a}
-    .center-full{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-    .app{width:100%;max-width:980px;margin:24px auto;padding:16px;display:grid;grid-template-columns:1fr 360px;gap:16px}
-    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(2,6,23,0.06);box-shadow:0 6px 18px rgba(2,6,23,0.03)}
-    header{max-width:980px;margin:12px auto;display:flex;justify-content:space-between;align-items:center;padding:0 16px}
-    .brand{display:flex;gap:12px;align-items:center}
-    .brand h1{margin:0;color:var(--accent);font-size:20px}
-    label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
-    input,select,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);margin-top:8px;font-size:14px}
-    textarea{min-height:90px;resize:vertical}
-    .row{display:flex;gap:8px}
-    .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
-    .btn-primary{background:linear-gradient(180deg,var(--primary),#1d4ed8);color:#fff}
-    .btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:var(--muted)}
-    .small{font-size:13px;color:var(--muted);margin-top:8px}
-    .tx-list{max-height:320px;overflow:auto;margin-top:10px}
-    .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(2,6,23,0.03);margin-bottom:8px;background:linear-gradient(180deg, rgba(2,6,23,0.01), transparent)}
-    .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999}
-    .auth-card{width:420px;background:linear-gradient(180deg,#fff,#f8fafc);padding:20px;border-radius:12px;border:1px solid rgba(2,6,23,0.06)}
-    .muted{color:var(--muted)}
-    .hidden{display:none !important}
-    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f5f9;border:1px solid rgba(2,6,23,0.04);font-size:13px;color:var(--muted)}
-    .stars{display:flex;gap:6px;justify-content:center}
-    .star{font-size:22px;cursor:pointer;color:#cbd5e1}
-    .star.on{color:#f59e0b}
-    .toast{position:fixed;right:16px;bottom:16px;background:#0b1220;color:#fff;padding:12px 14px;border-radius:10px;z-index:99999;display:none}
-    @media (max-width:980px){ .app{grid-template-columns:1fr;padding:12px} .auth-card{width:92vw} }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Echanj Plus — Tout an 1</title>
+<style>
+  :root{
+    --bg:#ffffff; --card:#ffffff; --page:#f7f9fb; --accent:#0ea5ff; --muted:#6b7280;
+    --primary:#0b84ff; --danger:#ef4444; --radius:12px; font-family:Inter,system-ui,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--page);color:#0f172a}
+  header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#fff;box-shadow:0 2px 8px rgba(2,6,23,0.04)}
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand h1{margin:0;color:var(--primary);font-size:18px}
+  .main{max-width:1100px;margin:22px auto;padding:10px;display:grid;grid-template-columns:1fr 380px;gap:16px}
+  .card{background:var(--card);padding:16px;border-radius:var(--radius);border:1px solid rgba(2,6,23,0.04)}
+  h2{margin:0 0 8px 0;color:var(--primary)}
+  label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
+  input,select,textarea,button{font-family:inherit}
+  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:transparent;color:inherit;margin-top:8px}
+  textarea{min-height:90px;resize:vertical}
+  .row{display:flex;gap:8px}
+  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn-primary{background:linear-gradient(180deg,var(--primary),#0669d9);color:#fff}
+  .btn-ghost{background:transparent;border:1px solid rgba(2,6,23,0.06);color:var(--muted)}
+  .small{font-size:13px;color:var(--muted);margin-top:8px}
+  .tx-list{max-height:320px;overflow:auto;margin-top:10px}
+  .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(2,6,23,0.03);margin-bottom:8px;background:linear-gradient(180deg, rgba(2,6,23,0.01), transparent)}
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999}
+  .auth-card{width:420px;background:#fff;padding:22px;border-radius:12px;border:1px solid rgba(2,6,23,0.06)}
+  .muted{color:var(--muted)}
+  .full-screen { width:100%; height:100vh; display:flex; justify-content:center; align-items:center; }
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f5f9;border:1px solid rgba(2,6,23,0.04);font-size:13px;color:#0f172a}
+  .hide{display:none!important}
+  .toast{position:fixed;right:18px;bottom:18px;background:#0b1220;color:#fff;padding:12px 14px;border-radius:10px;z-index:100000}
+  .profile-badge{display:flex;gap:8px;align-items:center}
+  .profile-badge .name{font-weight:700}
+  @media (max-width:980px){ .main{grid-template-columns:1fr;padding:12px} .auth-card{width:92%} }
+</style>
 </head>
 <body>
 
 <header>
   <div class="brand">
-    <img src="" alt="logo" style="height:44px;display:block" onerror="this.style.display='none'"/>
+    <img src="" alt="logo" id="logo" style="width:40px;height:40px;border-radius:8px;background:#fff;display:none"/>
     <h1>Echanj Plus</h1>
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <div id="userBadge" class="pill">Guest</div>
-    <button id="openAuth" class="btn btn-ghost">Login / Signup</button>
-    <button id="logoutBtn" class="btn btn-ghost hidden">Dekonekte</button>
+  <div style="display:flex;gap:12px;align-items:center">
+    <div id="userBadge" class="profile-badge" style="display:none;cursor:pointer">
+      <div class="pill name" id="badgeName">Itilizatè</div>
+      <div class="pill" id="badgePhone"></div>
+    </div>
+    <button id="openAuthBtn" class="btn btn-ghost">Konekte / Enskri</button>
+    <button id="logoutBtn" class="btn btn-ghost hide">Dekonekte</button>
   </div>
 </header>
 
-<main class="app" id="mainApp" aria-hidden="true">
-  <!-- LEFT: Dialer + comment -->
+<main class="main">
+  <!-- LEFT: Dialer + Comments -->
   <section>
-    <div class="card" id="dialCard">
-      <h2>1) Dialer — Voye Minit</h2>
-      <div class="small">Sistèm: Digicel <strong>+50947111123</strong> • Natcom <strong>32160708</strong></div>
+    <section class="card" id="dialCard">
+      <h2>Etap 1 — Voye Minit (Dialer)</h2>
+      <div class="small">Nimewo sistèm: Digicel <strong>+50947111123</strong> • Natcom <strong>32160708</strong></div>
 
-      <label>Telefòn ou (ekzanp +509xxxxxxxx)</label>
+      <label>Telefòn ou (ou ka kite blan si w anvi)</label>
       <input id="sender" placeholder="+509XXXXXXXX"/>
 
-      <div class="row">
+      <div class="row" style="margin-top:10px">
         <select id="operator" style="flex:1">
-          <option value="">Chwazi operatè</option>
+          <option value="">-- Chwazi --</option>
           <option value="digicel">Digicel</option>
           <option value="natcom">Natcom</option>
         </select>
-        <input id="amount" type="number" placeholder="100" min="1" style="width:120px"/>
+        <input id="amount" type="number" placeholder="100" style="width:140px" min="1"/>
       </div>
 
       <div class="row" style="margin-top:12px">
-        <button id="dialBtn" class="btn btn-primary" style="flex:1">Dial & Voye</button>
+        <button id="ussdBtn1" class="btn btn-primary">Dial Konpoze 1</button>
+        <button id="ussdBtn2" class="btn btn-primary" style="display:none">Dial Konpoze 2</button>
+        <button id="ussdBtn3" class="btn btn-primary" style="display:none">Dial Konfime</button>
         <button id="previewDial" class="btn btn-ghost">Preview</button>
       </div>
 
-      <div class="small" style="margin-top:10px">
-        Frè sistèm (<strong>17.5%</strong>): <strong id="feeMin">—</strong> • Total (montan + frè): <strong id="totalMin">—</strong>
-      </div>
-      <div id="dialGateMsg" class="small muted" style="margin-top:8px;display:none">
-        Ap tann verifikasyon transfè (pa pèmèt kontinye jiskaske sistèm verifye).
-      </div>
-    </div>
+      <div class="small" style="margin-top:10px">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Montan ou resevwa: <strong id="netMin">—</strong></div>
+      <div id="dialStatus" class="small muted" style="margin-top:8px">Estati: <span id="dialStatusText">—</span></div>
+    </section>
 
-    <div class="card" style="margin-top:16px" id="commentCard">
-      <h2>2) Evalye & Kòmantè</h2>
-      <label>Nivo konfyans ou (chwazi etwal)</label>
-      <div class="stars" id="stars">
-        <span class="star" data-i="1">★</span>
-        <span class="star" data-i="2">★</span>
-        <span class="star" data-i="3">★</span>
-        <span class="star" data-i="4">★</span>
-        <span class="star" data-i="5">★</span>
+    <section class="card" style="margin-top:16px" id="commentCard">
+      <h2>Etap 2 — Evalye & Kòmantè</h2>
+      <label>Nan ki nivo ou fè sistèm lan konfyans?</label>
+      <div id="stars" style="display:flex;gap:6px;margin-top:8px">
+        <span class="star" data-n="1" style="font-size:22px;cursor:pointer">⭐</span>
+        <span class="star" data-n="2" style="font-size:22px;cursor:pointer">⭐</span>
+        <span class="star" data-n="3" style="font-size:22px;cursor:pointer">⭐</span>
+        <span class="star" data-n="4" style="font-size:22px;cursor:pointer">⭐</span>
+        <span class="star" data-n="5" style="font-size:22px;cursor:pointer">⭐</span>
       </div>
-      <label>Kòmantè</label>
-      <textarea id="commentText" placeholder="Ekri kòmantè w la..."></textarea>
-      <div class="row">
-        <button id="submitComment" class="btn btn-primary" style="flex:1">Soumèt & Pwochen</button>
+
+      <label style="margin-top:10px">Kòmantè</label>
+      <textarea id="commentText" placeholder="Ekri kòmantè ou…"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button id="submitComment" class="btn btn-primary">Anrejistre & Pwochen</button>
         <button id="clearComment" class="btn btn-ghost">Efase</button>
       </div>
-    </div>
+    </section>
   </section>
 
-  <!-- RIGHT: Payments + transactions -->
-  <aside class="card">
-    <h2>3) Peman</h2>
-    <label>Chwazi metòd</label>
+  <!-- RIGHT: Payment & Tx -->
+  <aside class="card" id="paymentCard">
+    <h2>Etap 3 — Peman</h2>
+    <div class="small">Chwazi metòd peman — tout chan yo ap ekri ak otomatik montan kliyan ap resevwa.</div>
+
+    <label>Metòd peman</label>
     <select id="payMethod">
       <option value="">-- Chwazi --</option>
       <option value="moncash">MonCash</option>
       <option value="natcash">NatCash</option>
-      <option value="paryajlakay">Paryaj Lakay</option>
-      <option value="paryajpam">Paryaj Pam</option>
+      <option value="paryaj_lakay">Paryaj Lakay</option>
+      <option value="paryaj_pam">Paryaj Pam</option>
     </select>
 
     <div id="payFields" style="margin-top:10px"></div>
 
     <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="sendPay" class="btn btn-primary" style="flex:1">Voye sou WhatsApp & Sove</button>
+      <button id="sendPay" class="btn btn-primary" style="flex:1">Soumèt & WhatsApp</button>
       <button id="previewPay" class="btn btn-ghost">Preview</button>
     </div>
 
     <hr style="margin:12px 0;border-color:rgba(2,6,23,0.06)">
 
-    <h3 style="margin:0 0 8px 0;color:var(--accent);font-size:15px">Tranzaksyon Ou</h3>
+    <h3 style="margin:0 0 8px 0;color:var(--primary);font-size:15px">Tranzaksyon Ou</h3>
     <div id="txList" class="tx-list"><div class="small">Pa gen tranzaksyon chaje.</div></div>
 
     <div style="display:flex;gap:8px;margin-top:10px">
@@ -135,293 +140,309 @@
   </aside>
 </main>
 
-<!-- AUTH OVERLAY - full screen, mandatory -->
+<!-- Auth overlay (full-screen, mandatory) -->
 <div id="authOverlay" class="overlay">
   <div class="auth-card">
-    <h2 style="margin:0 0 6px 0;color:var(--accent)">Obligatwa — Konekte / Enskri</h2>
+    <h2 style="margin:0 0 6px 0;color:var(--primary)">Obligatwa — Konekte / Enskri</h2>
     <div class="small muted">Ou dwe konekte pou itilize Echanj Plus. Si ou pa gen kont, enskri kounye a.</div>
 
     <label style="margin-top:12px">Mode</label>
-    <select id="authMode"><option value="register">Enskri</option><option value="login">Konekte</option></select>
+    <select id="authMode"><option value="login">Konekte</option><option value="register">Enskri</option></select>
 
-    <div id="registerFields" style="margin-top:8px">
-      <label>Non konplè</label>
-      <input id="authName" placeholder="Non konplè"/>
-      <label>Telefòn (+509...)</label>
-      <input id="authPhone" placeholder="+509XXXXXXXX"/>
+    <div id="registerFields" style="margin-top:8px;display:none">
+      <label>Non konplè</label><input id="authName" placeholder="Non konplè"/>
+      <label>Telefòn (+509...)</label><input id="authPhone" placeholder="+509XXXXXXXX"/>
+      <label>Sèks</label>
+      <select id="authGender"><option value="">Chwazi</option><option value="fi">Fi</option><option value="gason">Gason</option></select>
     </div>
 
-    <label>Imèl</label>
-    <input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
-    <label>Modpas</label>
-    <input id="authPass" type="password" placeholder="Min 6 karaktè (Kòmanse ak lèt majiskil)"/>
+    <label style="margin-top:8px">Imèl</label><input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
+    <label>Modpas</label><input id="authPass" type="password" placeholder="Modpas (Min 6, kòmanse ak Majiskil)"/>
 
     <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="authAction" class="btn btn-primary">Enskri</button>
+      <button id="authAction" class="btn btn-primary">Konekte</button>
       <button id="guestBtn" class="btn btn-ghost">Teste kòm Guest</button>
     </div>
 
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <a href="#" id="toLogin" style="font-size:13px;color:var(--accent);text-decoration:none">Deja gen kont? Konekte</a>
-      <a href="#" id="forgotLink" style="font-size:13px;color:var(--accent);text-decoration:none;margin-left:auto">Reinitialiser Modpas</a>
+    <div style="display:flex;justify-content:space-between;margin-top:10px">
+      <a href="#" id="showForgot" style="color:var(--primary);font-size:13px">Reset Modpas</a>
+      <a href="#" id="toggleAuth" style="color:var(--primary);font-size:13px">Anrejistre</a>
     </div>
-
-    <div id="authMsg" class="small" style="margin-top:8px;color:tomato"></div>
+    <div id="authMsg" class="small" style="margin-top:8px;color:var(--danger)"></div>
   </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast hide"></div>
 
-<!-- Firebase modular SDK (v10+) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, push, get, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  // If you want FCM later, import messaging:
-  // import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
+<!-- Firebase compat (pi fasil) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 
-  // ---------- CONFIG ----------
-  const firebaseConfig = {
-    /* --- REPLACE WITH YOUR CONFIG (you provided earlier) --- */
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus-778cd",
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-    messagingSenderId: "111144762929",
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-    measurementId: "G-J1BQRF32ZW"
-  };
+<script>
+/* ==========================
+   RANPLASE SA AK KONFIG OU
+   ========================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  authDomain: "echanj-plus-778cd.firebaseapp.com",
+  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+  projectId: "echanj-plus-778cd",
+  storageBucket: "echanj-plus-778cd.firebasestorage.app",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+  measurementId: "G-J1BQRF32ZW"
+};
+/* VAPID KEY pou FCM Web push (ranplase ak pwòp VAPID PUBLIC key ou) */
+const VAPID_KEY = "METE_PUBLIC_VAPID_KEY_LA";
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
+/* ==========================
+   INIT FIREBASE
+   ========================== */
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+const messaging = firebase.messaging();
 
-  // ---------- constants ----------
-  const SYSTEM_DIGICEL = '+50947111123';
-  const SYSTEM_NATCOM  = '32160708';
-  const FEE_RATE = 0.175;
+/* ==========================
+   CONSTANTS
+   ========================== */
+const SYSTEM_DIGICEL = '+50947111123';
+const SYSTEM_NATCOM = '32160708';
+const FEE_RATE = 0.175; // 17.5%
 
-  // ---------- elements ----------
-  const authOverlay = document.getElementById('authOverlay');
-  const authMode = document.getElementById('authMode');
-  const registerFields = document.getElementById('registerFields');
-  const authName = document.getElementById('authName');
-  const authPhone = document.getElementById('authPhone');
-  const authEmail = document.getElementById('authEmail');
-  const authPass = document.getElementById('authPass');
-  const authAction = document.getElementById('authAction');
-  const authMsg = document.getElementById('authMsg');
-  const guestBtn = document.getElementById('guestBtn');
-  const toLogin = document.getElementById('toLogin');
-  const forgotLink = document.getElementById('forgotLink');
+/* ==========================
+   UI ELEM
+   ========================== */
+const authOverlay = document.getElementById('authOverlay');
+const authMode = document.getElementById('authMode');
+const registerFields = document.getElementById('registerFields');
+const authAction = document.getElementById('authAction');
+const toggleAuth = document.getElementById('toggleAuth');
+const authMsg = document.getElementById('authMsg');
+const guestBtn = document.getElementById('guestBtn');
+const showForgot = document.getElementById('showForgot');
 
-  const openAuth = document.getElementById('openAuth');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const userBadge = document.getElementById('userBadge');
+const openAuthBtn = document.getElementById('openAuthBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const userBadge = document.getElementById('userBadge');
+const badgeName = document.getElementById('badgeName');
+const badgePhone = document.getElementById('badgePhone');
 
-  const mainApp = document.getElementById('mainApp');
-  const amountInput = document.getElementById('amount');
-  const feeMinEl = document.getElementById('feeMin');
-  const totalMinEl = document.getElementById('totalMin');
-  const operatorEl = document.getElementById('operator');
-  const dialBtn = document.getElementById('dialBtn');
-  const previewDial = document.getElementById('previewDial');
-  const senderEl = document.getElementById('sender');
-  const dialGateMsg = document.getElementById('dialGateMsg');
+const amountInput = document.getElementById('amount');
+const operatorSelect = document.getElementById('operator');
+const feeMin = document.getElementById('feeMin');
+const netMin = document.getElementById('netMin');
+const ussdBtn1 = document.getElementById('ussdBtn1');
+const ussdBtn2 = document.getElementById('ussdBtn2');
+const ussdBtn3 = document.getElementById('ussdBtn3');
+const previewDial = document.getElementById('previewDial');
+const dialStatusText = document.getElementById('dialStatusText');
 
-  const starsContainer = document.getElementById('stars');
-  const commentText = document.getElementById('commentText');
-  const submitComment = document.getElementById('submitComment');
-  const clearComment = document.getElementById('clearComment');
+const stars = Array.from(document.querySelectorAll('.star'));
+const commentText = document.getElementById('commentText');
+const submitComment = document.getElementById('submitComment');
+const clearComment = document.getElementById('clearComment');
 
-  const payMethod = document.getElementById('payMethod');
-  const payFields = document.getElementById('payFields');
-  const sendPay = document.getElementById('sendPay');
-  const previewPay = document.getElementById('previewPay');
+const payMethod = document.getElementById('payMethod');
+const payFields = document.getElementById('payFields');
+const sendPay = document.getElementById('sendPay');
+const previewPay = document.getElementById('previewPay');
 
-  const txList = document.getElementById('txList');
-  const exportCsv = document.getElementById('exportCsv');
-  const clearUi = document.getElementById('clearUi');
+const txList = document.getElementById('txList');
 
-  const toast = document.getElementById('toast');
+const toastEl = document.getElementById('toast');
 
-  // ---------- helpers ----------
-  function showToast(title){ toast.innerText = title; toast.style.display = 'block'; setTimeout(()=>toast.style.display='none', 3500); }
-  function uid(n=6){ return Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n); }
-  function calcFee(v){ return Math.round(Number(v) * FEE_RATE); }
-  function requireAuth(){ if(!currentUser){ authMsg.textContent = 'Ou dwe konekte pou kontinye.'; authOverlay.style.display='flex'; return false } return true; }
+/* ==========================
+   HELPERS
+   ========================== */
+function toast(msg, t=4000){ toastEl.textContent = msg; toastEl.classList.remove('hide'); setTimeout(()=>toastEl.classList.add('hide'), t); }
+function uid(n=6){ return Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n); }
+function calcFee(v){ return Math.round(Number(v) * FEE_RATE); }
+function sanitizeNum(n){ return String(n).replace(/\D/g,''); }
 
-  // ---------- state ----------
-  let currentUser = null;
-  let selectedStars = 0;
-  let lastSentTxId = null;
+/* ==========================
+   AUTH FLOW
+   ========================== */
+let currentUser = null;
+function showAuthOverlay(){ authOverlay.style.display='flex'; authMsg.textContent=''; }
+function hideAuthOverlay(){ authOverlay.style.display='none'; }
 
-  // ---------- auth overlay logic ----------
-  openAuth.addEventListener('click', ()=> { authOverlay.style.display='flex'; });
-  logoutBtn.addEventListener('click', async ()=> { await signOut(auth).catch(()=>null); });
+openAuthBtn.addEventListener('click', showAuthOverlay);
+logoutBtn.addEventListener('click', async ()=>{ await auth.signOut(); toast('Ou dekonekte'); });
 
-  authMode.addEventListener('change', ()=> {
-    if(authMode.value === 'login'){ registerFields.style.display='none'; authAction.textContent='Konekte'; }
-    else { registerFields.style.display='block'; authAction.textContent='Enskri'; }
-    authMsg.textContent='';
-  });
-  toLogin.addEventListener('click',(e)=>{ e.preventDefault(); authMode.value='login'; authMode.dispatchEvent(new Event('change')); });
-  forgotLink.addEventListener('click', async (e)=>{ e.preventDefault(); const email = prompt('Antre imel pou reset'); if(email){ try{ await sendPasswordResetEmail(auth, email); alert('Imèl reset voye.'); }catch(err){ alert(err.message) } } });
+authMode.addEventListener('change', ()=> {
+  const m = authMode.value;
+  registerFields.style.display = m === 'register' ? 'block' : 'none';
+  authAction.textContent = m === 'register' ? 'Enskri' : 'Konekte';
+  toggleAuth.textContent = m === 'register' ? 'Konekte' : 'Anrejistre';
+});
 
-  authAction.addEventListener('click', async ()=>{
-    authMsg.textContent=''; authAction.disabled=true;
-    const mode = authMode.value;
-    const email = authEmail.value.trim();
-    const pass = authPass.value;
-    if(mode==='register'){
-      const name = authName.value.trim(); const phone = authPhone.value.trim();
-      if(!name || !phone || !email || !pass){ authMsg.textContent='Ranpli tout chan enskripsyon.'; authAction.disabled=false; return; }
-      if(!/^[A-Z]/.test(pass)){ authMsg.textContent='Modpas dwe kòmanse ak yon lèt majiskil.'; authAction.disabled=false; return; }
-      try{
-        const cred = await createUserWithEmailAndPassword(auth, email, pass);
-        // store profile
-        await set(ref(db, `users/${cred.user.uid}`), { name, phone, email, createdAt: Date.now() });
-        // try update displayName
-        await updateProfile(cred.user, { displayName: name }).catch(()=>null);
-        authOverlay.style.display='none';
-      }catch(err){ authMsg.textContent = err.message; }
+toggleAuth.addEventListener('click', ()=>{
+  authMode.value = authMode.value === 'login' ? 'register' : 'login';
+  authMode.dispatchEvent(new Event('change'));
+});
+
+showForgot.addEventListener('click', async (e)=>{
+  e.preventDefault();
+  const email = prompt('Antre imel pou reset modpas:');
+  if(email){ try{ await auth.sendPasswordResetEmail(email); alert('Imel reset voye.'); }catch(err){ alert(err.message); } }
+});
+
+authAction.addEventListener('click', async ()=>{
+  authMsg.textContent = ''; authMsg.style.color = 'red';
+  const mode = authMode.value;
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value;
+  if(!email || !pass){ authMsg.textContent = 'Ranpli imel ak modpas'; return; }
+  if(pass.length < 6){ authMsg.textContent = 'Modpas dwe gen omwen 6 karaktè'; return; }
+  if(!pass.match(/^[A-Z]/)){ authMsg.textContent = 'Modpas dwe kòmanse ak yon lèt majiskil'; return; }
+  try{
+    if(mode === 'register'){
+      const name = document.getElementById('authName').value.trim();
+      const phone = document.getElementById('authPhone').value.trim();
+      const gender = document.getElementById('authGender').value;
+      if(!name || !phone || !gender){ authMsg.textContent='Ranpli non, telefòn, ak sèks'; return; }
+      const cred = await auth.createUserWithEmailAndPassword(email, pass);
+      currentUser = cred.user;
+      // save profile
+      await db.ref(`users/${currentUser.uid}`).set({ name, phone, gender, email, createdAt: Date.now() });
+      hideAuthOverlay();
+      toast('Enskripsyon fini — Byenveni!');
     } else {
-      if(!email || !pass){ authMsg.textContent='Ranpli imèl ak modpas.'; authAction.disabled=false; return; }
-      try{
-        await signInWithEmailAndPassword(auth, email, pass);
-        authOverlay.style.display='none';
-      }catch(err){ authMsg.textContent = err.message; }
+      const cred = await auth.signInWithEmailAndPassword(email, pass);
+      currentUser = cred.user;
+      hideAuthOverlay();
+      toast('Konekte avèk siksè');
     }
-    authAction.disabled=false;
-  });
+  }catch(err){ authMsg.textContent = err.message; }
+});
 
-  guestBtn.addEventListener('click', ()=>{
-    // lightweight guest
-    currentUser = { uid: 'guest-'+uid(4), isGuest:true, email: 'guest@example.com' };
-    userBadge.textContent = 'Guest';
-    logoutBtn.classList.remove('hidden');
-    authOverlay.style.display='none';
-    mainApp.removeAttribute('aria-hidden');
-    loadTxList([]);
-  });
+guestBtn.addEventListener('click', ()=>{
+  currentUser = { uid: 'guest-'+uid(4), email: 'guest@guest.com', guest: true };
+  hideAuthOverlay();
+  badgeName.textContent = 'Guest';
+  badgePhone.textContent = '';
+  userBadge.style.display='flex';
+  logoutBtn.classList.remove('hide');
+  toast('W ap teste kòm Guest — kèk opsyon limite.');
+  renderTx([]);
+});
 
-  // ---------- auth state ----------
-  onAuthStateChanged(auth, async user => {
-    if(user){
-      currentUser = user;
-      userBadge.textContent = (user.displayName || user.email || 'Itilizatè');
-      logoutBtn.classList.remove('hidden');
-      authOverlay.style.display='none';
-      mainApp.removeAttribute('aria-hidden');
-      await loadProfile();
-      await loadTxs();
-      liveTxChanges();
-    } else {
-      currentUser = null;
-      userBadge.textContent = 'Guest';
-      logoutBtn.classList.add('hidden');
-      authOverlay.style.display='flex';
-      mainApp.setAttribute('aria-hidden','true');
-      loadTxList([]);
-    }
-  });
-
-  async function loadProfile(){
-    if(!currentUser) return;
+/* listen auth state */
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    currentUser = user;
+    logoutBtn.classList.remove('hide');
+    openAuthBtn.style.display='none';
+    // load profile
     try{
-      const snap = await get(ref(db, `users/${currentUser.uid}`));
-      if(snap.exists()){
-        const u = snap.val();
-        userBadge.textContent = u.name ? `${u.name}` + (u.phone? ` • ${u.phone}` : '') : (currentUser.email||'Itilizatè');
-        // fill profile fields if exist
-        document.getElementById('authName').value = u.name || '';
-        document.getElementById('authPhone').value = u.phone || '';
-      }
-    }catch(e){ console.warn('loadProfile', e); }
+      const s = await db.ref(`users/${user.uid}`).get();
+      const profile = s.exists()? s.val() : {};
+      badgeName.textContent = profile.name || user.displayName || 'Itilizatè';
+      badgePhone.textContent = profile.phone || '';
+      userBadge.style.display='flex';
+    }catch(e){ console.warn('load profile err', e); }
+
+    hideAuthOverlay();
+    await loadTx();
+    await liveComments();
+    await trySetupFCM();
+  } else {
+    currentUser = null;
+    userBadge.style.display='none';
+    openAuthBtn.style.display='inline-block';
+    logoutBtn.classList.add('hide');
+    showAuthOverlay();
+    renderTx([]);
   }
+});
 
-  // ---------- dialer fee preview ----------
-  amountInput.addEventListener('input', ()=>{
-    const v = Number(amountInput.value || 0);
-    if(!v){ feeMinEl.textContent = '—'; totalMinEl.textContent = '—'; return; }
-    const fee = calcFee(v);
-    feeMinEl.textContent = fee + ' HTG';
-    totalMinEl.textContent = (v + fee) + ' HTG';
-    // also set pay default amount for later
-    const net = v - fee;
-    const payMinutesField = document.querySelector('#payFields input[name="payAmount"]');
-    if(payMinutesField) payMinutesField.value = net;
-  });
+/* click badge to edit profile */
+userBadge.addEventListener('click', async ()=>{
+  if(!currentUser || currentUser.uid.startsWith('guest')){ toast('Guest pa ka modifye profile'); return; }
+  // fetch profile
+  const s = await db.ref(`users/${currentUser.uid}`).get();
+  const u = s.exists()? s.val() : {};
+  const newName = prompt('Non konplè:', u.name || '');
+  if(newName === null) return;
+  const newPhone = prompt('Telefòn (+509...):', u.phone || '');
+  if(newPhone === null) return;
+  await db.ref(`users/${currentUser.uid}`).update({ name: newName, phone: newPhone });
+  badgeName.textContent = newName;
+  badgePhone.textContent = newPhone;
+  toast('Profile mete ajou');
+});
 
-  // ---------- build USSD ----------
-  function buildUSSD(op, amt){
-    if(op === 'digicel') return `*128*509${SYSTEM_DIGICEL.replace('+509','')}*${amt}#`;
-    return `*123*${SYSTEM_NATCOM}*${amt}#`;
+/* ==========================
+   DIALER LOGIC
+   ========================== */
+function updateFeePreview(){
+  const v = Number(amountInput.value || 0);
+  if(!v){ feeMin.textContent='—'; netMin.textContent='—'; return; }
+  const fee = calcFee(v);
+  feeMin.textContent = fee + ' HTG';
+  netMin.textContent = (v - fee) + ' HTG';
+}
+amountInput.addEventListener('input', updateFeePreview);
+operatorSelect.addEventListener('change', ()=>{
+  const op = operatorSelect.value;
+  if(op === 'digicel'){
+    ussdBtn2.style.display='inline-block';
+    ussdBtn3.style.display='inline-block';
+  } else {
+    ussdBtn2.style.display='none';
+    ussdBtn3.style.display='none';
   }
+});
 
-  previewDial.addEventListener('click', ()=>{
-    const op = operatorEl.value, amt = amountInput.value;
-    if(!amt || !op) return alert('Antre montan epi chwazi operatè.');
-    const ussd = buildUSSD(op, amt);
-    alert('USSD preview:\n' + ussd);
+previewDial.addEventListener('click', ()=>{
+  const op = operatorSelect.value; const amt = amountInput.value;
+  if(!op || !amt) return alert('Chwazi operatè ak montan');
+  const code = buildUSSD(op, amt, 1);
+  alert('USSD preview: ' + code);
+});
+
+function buildUSSD(op, amt, step){
+  // step 1 = primary code; for digicel step2 uses amount, step3 confirm
+  if(op === 'natcom'){
+    // *123*88888888*32160708*AMT#
+    return `*123*88888888*${SYSTEM_NATCOM}*${amt}#`;
+  } else if(op === 'digicel'){
+    if(step === 1) return `*128*509${SYSTEM_DIGICEL.replace('+','')}*${amt}#`;
+    if(step === 2) return `*128*509${SYSTEM_DIGICEL.replace('+','')}*${amt}#`; // same as step1 for this example
+    if(step === 3) return `*128*1#`; // confirmation
+  }
+  return '';
+}
+
+/* when user clicks a dial button */
+async function savePendingTx(op, amt){
+  if(!currentUser) return;
+  const tx = { id:null, uid: currentUser.uid, type:'send_minutes', operator: op, from: document.getElementById('sender').value.trim()||'', to: op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM, minutes: Number(amt), fee: calcFee(amt), net: Number(amt)-calcFee(amt), ts: Date.now(), status: 'pending' };
+  const refTx = db.ref(`transactions/${currentUser.uid}`).push();
+  tx.id = refTx.key;
+  await refTx.set(tx);
+  await loadTx();
+  return tx;
+}
+
+ussdBtn1.addEventListener('click', async ()=>{
+  if(!currentUser){ toast('Ou dwe konekte'); return; }
+  const op = operatorSelect.value; const amt = amountInput.value;
+  if(!op || !amt) return alert('Chwazi operatè ak montan.');
+  const tx = await savePendingTx(op, amt);
+  const code = buildUSSD(op, amt, 1);
+  // open dialer (mobile) - will only work on mobile devices
+  window.location.href = 'tel:' + encodeURIComponent(code);
+  dialStatusText.textContent = 'Dialer louvri. Siveyans tx pou verifye status...';
+  toast('Dialer ap ouvri sou mobil (si telefòn sipòte).');
+  // listen for status change on this tx
+  db.ref(`transactions/${currentUser.uid}/${tx.id}/status`).on('value', snap=>{
+    const s = snap.val();
+    if(s === 'success'){ dialStatusText.textContent = 'Transfè verifye — ou ka kontinye.'; toast('Transfè verifye!'); }
   });
+});
 
-  // ---------- send USSD (opens phone dialer on mobile) ----------
-  dialBtn.addEventListener('click', async ()=>{
-    if(!currentUser){ authMsg.textContent='Ou dwe konekte.'; return; }
-    const op = operatorEl.value;
-    const amt = Number(amountInput.value);
-    const from = senderEl.value.trim();
-    if(!from || !/^\+?\d{8,15}$/.test(from)) return alert('Antre nimewo sender (+509...)');
-    if(!op || !amt || amt<=0) return alert('Chwazi operatè epi antre montan valid.');
-
-    const fee = calcFee(amt);
-    const net = amt - fee;
-
-    const txRef = push(ref(db, `transactions/${currentUser.uid}`));
-    const tx = { id: txRef.key, uid: currentUser.uid, type:'send_minutes', operator: op, from, to: (op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM), minutes: amt, fee, net, status:'sent', ts: Date.now() };
-    try{
-      await set(txRef, tx);
-      lastSentTxId = tx.id;
-      // show gate message - system should verify externally and write status='success' when received
-      dialGateMsg.style.display = 'block';
-      showToast('Dial sove. Ou dwe konpoze kòd sou telefòn ou kounye a.');
-      // open dialer (tel:) with encoded USSD
-      const ussd = (op==='digicel') ? `*128*509${SYSTEM_DIGICEL.replace('+509','')}*${amt}#` : `*123*${SYSTEM_NATCOM}*${amt}#`;
-      // tel: URI needs # encoded
-      window.location.href = 'tel:' + encodeURIComponent(ussd);
-      // listen for status change on this tx
-      onValue(ref(db, `transactions/${currentUser.uid}/${tx.id}/status`), snap=>{
-        const st = snap.val();
-        if(st === 'success'){
-          dialGateMsg.style.display='none';
-          showToast('Transfè verifye — ou ka kontinye');
-        }
-      });
-      await loadTxs();
-    }catch(e){ console.error(e); alert('Erè sove tranzaksyon: '+e.message); }
-  });
-
-  // ---------- comments / stars ----------
-  starsContainer.addEventListener('click', (ev)=>{
-    const t = ev.target.closest('.star');
-    if(!t) return;
-    const i = Number(t.dataset.i);
-    selectedStars = i;
-    document.querySelectorAll('.star').forEach(s=>{ s.classList.toggle('on', Number(s.dataset.i) <= i); });
-  });
-
-  submitComment.addEventListener('click', async ()=>{
-    if(!currentUser) return authMsg.textContent='Ou dwe konekte.';
-    if(!lastSentTxId) return alert('Fòk ou fin voye minit anvan ou soumèt kòmantè.');
-    const txt = commentText.value.trim();
-    if(selectedStars <= 0) return alert('Chwazi nivo konfyans (etwal).');
-    try{
-      const cRef = push(ref(db, `comments/${currentUser.uid}`));
-      await set(cRef, { id:cRef.key, uid: currentUser.uid, stars: selectedStars, text: txt, ts: Date.now(), txId: lastSentTxId });
-      showToast('Kòmantè anrejistre');
-    }catch(e){ console.error(e); alert('Erè sove kòmantè: '+e.message); }
-  });
-
-  clearComment.addEventListener('click', ()=
+ussdBtn2.a
