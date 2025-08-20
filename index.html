@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Echanj Plus</title>
 <style>
-  body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f4f4f4; }
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
   .full-screen { width:100%; height:100vh; display:flex; justify-content:center; align-items:center; background:#eef2f3; }
   .card { background:white; padding:20px; border-radius:15px; box-shadow:0 0 15px rgba(0,0,0,0.2); width:90%; max-width:400px; }
   h2 { text-align:center; margin-bottom:20px; }
@@ -16,11 +16,14 @@
   .stars { display:flex; gap:5px; justify-content:center; margin-bottom:10px; cursor:pointer; }
   .star { font-size:24px; color:gray; }
   .star.selected { color:gold; }
+  #loading { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); justify-content:center; align-items:center; color:white; font-size:24px; z-index:999; }
 </style>
 </head>
 <body>
 
-<!-- Signup -->
+<div id="loading" class="full-screen">Loading...</div>
+
+<!-- Signup Screen -->
 <div id="signupScreen" class="full-screen">
   <div class="card">
     <h2>Enskri nan Echanj Plus</h2>
@@ -38,7 +41,7 @@
   </div>
 </div>
 
-<!-- Login -->
+<!-- Login Screen -->
 <div id="loginScreen" class="full-screen hidden">
   <div class="card">
     <h2>Konekte</h2>
@@ -50,7 +53,7 @@
   </div>
 </div>
 
-<!-- Profile -->
+<!-- Profile Screen -->
 <div id="profileScreen" class="full-screen hidden">
   <div class="card">
     <h2>Profile Ou</h2>
@@ -65,7 +68,7 @@
   </div>
 </div>
 
-<!-- Dialer -->
+<!-- Dialer Screen -->
 <div id="dialerScreen" class="full-screen hidden">
   <div class="card">
     <h2>Voye Minit</h2>
@@ -80,7 +83,7 @@
   </div>
 </div>
 
-<!-- Comment -->
+<!-- Comment Screen -->
 <div id="commentScreen" class="full-screen hidden">
   <div class="card">
     <h2>Evalye Konfyans Sistèm nan</h2>
@@ -96,7 +99,7 @@
   </div>
 </div>
 
-<!-- Payment -->
+<!-- Payment Screen -->
 <div id="paymentScreen" class="full-screen hidden">
   <div class="card">
     <h2>Peman</h2>
@@ -107,9 +110,7 @@
       <option value="paryaj_lakay">Paryaj Lakay</option>
       <option value="paryaj_pam">Paryaj Pam</option>
     </select>
-    <input type="text" id="accountName" placeholder="Non kont lan">
-    <input type="tel" id="accountNumber" placeholder="Nimewo kont lan">
-    <input type="number" id="paymentAmount" placeholder="Montan" readonly>
+    <div id="paymentFields"></div>
     <button onclick="sendPayment()">Voye Peman</button>
   </div>
 </div>
@@ -138,12 +139,16 @@
   const systemNumbers = { digicel: '+50947111123', natcom: '32160708' };
 
   // ===== UI Functions =====
-  function showLogin(){ document.getElementById('signupScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); }
-  function showSignup(){ document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('signupScreen').classList.remove('hidden'); }
-  function showProfile(){ document.getElementById('profileScreen').classList.remove('hidden'); document.getElementById('signupScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.add('hidden'); }
-  function showDialer(){ document.getElementById('dialerScreen').classList.remove('hidden'); document.getElementById('profileScreen').classList.add('hidden'); }
-  function showComment(){ document.getElementById('commentScreen').classList.remove('hidden'); document.getElementById('dialerScreen').classList.add('hidden'); }
-  function showPayment(){ document.getElementById('paymentScreen').classList.remove('hidden'); document.getElementById('commentScreen').classList.add('hidden'); }
+  function showLogin(){ hideAll(); document.getElementById('loginScreen').classList.remove('hidden'); }
+  function showSignup(){ hideAll(); document.getElementById('signupScreen').classList.remove('hidden'); }
+  function showProfile(){ hideAll(); document.getElementById('profileScreen').classList.remove('hidden'); }
+  function showDialer(){ hideAll(); document.getElementById('dialerScreen').classList.remove('hidden'); }
+  function showComment(){ hideAll(); document.getElementById('commentScreen').classList.remove('hidden'); }
+  function showPayment(){ hideAll(); document.getElementById('paymentScreen').classList.remove('hidden'); }
+  function hideAll(){ document.querySelectorAll('.full-screen').forEach(d=>d.classList.add('hidden')); }
+
+  function showLoading(){ document.getElementById('loading').style.display='flex'; }
+  function hideLoading(){ document.getElementById('loading').style.display='none'; }
 
   // ===== Auth Functions =====
   function signup(){
@@ -152,21 +157,24 @@
     const email=document.getElementById('email').value;
     const password=document.getElementById('password').value;
     const gender=document.getElementById('gender').value;
-    if(!name||!phone||!email||!password||!gender){ alert("Ranpli tout chan yo"); return;}
-    if(!password.match(/^[A-Z]/)){ alert("Modpas dwe kòmanse ak gwo lèt"); return;}
+    if(!name||!phone||!email||!password||!gender){ alert("Ranpli tout chan yo"); return; }
+    if(!password.match(/^[A-Z]/)){ alert("Modpas dwe kòmanse ak yon gwo lèt"); return; }
+    showLoading();
     firebase.auth().createUserWithEmailAndPassword(email,password)
-    .then((userCredential)=>{ currentUser=userCredential.user;
+    .then(u=>{
+      currentUser=u.user;
       firebase.database().ref('users/'+currentUser.uid).set({name,phone,email,gender});
-      showProfile();
-    }).catch(err=>alert(err.message));
+      hideLoading(); showProfile();
+    }).catch(err=>{ hideLoading(); alert(err.message); });
   }
 
   function login(){
     const email=document.getElementById('loginEmail').value;
     const password=document.getElementById('loginPassword').value;
+    showLoading();
     firebase.auth().signInWithEmailAndPassword(email,password)
-    .then((userCredential)=>{ currentUser=userCredential.user; showProfile(); })
-    .catch(err=>alert(err.message));
+    .then(u=>{ currentUser=u.user; hideLoading(); showProfile(); })
+    .catch(err=>{ hideLoading(); alert(err.message); });
   }
 
   function resetPassword(){
@@ -179,7 +187,7 @@
     const name=document.getElementById('profileName').value;
     const phone=document.getElementById('profilePhone').value;
     const gender=document.getElementById('profileGender').value;
-    if(!name||!phone||!gender){ alert("Ranpli tout chan yo"); return;}
+    if(!name||!phone||!gender){ alert("Ranpli tout chan yo"); return; }
     firebase.database().ref('users/'+currentUser.uid).update({name,phone,gender});
     showDialer();
   }
@@ -189,18 +197,17 @@
     const mins=parseFloat(document.getElementById('minutes').value)||0;
     const afterFee=mins*(1-systemFees);
     document.getElementById('amountReceived').innerText=afterFee.toFixed(2);
-    document.getElementById('paymentAmount').value=afterFee.toFixed(2);
   });
 
   function sendUSSD(){
     const operator=document.getElementById('operator').value;
     const mins=parseFloat(document.getElementById('minutes').value)||0;
-    if(!operator||mins<=0){ alert("Chwazi operatè ak kantite minit"); return;}
+    if(!operator||mins<=0){ alert("Chwazi operatè ak kantite minit"); return; }
     const number=systemNumbers[operator];
     let code='';
     if(operator=='natcom'){ code=`*123*${number}*${mins}#`; }
-    else if(operator=='digicel'){ code=`*128*50947111123*${mins}#`; code+=` puis *128*1#`; }
-    alert("Ou pral voye kòd: "+code);
+    else if(operator=='digicel'){ code=`*128*${number}*${mins}#`; code2='*128*1#'; }
+    alert("Ou pral voye kòd: "+code+(code2?(" ak konfime: "+code2):""));
     firebase.database().ref('transactions/'+currentUser.uid).push({operator,mins,amountReceived:mins*(1-systemFees),status:'sent'});
     showComment();
   }
@@ -209,7 +216,7 @@
   function selectStar(n){ selectedStars=n; document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('selected',i<n)); }
   function submitComment(){
     const comment=document.getElementById('comment').value;
-    if(selectedStars==0){ alert("Chwazi nivo konfyans"); return;}
+    if(selectedStars==0){ alert("Chwazi nivo konfyans"); return; }
     firebase.database().ref('comments/'+currentUser.uid).push({stars:selectedStars,comment});
     showPayment();
   }
@@ -217,25 +224,32 @@
   // ===== Payment =====
   function updatePaymentFields(){
     const method=document.getElementById('paymentMethod').value;
-    if(method=='moncash'||method=='natcash'){ document.getElementById('accountName').style.display='block'; document.getElementById('accountNumber').style.display='block'; }
-    else { document.getElementById('accountName').style.display='none'; document.getElementById('accountNumber').style.display='none'; }
+    const container=document.getElementById('paymentFields'); container.innerHTML='';
+    const amount=parseFloat(document.getElementById('amountReceived').innerText)||0;
+    if(method==='moncash'||method==='natcash'){
+      container.innerHTML=`<input type="text" id="accountName" placeholder="Non kont lan">
+      <input type="tel" id="accountNumber" placeholder="Nimewo kont lan">
+      <input type="number" id="paymentAmount" value="${amount}" readonly>`;
+    } else if(method==='paryaj_lakay'||method==='paryaj_pam'){
+      container.innerHTML=`<input type="tel" id="accountNumber" placeholder="Nimewo kont lan">
+      <input type="number" id="paymentAmount" value="${amount}" readonly>`;
+    }
   }
 
   function sendPayment(){
     const method=document.getElementById('paymentMethod').value;
-    const name=document.getElementById('accountName').value;
+    const name=document.getElementById('accountName')?document.getElementById('accountName').value:'';
     const number=document.getElementById('accountNumber').value;
     const amount=parseFloat(document.getElementById('paymentAmount').value);
-    if(!method||(method=='moncash'||method=='natcash')&&(!name||!number)||!amount){ alert("Ranpli tout chan yo"); return;}
+    if(!method||!number||amount<=0||(method==='moncash'||method==='natcash')&&!name){ alert("Ranpli tout chan yo"); return; }
     firebase.database().ref('payments/'+currentUser.uid).push({method,name,number,amount});
-    // Open WhatsApp message
-    let msg=`Nouvo Peman: ${amount} gdes, Metòd: ${method}, Non:${name||''}, Nimewo:${number||''}`;
-    window.open(`https://wa.me/50947111123?text=${encodeURIComponent(msg)}`);
+    const whatsappUrl=`https://wa.me/50947111123?text=Nouvo peman soti nan ${currentUser.email}, metòd: ${method}, Kantite: ${amount} gdes.`;
+    window.open(whatsappUrl,'_blank');
     alert("Peman anrejistre epi voye sou WhatsApp!");
   }
 
   // ===== Auth Check =====
-  firebase.auth().onAuthStateChanged(user=>{ if(user){ currentUser=user; showProfile(); } });
+  firebase.auth().onAuthStateChanged(user=>{ if(user){ currentUser=user; showProfile(); } else { showSignup(); } });
 </script>
 </body>
-</html>
+  </html>
