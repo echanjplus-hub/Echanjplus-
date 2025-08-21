@@ -6,26 +6,26 @@
 <title>Echanj Plus Dashboard</title>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:'Segoe UI', sans-serif; background:#111; color:#fff; min-height:100vh; overflow-x:hidden; }
-header { position:sticky; top:0; display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; background:#1f1f1f; z-index:10; }
+body { font-family:'Segoe UI',sans-serif; min-height:100vh; background:linear-gradient(145deg,#111,#444); color:#fff; }
+header { position:sticky; top:0; display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; background:#1f1f1f; z-index:10; box-shadow:0 4px 12px rgba(0,0,0,0.6);}
 .brand h1 { color:#ffc107; font-size:1.8rem; }
 .brand p { font-size:0.9rem; color:#ccc; }
 .nav-buttons { display:flex; gap:0.5rem; }
-.btn { background:#ffc107; color:#000; padding:0.8rem 1.2rem; border:none; border-radius:8px; cursor:pointer; font-weight:600; }
+.btn { background:#ffc107; color:#000; padding:0.8rem 1.2rem; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:0.25s; }
 .btn:hover { background:#e0a800; }
 .user-area { display:flex; gap:10px; align-items:center; }
 .user-badge { background:rgba(255,193,7,0.1); padding:5px 10px; border-radius:20px; font-size:0.8rem; }
-section { display:none; max-width:500px; margin:1.5rem auto; padding:2rem; background:#222; border-radius:12px; }
-section.active { display:flex; flex-direction:column; }
+section { display:none; max-width:500px; margin:1.5rem auto; padding:2rem; background:#222; border-radius:12px; flex-direction:column; }
+section.active { display:flex; }
 input, select { width:100%; padding:0.8rem 1rem; margin:0.5rem 0; border-radius:10px; border:1px solid #ffc107; background:#333; color:#fff; }
 .inline-group { display:flex; gap:0.5rem; flex-wrap:wrap; }
 .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.95); display:flex; align-items:center; justify-content:center; z-index:50; }
 .auth-card { background:#1f1f1f; padding:2rem 1.5rem; border-radius:12px; width:90%; max-width:400px; display:flex; flex-direction:column; gap:12px; }
 .message { min-height:1.2em; margin-top:6px; font-size:0.9rem; }
-.sidebar { position:fixed; top:0; left:-240px; width:240px; height:100%; background:#222; padding:1rem; display:flex; flex-direction:column; gap:12px; transition:0.3s; z-index:30; }
+.sidebar { position:fixed; top:0; left:-220px; width:220px; height:100%; background:#222; padding:1rem; display:flex; flex-direction:column; gap:12px; transition:0.3s; z-index:30; }
 .sidebar.active { left:0; }
-.hamburger { font-size:1.5rem; cursor:pointer; }
-@media (max-width:600px){ .nav-buttons{ display:none; } }
+.hamburger { font-size:1.5rem; cursor:pointer; display:none; }
+@media(max-width:600px){ .nav-buttons{ display:none; } .hamburger{ display:block; } }
 </style>
 </head>
 <body>
@@ -35,7 +35,7 @@ input, select { width:100%; padding:0.8rem 1rem; margin:0.5rem 0; border-radius:
   <div class="nav-buttons">
     <button class="btn" onclick="requireAuth(()=>showSection('minit'))">Voye Minit</button>
     <button class="btn" onclick="requireAuth(()=>showSection('peyman'))">Peyman</button>
-    <button class="btn" onclick="requireAuth(()=>showSection('profile'))">Profile</button>
+    <button class="btn" onclick="showAuth()">Konekte / Enskri</button>
   </div>
   <div class="hamburger" onclick="toggleSidebar()">☰</div>
   <div class="user-area" id="userArea" style="display:none;">
@@ -47,7 +47,6 @@ input, select { width:100%; padding:0.8rem 1rem; margin:0.5rem 0; border-radius:
 <div class="sidebar" id="sidebar">
   <button class="btn" onclick="showSection('minit')">Voye Minit</button>
   <button class="btn" onclick="showSection('peyman')">Peyman</button>
-  <button class="btn" onclick="showSection('profile')">Profile</button>
 </div>
 
 <section id="minit">
@@ -71,18 +70,6 @@ input, select { width:100%; padding:0.8rem 1rem; margin:0.5rem 0; border-radius:
   <button class="btn" onclick="requireAuth(soumetPeyman)">Voye</button>
 </section>
 
-<section id="profile">
-  <h2>Profile</h2>
-  <input type="text" id="profileName" placeholder="Non ou">
-  <input type="text" id="profilePhone" placeholder="Nimewo telefòn">
-  <select id="profileGender">
-    <option value="">Chwazi sèks</option>
-    <option value="gason">Gason</option>
-    <option value="fi">Fi</option>
-  </select>
-  <button class="btn" onclick="saveProfile()">Sove Profile</button>
-</section>
-
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-card">
     <h2>Konekte oswa Enskri</h2>
@@ -96,6 +83,7 @@ input, select { width:100%; padding:0.8rem 1rem; margin:0.5rem 0; border-radius:
   </div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
@@ -124,17 +112,14 @@ function showSection(id){
   document.getElementById(id).classList.add('active');
   sidebar.classList.remove('active');
 }
-
 function requireAuth(fn){
   if(auth.currentUser) fn();
   else showAuth('Tanpri konekte pou kontinye.');
 }
-
 function showAuth(msg){
   authOverlay.style.display='flex';
   if(msg){ authMsg.textContent=msg; authMsg.style.color='#ffcc00'; }
 }
-
 function hideAuth(){ authOverlay.style.display='none'; }
 
 function register(){
@@ -151,16 +136,14 @@ function login(){
   const password=document.getElementById('password').value.trim();
   if(!email||!password){ authMsg.textContent='Ranpli tout chan yo'; authMsg.style.color='red'; return; }
   auth.signInWithEmailAndPassword(email,password)
-    .then(u=>{ authMsg.textContent='Byenvini!'; authMsg.style.color='lightgreen'; hideAuth(); showSection('minit'); loadProfile(); })
+    .then(u=>{ authMsg.textContent='Byenvini!'; authMsg.style.color='lightgreen'; hideAuth(); showSection('minit'); })
     .catch(e=>{ authMsg.textContent=e.message; authMsg.style.color='red'; });
 }
 
-function logout(){
-  auth.signOut().then(()=>{ userArea.style.display='none'; showAuth(); });
-}
+function logout(){ auth.signOut().then(()=>{ userArea.style.display='none'; showAuth(); }); }
 
 auth.onAuthStateChanged(user=>{
-  if(user){ userArea.style.display='flex'; userEmailDisplay.textContent=user.email; hideAuth(); showSection('minit'); loadProfile(); }
+  if(user){ userArea.style.display='flex'; userEmailDisplay.textContent=user.email; hideAuth(); showSection('minit'); }
   else showAuth();
 });
 
@@ -187,30 +170,8 @@ function soumetPeyman(){
   window.open(`https://wa.me/50947111123?text=${encodeURIComponent(mesaj)}`);
 }
 
-function saveProfile(){
-  const name=document.getElementById('profileName').value.trim();
-  const phone=document.getElementById('profilePhone').value.trim();
-  const gender=document.getElementById('profileGender').value;
-  if(!name||!phone||!gender){ alert('Ranpli tout chan profile'); return; }
-  const uid=auth.currentUser.uid;
-  db.ref('users/'+uid).set({name, phone, gender});
-  alert('Profile sove!');
-}
-
-function loadProfile(){
-  const uid=auth.currentUser.uid;
-  db.ref('users/'+uid).get().then(snapshot=>{
-    if(snapshot.exists()){
-      const data=snapshot.val();
-      document.getElementById('profileName').value=data.name||'';
-      document.getElementById('profilePhone').value=data.phone||'';
-      document.getElementById('profileGender').value=data.gender||'';
-    }
-  });
-}
-
+// Sidebar toggle & swipe
 function toggleSidebar(){ sidebar.classList.toggle('active'); }
-
 let touchStartX=0;
 document.body.addEventListener('touchstart', e=>{ touchStartX=e.touches[0].clientX; });
 document.body.addEventListener('touchend', e=>{
