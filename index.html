@@ -1,362 +1,193 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Echanj Plus</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-  }
-  /* LOGIN / SIGNUP */
-  #auth-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #f0f2f5;
-  }
-  .auth-container {
-    background: #fff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    width: 350px;
-  }
-  .auth-container h2 { text-align: center; margin-bottom: 20px; color: #333; }
-  .auth-container input {
-    width: 100%; padding: 10px; margin: 8px 0;
-    border-radius: 6px; border: 1px solid #ccc; font-size: 16px;
-  }
-  .auth-container button {
-    width: 100%; padding: 10px; margin: 10px 0;
-    border: none; border-radius: 6px;
-    background: #007bff; color: #fff; font-size: 16px; cursor: pointer;
-  }
-  .auth-container button:hover { background: #0056b3; }
-  .toggle-link { text-align: center; margin-top: 10px; cursor: pointer; color: #007bff; }
-  .error { color: red; font-size: 14px; margin: 5px 0; }
-  .success { color: green; font-size: 14px; margin: 5px 0; }
-
-  /* DASHBOARD */
-  #dashboard-screen { display: none; }
-  .dashboard { display: flex; height: 100vh; }
-  .sidebar {
-    width: 220px; background-color: #2c3e50; color: white;
-    display: flex; flex-direction: column; padding-top: 20px;
-  }
-  .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; }
-  .sidebar button {
-    background: none; border: none; color: white;
-    padding: 15px 20px; text-align: left; width: 100%;
-    font-size: 16px; cursor: pointer; transition: background 0.3s;
-  }
-  .sidebar button:hover, .sidebar button.active { background-color: #34495e; }
-  .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-  .section { display: none; }
-  .section.active { display: block; }
-  .placeholder {
-    background-color: #ecf0f1; padding: 30px; border-radius: 8px;
-    text-align: center; color: #7f8c8d; font-size: 18px;
-  }
-
-  /* PROFILE */
-  .profile-container { background: white; padding: 20px; border-radius: 10px; width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin:auto; }
-  .profile-container input, .profile-container select {
-    width: 100%; padding: 10px; margin-bottom: 15px;
-    border-radius: 5px; border: 1px solid #ccc;
-  }
-  .profile-container button { width: 100%; padding: 12px; background: #007BFF; border: none; border-radius: 5px; color: white; font-size: 16px; }
-  .profile-preview { display: block; margin: 0 auto 15px; width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #007BFF; }
-
-  /* PAYMENT */
-  .payment-container {
-    max-width: 500px; margin: auto; background: #fff; padding: 20px;
-    border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
-  .payment-container select, .payment-container input {
-    width: 100%; padding: 10px; margin-bottom: 15px;
-    border-radius: 5px; border: 1px solid #ccc;
-  }
-  .payment-container button {
-    width: 100%; padding: 12px; background: #4CAF50; color: #fff;
-    border: none; border-radius: 5px; cursor: pointer;
-  }
-
-  /* FEEDBACK */
-  .feedback-container {
-    background: white; padding: 20px; border-radius: 10px; max-width: 600px; margin:auto;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-  .stars { display: flex; justify-content: center; margin: 10px 0; }
-  .stars span { font-size: 2rem; cursor: pointer; color: #ccc; }
-  .stars span.selected { color: gold; }
-  textarea { width: 100%; height: 100px; margin-top: 10px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; resize: none; }
-  .comment-item { background: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-</style>
+  <meta charset="UTF-8">
+  <title>Echanj Plus Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f4f6f9;
+    }
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 220px;
+      background: #2c3e50;
+      color: #fff;
+      padding-top: 20px;
+    }
+    .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background: none;
+      border: none;
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+    }
+    .sidebar button.active {
+      background: #1abc9c;
+    }
+    .content {
+      margin-left: 220px;
+      padding: 20px;
+    }
+    .section {
+      display: none;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .section.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
 
-<!-- LOGIN / SIGNUP -->
-<div id="auth-screen">
-  <div class="auth-container">
-    <h2 id="form-title">Login</h2>
-    <div id="error-message" class="error"></div>
-    <div id="success-message" class="success"></div>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button id="submit-btn">Login</button>
-    <div class="toggle-link" id="toggle-form">Don't have an account? Signup</div>
-    <div style="text-align:center; margin-top:5px;">
-      <a href="#" id="forgot-password">Forgot Password?</a>
+  <div class="sidebar">
+    <button data-section="dashboard" class="active">🏠 Dashboard</button>
+    <button data-section="profile">👤 Profile</button>
+    <button data-section="sendMinutes">📱 Voye Minit</button>
+    <button data-section="payment">💵 Peman</button>
+    <button data-section="feedback">⭐ Feedback</button>
+    <button data-section="settings">⚙️ Paramèt</button>
+  </div>
+
+  <div class="content">
+    <!-- Dashboard -->
+    <div id="dashboard" class="section active">
+      <h2>Dashboard</h2>
+      <p>Byenveni nan Echanj Plus!</p>
+    </div>
+
+    <!-- Profile -->
+    <div id="profile" class="section">
+      <h2>Profile</h2>
+      <form id="profileForm">
+        <label>Non: <input type="text" id="name"></label><br><br>
+        <label>Telefòn: <input type="text" id="phone"></label><br><br>
+        <label>Sèks: 
+          <select id="gender">
+            <option>Gason</option>
+            <option>Fi</option>
+          </select>
+        </label><br><br>
+        <button type="button" onclick="saveProfile()">Save</button>
+      </form>
+    </div>
+
+    <!-- Send Minutes -->
+    <div id="sendMinutes" class="section">
+      <h2>Voye Minit</h2>
+      <label>Kantite: <input type="number" id="minutes"></label><br><br>
+      <label>Operatè:
+        <select id="operator">
+          <option>Digicel</option>
+          <option>Natcom</option>
+        </select>
+      </label><br><br>
+      <button onclick="calculateFee()">Kalkile Frè</button>
+      <p id="feeResult"></p>
+    </div>
+
+    <!-- Payment -->
+    <div id="payment" class="section">
+      <h2>Peman</h2>
+      <label>Metòd: 
+        <select id="method" onchange="showPaymentFields()">
+          <option value="">--Chwazi--</option>
+          <option value="moncash">MonCash</option>
+          <option value="natcash">NatCash</option>
+          <option value="parayaj">Paryaj Lakay</option>
+        </select>
+      </label>
+      <div id="paymentFields"></div>
+    </div>
+
+    <!-- Feedback -->
+    <div id="feedback" class="section">
+      <h2>Feedback</h2>
+      <p>Evalye konfyans ou nan sistèm nan:</p>
+      <div>
+        <span onclick="rate(1)">⭐</span>
+        <span onclick="rate(2)">⭐</span>
+        <span onclick="rate(3)">⭐</span>
+        <span onclick="rate(4)">⭐</span>
+        <span onclick="rate(5)">⭐</span>
+      </div>
+      <p id="feedbackText"></p>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings" class="section">
+      <h2>Paramèt</h2>
+      <p>Bientot disponib...</p>
     </div>
   </div>
-</div>
 
-<!-- DASHBOARD -->
-<div id="dashboard-screen">
-  <div class="dashboard">
-    <div class="sidebar">
-      <h2>Echanj Plus</h2>
-      <button class="tab-btn active" data-target="dashboard">Dashboard</button>
-      <button class="tab-btn" data-target="profil">Profil</button>
-      <button class="tab-btn" data-target="voyeMinit">Voye Minit</button>
-      <button class="tab-btn" data-target="peman">Peman</button>
-      <button class="tab-btn" data-target="feedback">Feedback</button>
-      <button class="tab-btn" data-target="settings">Settings</button>
-      <button id="logoutBtn">Logout</button>
-    </div>
-    <div class="main-content">
-      <div id="dashboard" class="section active">
-        <div class="placeholder">Byenveni sou Dashboard Echanj Plus</div>
-      </div>
+  <script>
+    // Sidebar navigation
+    const buttons = document.querySelectorAll('.sidebar button');
+    const sections = document.querySelectorAll('.section');
 
-      <!-- PROFILE -->
-      <div id="profil" class="section">
-        <div class="profile-container">
-          <h2>Profile</h2>
-          <form id="profileForm">
-            <img src="" alt="Preview" class="profile-preview" id="profilePreview" style="display:none;">
-            <input type="file" id="photo" accept="image/*">
-            <input type="text" id="name" placeholder="Non" required>
-            <input type="email" id="emailProfile" placeholder="Imèl" required>
-            <input type="text" id="phone" placeholder="Telefòn" required>
-            <select id="gender" required>
-              <option value="">Chwazi sèks ou</option>
-              <option value="Masculin">Masculin</option>
-              <option value="Feminin">Feminin</option>
-            </select>
-            <button type="submit">Save</button>
-          </form>
-        </div>
-      </div>
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-      <!-- VOYE MINIT -->
-      <div id="voyeMinit" class="section">
-        <div class="placeholder">
-          <h2>Voye Minit</h2>
-          <input type="number" id="minutesInput" placeholder="Antre kantite minit">
-          <select id="operatorSelect">
-            <option value="">--Chwazi Operatè--</option>
-            <option value="digicel">Digicel</option>
-            <option value="natcom">Natcom</option>
-          </select>
-          <button id="sendBtn">Voye</button>
-        </div>
-      </div>
-
-      <!-- PEMAN -->
-      <div id="peman" class="section">
-        <div class="payment-container">
-          <h2>Peman</h2>
-          <select id="method">
-            <option value="">-- Chwazi Metòd --</option>
-            <option value="moncash">MonCash</option>
-            <option value="natcash">NatCash</option>
-            <option value="paryaj_lakay">Paryaj Lakay</option>
-            <option value="paryaj_pam">Paryaj Pam</option>
-          </select>
-          <div id="moncash-fields" class="hidden">
-            <input type="text" id="mc-name" placeholder="Non kont lan">
-            <input type="text" id="mc-number" placeholder="Nimero kont lan">
-            <input type="number" id="mc-amount" placeholder="Montan">
-          </div>
-          <div id="natcash-fields" class="hidden">
-            <input type="text" id="nc-name" placeholder="Non kont lan">
-            <input type="text" id="nc-number" placeholder="Nimero kont lan">
-            <input type="number" id="nc-amount" placeholder="Montan">
-          </div>
-          <div id="paryaj-lakay-fields" class="hidden">
-            <input type="text" id="pl-number" placeholder="Nimero kont lan">
-            <input type="number" id="pl-amount" placeholder="Montan">
-          </div>
-          <div id="paryaj-pam-fields" class="hidden">
-            <input type="text" id="pp-number" placeholder="Nimero kont lan">
-            <input type="number" id="pp-amount" placeholder="Montan">
-          </div>
-          <button id="sendPayBtn">Voye Peman</button>
-        </div>
-      </div>
-
-      <!-- FEEDBACK -->
-      <div id="feedback" class="section">
-        <div class="feedback-container">
-          <h2>Feedback</h2>
-          <div class="stars">
-            <span data-value="1">⭐</span><span data-value="2">⭐</span>
-            <span data-value="3">⭐</span><span data-value="4">⭐</span>
-            <span data-value="5">⭐</span>
-          </div>
-          <p id="trust-level" style="text-align:center;">Konfyans: 0%</p>
-          <textarea id="comment" placeholder="Ekri komantè w la..."></textarea>
-          <button id="sendFbBtn">Voye Feedback</button>
-          <div id="commentsContainer"><h3>Tout Komantè:</h3></div>
-        </div>
-      </div>
-
-      <div id="settings" class="section">
-        <div class="placeholder">Settings ap vini pita</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-<script>
-/* ---------------- FIREBASE CONFIG ---------------- */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const database = firebase.database();
-const storage = firebase.storage();
-
-/* ---------------- LOGIN / SIGNUP ---------------- */
-let isLogin = true;
-const formTitle = document.getElementById('form-title');
-const submitBtn = document.getElementById('submit-btn');
-const toggleForm = document.getElementById('toggle-form');
-const errorMessage = document.getElementById('error-message');
-const successMessage = document.getElementById('success-message');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-
-toggleForm.addEventListener('click', () => {
-  isLogin = !isLogin;
-  formTitle.textContent = isLogin ? 'Login' : 'Signup';
-  submitBtn.textContent = isLogin ? 'Login' : 'Signup';
-  toggleForm.textContent = isLogin ? "Don't have an account? Signup" : "Already have an account? Login";
-  errorMessage.textContent = '';
-  successMessage.textContent = '';
-});
-
-submitBtn.addEventListener('click', () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  if(!email || !password){ errorMessage.textContent = 'Tanpri ranpli tout chan yo.'; return; }
-  if(password.length < 6){ errorMessage.textContent = 'Modpas dwe gen omwen 6 karaktè.'; return; }
-
-  if(isLogin){
-    auth.signInWithEmailAndPassword(email, password)
-    .then(() => showDashboard())
-    .catch(err => errorMessage.textContent = err.message);
-  } else {
-    auth.createUserWithEmailAndPassword(email, password)
-    .then(() => showDashboard())
-    .catch(err => errorMessage.textContent = err.message);
-  }
-});
-
-document.getElementById('forgot-password').addEventListener('click', () => {
-  const email = emailInput.value.trim();
-  if(!email){ errorMessage.textContent = 'Antre email ou pou reset.'; return; }
-  auth.sendPasswordResetEmail(email)
-  .then(()=> successMessage.textContent = 'Imèl reset voye!')
-  .catch(err=> errorMessage.textContent = err.message);
-});
-
-auth.onAuthStateChanged(user => { if(user) showDashboard(); });
-
-function showDashboard(){
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('dashboard-screen').style.display = 'block';
-}
-
-/* ---------------- DASHBOARD NAVIGATION ---------------- */
-const buttons = document.querySelectorAll('.tab-btn');
-const sections = document.querySelectorAll('.section');
-buttons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    buttons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    sections.forEach(sec => sec.classList.remove('active'));
-    document.getElementById(btn.dataset.target).classList.add('active');
-  });
-});
-document.getElementById('logoutBtn').addEventListener('click', ()=> auth.signOut().then(()=>{
-  document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('dashboard-screen').style.display = 'none';
-}));
-
-/* ---------------- PROFILE ---------------- */
-const profileForm = document.getElementById('profileForm');
-const profilePreview = document.getElementById('profilePreview');
-const photoInput = document.getElementById('photo');
-photoInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if(file){ profilePreview.src = URL.createObjectURL(file); profilePreview.style.display='block'; }
-});
-auth.onAuthStateChanged(user => {
-  if(user){
-    database.ref('users/'+user.uid).once('value').then(snap=>{
-      const d = snap.val();
-      if(d){
-        document.getElementById('name').value = d.name||'';
-        document.getElementById('emailProfile').value = d.email||user.email||'';
-        document.getElementById('phone').value = d.phone||'';
-        document.getElementById('gender').value = d.gender||'';
-        if(d.photoUrl){ profilePreview.src=d.photoUrl; profilePreview.style.display='block'; }
-      }
+        sections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById(btn.dataset.section).classList.add('active');
+      });
     });
-  }
-});
-profileForm.addEventListener('submit', async e=>{
-  e.preventDefault();
-  const user = auth.currentUser; if(!user) return;
-  const userId = user.uid;
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('emailProfile').value;
-  const phone = document.getElementById('phone').value;
-  const gender = document.getElementById('gender').value;
-  const file = photoInput.files[0];
-  let photoUrl='';
-  if(file){
-    const storageRef = storage.ref('profile_photos/'+userId+'/'+file.name);
-    await storageRef.put(file); photoUrl= await storageRef.getDownloadURL();
-  }
-  database.ref('users/'+userId).set({name,email,phone,gender,photoUrl});
-});
 
-/* ---------------- VOYE MINIT ---------------- */
-function calculateFee(mins){ return mins - (mins*0.175); }
-const minutesInput = document.getElementById('minutesInput');
-const operatorSelect = document.getElementById('operatorSelect');
-document.getElementById('sendBtn').addEventListener('click', ()=>{
-  const mins=parseFloat(minutesInput.value); const operator=operatorSelect.value;
-  if(!mins||!operator){alert('Ranpli tout chan yo'); return;}
-  const received = calculateFee(mins); let ussdCode='';
-  if(operator==='natcom'){ ussdCode=`*123*88888888*321607
+    // Profile
+    function saveProfile() {
+      alert("Profile saved!");
+    }
+
+    // Send minutes
+    function calculateFee() {
+      let min = document.getElementById('minutes').value;
+      if (!min) return alert("Antre kantite minit!");
+      let fee = min * 0.175;
+      let total = min - fee;
+      document.getElementById('feeResult').innerText = 
+        `Frè: ${fee.toFixed(2)} | Resevwa: ${total.toFixed(2)}`;
+    }
+
+    // Payment
+    function showPaymentFields() {
+      let method = document.getElementById("method").value;
+      let container = document.getElementById("paymentFields");
+      container.innerHTML = "";
+      if (method === "moncash" || method === "natcash") {
+        container.innerHTML = `
+          <label>Non kont: <input type="text"></label><br><br>
+          <label>Nimewo: <input type="text"></label><br><br>
+          <label>Montan: <input type="number"></label>
+        `;
+      } else if (method === "parayaj") {
+        container.innerHTML = `
+          <label>Nimewo kont: <input type="text"></label>
+        `;
+      }
+    }
+
+    // Feedback
+    function rate(stars) {
+      const levels = {
+        1: "Konfyans: 10%",
+        2: "Konfyans: 30%",
+        3: "Konfyans: 50%",
+        4: "Konfyans: 75%",
+        5: "Konfyans: 100%"
+      };
+      document.getElementById("feedbackText").innerText = levels[stars];
+    }
+  </script>
+</body>
+</html>
