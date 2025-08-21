@@ -1,226 +1,405 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-  <meta charset="UTF-8">
-  <title>Echanj Plus</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Echanj Plus v5.0.1</title>
   <style>
-    body {
-      margin: 0; font-family: Arial, sans-serif;
-      background: #f4f6f9; color: #333;
+    :root{
+      --bg:#f4f6f9; --fg:#0f172a; --card:#ffffff; --muted:#94a3b8; --primary:#2563eb; --primary-2:#1d4ed8;
+      --ok:#16a34a; --warn:#f59e0b; --err:#e11d48; --ring:rgba(37,99,235,.25);
+      --sidebar:#0b1220; --sidebarAccent:#111827;
     }
-    /* Auth screens */
-    .auth-container {
-      display: flex; align-items: center; justify-content: center;
-      height: 100vh; background: #2c3e50; color: #fff;
+    .dark{
+      --bg:#0b0f1a; --fg:#e5e7eb; --card:#0f172a; --muted:#9ca3af; --primary:#60a5fa; --primary-2:#3b82f6;
+      --ok:#22c55e; --warn:#fbbf24; --err:#fb7185; --ring:rgba(96,165,250,.25);
+      --sidebar:#050914; --sidebarAccent:#0b1220;
     }
-    .auth-box {
-      background: #fff; color: #333;
-      padding: 20px; border-radius: 10px;
-      width: 300px; box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-      text-align: center;
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--fg);}
+    a{color:var(--primary);text-decoration:none}
+    /* FULLSCREEN AUTH GATE */
+    .gate{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e2e8f0, #eef2f7);}
+    .card{width:100%;max-width:420px;background:var(--card);border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.12);border:1px solid rgba(15,23,42,.06)}
+    h1,h2{margin:0 0 10px}
+    .muted{color:var(--muted);font-size:.92rem}
+    .row{display:flex;gap:12px}
+    .field{margin-top:14px}
+    .field label{display:block;font-size:.9rem;margin-bottom:6px}
+    .input, select, textarea{
+      width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;background:transparent;color:inherit;
+      outline:none;transition:border .15s, box-shadow .15s;
     }
-    .auth-box h2 { margin-bottom: 20px; }
-    .auth-box input {
-      width: 100%; padding: 10px; margin: 8px 0;
-      border: 1px solid #ccc; border-radius: 5px;
-    }
-    .auth-box button {
-      width: 100%; padding: 10px; margin-top: 10px;
-      background: #1abc9c; color: #fff; border: none; border-radius: 5px;
-      cursor: pointer; font-weight: bold;
-    }
-    .auth-box p { margin-top: 10px; font-size: 14px; }
-    .auth-box a { color: #1abc9c; cursor: pointer; }
-
-    /* Dashboard Layout */
-    .app {
-      display: none;
-    }
-    .sidebar {
-      position: fixed; left: 0; top: 0; bottom: 0;
-      width: 220px; background: #2c3e50; color: #fff;
-      padding-top: 20px;
-    }
-    .sidebar button {
-      display: block; width: 100%; padding: 15px;
-      background: none; border: none; color: #fff;
-      text-align: left; cursor: pointer;
-      font-size: 16px;
-    }
-    .sidebar button.active { background: #1abc9c; }
-    .content {
-      margin-left: 220px; padding: 20px;
-    }
-    .section {
-      display: none; background: #fff; padding: 20px;
-      border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .section.active { display: block; }
+    .input:focus, select:focus, textarea:focus{border-color:var(--primary);box-shadow:0 0 0 6px var(--ring)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;
+      padding:12px 14px;border-radius:12px;border:none;cursor:pointer;background:var(--primary);color:white;font-weight:600}
+    .btn:hover{background:var(--primary-2)}
+    .btn-ghost{background:transparent;border:1px solid #e5e7eb;color:inherit}
+    .btn-ok{background:var(--ok);color:#021}
+    .btn-warn{background:var(--warn)}
+    .btn-err{background:var(--err)}
+    .link{display:inline-block;margin-top:10px}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,#e5e7eb,transparent);margin:16px 0}
+    /* APP LAYOUT */
+    .app{display:none;height:100vh;overflow:hidden}
+    .sidebar{position:fixed;inset:0 auto 0 0;width:260px;background:var(--sidebar);color:#cbd5e1;display:flex;flex-direction:column;z-index:30;transform:translateX(0);transition:transform .25s ease}
+    .sidebar.hidden{transform:translateX(-100%)}
+    .brand{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:1px solid rgba(148,163,184,.12)}
+    .brand .logo{width:36px;height:36px;border-radius:12px;background:white;display:grid;place-items:center;color:#111;font-weight:800}
+    .nav{padding:10px}
+    .nav button{width:100%;text-align:left;padding:12px 14px;border-radius:12px;border:none;background:transparent;color:inherit;cursor:pointer;display:flex;align-items:center;gap:10px}
+    .nav button.active{background:var(--sidebarAccent);color:#fff;border:1px solid rgba(148,163,184,.18)}
+    .badge{background:var(--err);color:#fff;font-size:.72rem;padding:2px 6px;border-radius:999px;margin-left:auto}
+    .footerSide{margin-top:auto;padding:10px;border-top:1px solid rgba(148,163,184,.12)}
+    .content{position:fixed;inset:0 0 0 260px;display:flex;flex-direction:column}
+    .topbar{height:56px;display:flex;align-items:center;gap:10px;padding:0 12px;background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,.35));backdrop-filter:blur(10px);border-bottom:1px solid rgba(15,23,42,.08)}
+    .hamb{width:40px;height:40px;border-radius:10px;border:1px solid #e5e7eb;background:var(--card);display:grid;place-items:center;cursor:pointer}
+    .sp{flex:1}
+    .lang, .mode{border:1px solid #e5e7eb;background:var(--card);padding:8px 10px;border-radius:10px}
+    .main{flex:1;overflow:auto;padding:18px}
+    .panel{display:none;animation:fade .25s ease}
+    .panel.active{display:block}
+    @keyframes fade {from{opacity:.5;transform:translateY(6px)} to{opacity:1;transform:none}}
+    .grid{display:grid;gap:14px}
+    @media (min-width: 900px){ .grid-2{grid-template-columns:1fr 1fr} .grid-3{grid-template-columns:repeat(3,1fr)} }
+    .card2{background:var(--card);border:1px solid rgba(15,23,42,.08);border-radius:16px;padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.06)}
+    .title{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+    .mutedSmall{color:var(--muted);font-size:.86rem}
+    .list{display:flex;flex-direction:column;gap:10px}
+    .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px;border:1px dashed rgba(148,163,184,.35);border-radius:12px}
+    /* DIALER BUTTONS */
+    .groupBtn{display:flex;gap:10px;flex-wrap:wrap}
+    .tag{padding:4px 10px;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;font-size:.8rem}
+    /* TOAST + SPINNER + BACKDROP */
+    .toast{position:fixed;right:14px;bottom:14px;display:grid;gap:8px;z-index:50}
+    .toast .t{background:var(--card);border:1px solid rgba(15,23,42,.1);padding:10px 14px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+    .spinner{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.25);z-index:60}
+    .spin{width:52px;height:52px;border:6px solid #e5e7eb;border-top-color:var(--primary);border-radius:999px;animation:rot 1s linear infinite;background:var(--card)}
+    @keyframes rot{to{transform:rotate(360deg)}}
+    /* MOBILE: overlay sidebar */
+    @media (max-width: 900px){ .content{inset:0} .sidebar{transform:translateX(-100%)} .sidebar.show{transform:none} }
   </style>
 </head>
 <body>
-
-  <!-- Login / Signup -->
-  <div class="auth-container" id="authContainer">
-    <div class="auth-box" id="loginBox">
-      <h2>Login</h2>
-      <input type="email" id="loginEmail" placeholder="Imel">
-      <input type="password" id="loginPass" placeholder="Modpas">
-      <button onclick="login()">Login</button>
-      <p>Pa gen kont? <a onclick="showSignup()">Enskri</a></p>
-    </div>
-
-    <div class="auth-box" id="signupBox" style="display:none;">
-      <h2>Signup</h2>
-      <input type="text" id="signupName" placeholder="Non">
-      <input type="email" id="signupEmail" placeholder="Imel">
-      <input type="password" id="signupPass" placeholder="Modpas">
-      <button onclick="signup()">Enskri</button>
-      <p>Deja gen kont? <a onclick="showLogin()">Login</a></p>
-    </div>
-  </div>
-
-  <!-- Dashboard -->
-  <div class="app" id="app">
-    <div class="sidebar">
-      <button data-section="dashboard" class="active">🏠 Dashboard</button>
-      <button data-section="profile">👤 Profile</button>
-      <button data-section="sendMinutes">📱 Voye Minit</button>
-      <button data-section="payment">💵 Peman</button>
-      <button data-section="feedback">⭐ Feedback</button>
-      <button data-section="settings">⚙️ Paramèt</button>
-      <button onclick="logout()">🚪 Logout</button>
-    </div>
-
-    <div class="content">
-      <div id="dashboard" class="section active">
-        <h2>Dashboard</h2>
-        <p>Byenveni nan Echanj Plus!</p>
+  <!-- ========= AUTH FULLSCREEN ========= -->
+  <div id="authGate" class="gate">
+    <div class="card" id="authCard">
+      <h2>Antre nan Echanj Plus</h2>
+      <p class="muted">Login / Signup obligatwa</p>
+      <div id="authTabs" class="row" style="margin-top:8px">
+        <button class="btn" id="tabLogin">Konekte</button>
+        <button class="btn btn-ghost" id="tabSignup">Enskri</button>
       </div>
-      <div id="profile" class="section">
-        <h2>Profile</h2>
-        <p>Non: <span id="userName"></span></p>
-        <p>Imel: <span id="userEmail"></span></p>
-      </div>
-      <div id="sendMinutes" class="section">
-        <h2>Voye Minit</h2>
-        <label>Kantite: <input type="number" id="minutes"></label><br><br>
-        <label>Operatè:
-          <select id="operator">
-            <option>Digicel</option>
-            <option>Natcom</option>
-          </select>
-        </label><br><br>
-        <button onclick="calculateFee()">Kalkile Frè</button>
-        <p id="feeResult"></p>
-      </div>
-      <div id="payment" class="section">
-        <h2>Peman</h2>
-        <label>Metòd: 
-          <select id="method" onchange="showPaymentFields()">
-            <option value="">--Chwazi--</option>
-            <option value="moncash">MonCash</option>
-            <option value="natcash">NatCash</option>
-            <option value="parayaj">Paryaj Lakay</option>
-          </select>
-        </label>
-        <div id="paymentFields"></div>
-      </div>
-      <div id="feedback" class="section">
-        <h2>Feedback</h2>
-        <p>Klike sou zetwal yo pou evalye:</p>
-        <div>
-          <span onclick="rate(1)">⭐</span>
-          <span onclick="rate(2)">⭐</span>
-          <span onclick="rate(3)">⭐</span>
-          <span onclick="rate(4)">⭐</span>
-          <span onclick="rate(5)">⭐</span>
+      <div id="authLogin" style="margin-top:10px">
+        <div class="field">
+          <label>Email</label><input id="loginEmail" class="input" type="email" placeholder="imel@egzanp.com"/>
         </div>
-        <p id="feedbackText"></p>
+        <div class="field">
+          <label>Modpas</label><input id="loginPass" class="input" type="password" placeholder="Modpas"/>
+        </div>
+        <button class="btn" id="btnLogin">Konekte</button>
+        <a href="#" id="lnkReset" class="link">Bliye modpas?</a>
       </div>
-      <div id="settings" class="section">
-        <h2>Paramèt</h2>
-        <p>Bientôt disponib...</p>
+      <div id="authSignup" style="display:none;margin-top:10px">
+        <div class="row">
+          <div class="field" style="flex:1"><label>Non konplè</label><input id="suFull" class="input" type="text"/></div>
+        </div>
+        <div class="row">
+          <div class="field" style="flex:1"><label>Nimewo telefòn</label><input id="suPhone" class="input" type="tel" placeholder="+509..." /></div>
+          <div class="field" style="flex:1"><label>Sèks</label>
+            <select id="suGender">
+              <option value="">Chwazi</option><option value="gason">Gason</option><option value="fi">Fi</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Email</label><input id="suEmail" class="input" type="email"/></div>
+        <div class="field"><label>Modpas (kòmanse ak majiskil)</label><input id="suPass" class="input" type="password"/></div>
+        <button class="btn" id="btnSignup">Kreye kont</button>
       </div>
     </div>
   </div>
 
-<script>
-  // Fake user storage
-  let users = [];
-  let currentUser = null;
+  <!-- ========= APP ========= -->
+  <div id="app" class="app">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">
+        <div class="logo">EP</div>
+        <div>
+          <div style="font-weight:800">Echanj Plus</div>
+          <div class="mutedSmall">v5.0.1</div>
+        </div>
+      </div>
+      <div class="nav">
+        <button data-panel="dashboard" class="active">🏠 Dashboard</button>
+        <button data-panel="profile">👤 Profile</button>
+        <button data-panel="dialer">📞 Voye Minit</button>
+        <button data-panel="payment">💰 Peman</button>
+        <button data-panel="feedback">⭐ Feedback</button>
+        <button data-panel="notifications">🔔 Notifikasyon <span id="notiBadge" class="badge" style="display:none">0</span></button>
+        <button data-panel="docs">📂 Dokiman / FAQ</button>
+        <button data-panel="contact">📞 Kontakte nou</button>
+        <button data-panel="settings">⚙️ Paramèt</button>
+      </div>
+      <div class="footerSide">
+        <div class="row">
+          <select id="langSel" class="lang" style="flex:1">
+            <option value="ht">Kreyòl</option><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option>
+          </select>
+          <button id="modeBtn" class="mode">🌙/☀️</button>
+        </div>
+        <button id="logoutBtn" class="btn btn-ghost" style="margin-top:10px">🚪 Logout</button>
+      </div>
+    </aside>
 
-  function showSignup(){ document.getElementById("loginBox").style.display="none"; document.getElementById("signupBox").style.display="block";}
-  function showLogin(){ document.getElementById("signupBox").style.display="none"; document.getElementById("loginBox").style.display="block";}
+    <section class="content">
+      <div class="topbar">
+        <div id="hamb" class="hamb">☰</div>
+        <div class="sp"></div>
+        <div class="mutedSmall" id="who"></div>
+      </div>
+      <main id="main" class="main">
+        <!-- DASHBOARD -->
+        <section id="panel-dashboard" class="panel active">
+          <div class="grid grid-2">
+            <div class="card2">
+              <h3 class="title">📊 Aktivite w</h3>
+              <div class="mutedSmall">Dènye tranzaksyon & txtID</div>
+              <div id="txList" class="list" style="margin-top:10px"></div>
+            </div>
+            <div class="card2">
+              <h3 class="title">⭐ Dènye kòmantè piblik</h3>
+              <div id="pubFeed" class="list"></div>
+            </div>
+          </div>
+        </section>
 
-  function signup(){
-    let name=document.getElementById("signupName").value;
-    let email=document.getElementById("signupEmail").value;
-    let pass=document.getElementById("signupPass").value;
-    if(!name||!email||!pass) return alert("Ranpli tout chan yo!");
-    users.push({name,email,pass});
-    alert("Kont kreye! Login kounya.");
-    showLogin();
-  }
+        <!-- PROFILE -->
+        <section id="panel-profile" class="panel">
+          <div class="card2">
+            <h3 class="title">👤 Profile</h3>
+            <div class="grid grid-2">
+              <div class="field"><label>Non konplè</label><input id="pfName" class="input" type="text"/></div>
+              <div class="field"><label>Nimewo</label><input id="pfPhone" class="input" type="tel" placeholder="+509..."/></div>
+              <div class="field"><label>Sèks</label>
+                <select id="pfGender"><option value="">Chwazi</option><option value="gason">Gason</option><option value="fi">Fi</option></select>
+              </div>
+              <div class="field"><label>Username (opsyonèl)</label><input id="pfUser" class="input" type="text" placeholder="@username"/></div>
+            </div>
+            <div class="row" style="margin-top:12px">
+              <button id="saveProfile" class="btn">💾 Sove</button>
+              <button id="okProfile" class="btn btn-ok" style="display:none">✓ Sove</button>
+            </div>
+          </div>
+        </section>
 
-  function login(){
-    let email=document.getElementById("loginEmail").value;
-    let pass=document.getElementById("loginPass").value;
-    let user=users.find(u=>u.email===email && u.pass===pass);
-    if(!user) return alert("Move idantifyan!");
-    currentUser=user;
-    document.getElementById("authContainer").style.display="none";
-    document.getElementById("app").style.display="block";
-    document.getElementById("userName").innerText=user.name;
-    document.getElementById("userEmail").innerText=user.email;
-  }
+        <!-- DIALER -->
+        <section id="panel-dialer" class="panel">
+          <div class="card2">
+            <h3 class="title">📞 Voye Minit</h3>
+            <div class="grid grid-3">
+              <div class="field"><label>Kantite (gdes)</label><input id="dlAmount" class="input" type="number" min="1" placeholder="100"/></div>
+              <div class="field"><label>Operatè</label>
+                <select id="dlOp">
+                  <option value="">Chwazi</option>
+                  <option value="digicel">Digicel</option>
+                  <option value="natcom">Natcom</option>
+                </select>
+              </div>
+              <div class="field"><label>Ap resevwa</label><input id="dlReceive" class="input" type="text" readonly/></div>
+            </div>
+            <div class="row">
+              <span class="tag">Frè: <b id="dlFee">0</b> gdes (17.5%)</span>
+              <span class="tag">Sistèm: <b id="dlSys">+50947111123 / 32160708</b></span>
+            </div>
+            <div class="divider"></div>
+            <div class="groupBtn" id="dlBtns">
+              <!-- Auto buttons appear here -->
+            </div>
+          </div>
+        </section>
 
-  function logout(){
-    currentUser=null;
-    document.getElementById("app").style.display="none";
-    document.getElementById("authContainer").style.display="flex";
-  }
+        <!-- PAYMENT -->
+        <section id="panel-payment" class="panel">
+          <div class="card2">
+            <h3 class="title">💰 Peman</h3>
+            <div class="field">
+              <label>Metòd</label>
+              <select id="payMethod">
+                <option value="">-- Chwazi --</option>
+                <option value="moncash">MonCash</option>
+                <option value="natcash">NatCash</option>
+                <option value="paryaj_lakay">Paryaj Lakay</option>
+                <option value="paryaj_pam">Paryaj Pam</option>
+              </select>
+            </div>
+            <div id="payFields" class="grid grid-2"></div>
+            <div class="row" style="margin-top:10px">
+              <button id="payBtn" class="btn">Voye sou WhatsApp & Anrejistre</button>
+              <button id="payOk" class="btn btn-ok" style="display:none">✓ Voye</button>
+            </div>
+          </div>
+        </section>
 
-  // Sidebar navigation
-  const buttons=document.querySelectorAll('.sidebar button[data-section]');
-  const sections=document.querySelectorAll('.section');
-  buttons.forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      buttons.forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      sections.forEach(sec=>sec.classList.remove('active'));
-      document.getElementById(btn.dataset.section).classList.add('active');
-    });
-  });
+        <!-- FEEDBACK -->
+        <section id="panel-feedback" class="panel">
+          <div class="card2">
+            <h3 class="title">⭐ Evalyasyon</h3>
+            <div style="font-size:28px;cursor:pointer" id="stars">
+              <span data-n="1">⭐</span><span data-n="2">⭐</span><span data-n="3">⭐</span><span data-n="4">⭐</span><span data-n="5">⭐</span>
+            </div>
+            <textarea id="fbText" class="input" rows="4" placeholder="Kite kòmantè ou..."></textarea>
+            <div class="row" style="margin-top:10px">
+              <button id="fbBtn" class="btn">Pibliye</button>
+              <button id="fbOk" class="btn btn-ok" style="display:none">✓ Pibliye</button>
+            </div>
+          </div>
+        </section>
 
-  // Send minutes
-  function calculateFee(){
-    let min=document.getElementById('minutes').value;
-    if(!min) return alert("Antre kantite minit!");
-    let fee=min*0.175, total=min-fee;
-    document.getElementById('feeResult').innerText=`Frè: ${fee.toFixed(2)} | Resevwa: ${total.toFixed(2)}`;
-  }
+        <!-- NOTIFICATIONS -->
+        <section id="panel-notifications" class="panel">
+          <div class="card2">
+            <h3 class="title">🔔 Notifikasyon</h3>
+            <div id="notiList" class="list"></div>
+          </div>
+        </section>
 
-  // Payment
-  function showPaymentFields(){
-    let method=document.getElementById("method").value;
-    let container=document.getElementById("paymentFields");
-    container.innerHTML="";
-    if(method==="moncash"||method==="natcash"){
-      container.innerHTML=`<label>Non kont: <input type="text"></label><br><br>
-                           <label>Nimewo: <input type="text"></label><br><br>
-                           <label>Montan: <input type="number"></label>`;
-    }else if(method==="parayaj"){
-      container.innerHTML=`<label>Nimewo kont: <input type="text"></label>`;
+        <!-- DOCS -->
+        <section id="panel-docs" class="panel">
+          <div class="card2">
+            <h3 class="title">📂 FAQ / Gid</h3>
+            <p>Kijan pou itilize sèvis la? Gade videyo/lyen yo:</p>
+            <ul>
+              <li><a href="https://facebook.com" target="_blank">Facebook</a></li>
+              <li><a href="https://youtube.com" target="_blank">YouTube</a></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="panel-contact" class="panel">
+          <div class="card2">
+            <h3 class="title">📞 Kontakte nou</h3>
+            <p>WhatsApp: <b>+50947111123</b></p>
+            <p>Email: <a href="mailto:echanjplus@gmail.com">echanjplus@gmail.com</a></p>
+            <a class="btn" href="https://wa.me/50947111123" target="_blank">Ouvri WhatsApp</a>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section id="panel-settings" class="panel">
+          <div class="card2">
+            <h3 class="title">⚙️ Paramèt</h3>
+            <p>Chanje modpas: itilize “Bliye modpas?” nan ekran koneksyon.</p>
+            <p>Dark/Light Mode + Lang disponib nan sidebar la.</p>
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <!-- ===== TOAST / SPINNER ===== -->
+  <div id="toast" class="toast"></div>
+  <div id="spinner" class="spinner"><div class="spin"></div></div>
+
+  <!-- ===== Firebase SDK ===== -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // ---------- CONFIG FIREBASE (SA OU TE BAY LA) ----------
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+      authDomain: "echanj-plus-778cd.firebaseapp.com",
+      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+      projectId: "echanj-plus-778cd",
+      storageBucket: "echanj-plus-778cd.firebasestorage.app",
+      messagingSenderId: "111144762929",
+      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+      measurementId: "G-J1BQRF32ZW"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // ---------- UTIL ----------
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => document.querySelectorAll(sel);
+    const spinner = show => { $('#spinner').style.display = show ? 'flex' : 'none'; };
+    function toast(msg, type=''){
+      const t = document.createElement('div');
+      t.className = 't';
+      t.textContent = msg;
+      if(type==='ok') t.style.borderColor = 'var(--ok)';
+      if(type==='err') t.style.borderColor = 'var(--err)';
+      $('#toast').appendChild(t);
+      setTimeout(()=> t.remove(), 3500);
     }
-  }
+    function txtId(){ return 'TX-' + Date.now().toString(36).toUpperCase() + '-' + Math.floor(Math.random()*999).toString().padStart(3,'0'); }
+    function encodeUSSD(s){ return 'tel:' + encodeURIComponent(s); } // encodes * and # safely
 
-  // Feedback
-  function rate(stars){
-    const levels={1:"Konfyans: 10%",2:"Konfyans: 30%",3:"Konfyans: 50%",4:"Konfyans: 75%",5:"Konfyans: 100%"};
-    document.getElementById("feedbackText").innerText=levels[stars];
-  }
-</script>
+    // ---------- STATE ----------
+    let currentUser = null;
+    let starPick = 0;
+    let unseenNoti = 0;
+    const DIGI_NUM = '+50947111123';
+    const NAT_NUM = '32160708';
+    const FEE_RATE = 0.175; // 17.5%
 
-</body>
-</html>
+    // ---------- AUTH UI TOGGLE ----------
+    const authLogin = $('#authLogin');
+    const authSignup = $('#authSignup');
+    $('#tabLogin').onclick = ()=>{ $('#tabLogin').className='btn'; $('#tabSignup').className='btn btn-ghost'; authLogin.style.display='block'; authSignup.style.display='none'; };
+    $('#tabSignup').onclick = ()=>{ $('#tabSignup').className='btn'; $('#tabLogin').className='btn btn-ghost'; authLogin.style.display='none'; authSignup.style.display='block'; };
+
+    // Reset password
+    $('#lnkReset').onclick = async (e)=>{
+      e.preventDefault();
+      const email = prompt('Antre imel ou:');
+      if(!email) return;
+      spinner(true);
+      try{ await auth.sendPasswordResetEmail(email); toast('Imèl reyinisyalizasyon voye.','ok'); }
+      catch(err){ toast(err.message,'err'); }
+      finally{ spinner(false); }
+    };
+
+    // Signup
+    $('#btnSignup').onclick = async ()=>{
+      const name = $('#suFull').value.trim();
+      const phone = $('#suPhone').value.trim();
+      const gender = $('#suGender').value;
+      const email = $('#suEmail').value.trim();
+      const pass  = $('#suPass').value;
+      if(!name || !phone || !gender || !email || !pass) return toast('Ranpli tout chan yo.', 'err');
+      if(!/^[A-Z]/.test(pass)) return toast('Modpas dwe kòmanse ak majiskil.', 'err');
+      spinner(true);
+      try{
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        currentUser = cred.user;
+        await db.ref('users/'+currentUser.uid+'/profile').set({ name, phone, gender, email, createdAt: Date.now() });
+        toast('Kont kreye. Byenvini!','ok');
+      }catch(err){ toast(err.message,'err'); }
+      finally{ spinner(false); }
+    };
+
+    // Login
+    $('#btnLogin').onclick = async ()=>{
+      const email = $('#loginEmail').value.trim();
+      const pass  = $('#loginPass').value;
+      if(!email || !pass) return toast('Antre imel ak modpas.', 'err');
+      spinner(true);
+      try{
+        const cred = await auth.signInWithEmailAndPassword(email, pass);
+        currentUser = cred.user;
+        toast('Konekte ✓','ok');
+      }catch(err){ toast(err.message,'err'); }
+      finally{ spinner(false); }
+    };
+
+    // On auth state change
+    auth.onAuthStateChanged(async (u)=>{
+      if(u){
+        currentUser = u;
+        $('#authGate').style.display='none';
+        $('#app').style.display='block';
+        $(
