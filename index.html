@@ -1,201 +1,414 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ht">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Echanj Plus</title>
-  <style>
-    body,html {margin:0;padding:0;font-family:sans-serif;height:100%;background:#f4f4f4;}
-    .hidden{display:none;}
-    .center{display:flex;justify-content:center;align-items:center;height:100vh;}
-    .auth-container,.dashboard{max-width:400px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);}
-    input,select,button{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:5px;}
-    button{background:#0066ff;color:white;font-weight:bold;cursor:pointer;}
-    button:hover{background:#0044aa;}
-    /* Sidebar */
-    .sidebar{height:100%;width:0;position:fixed;z-index:100;top:0;left:0;background:#222;color:white;overflow-x:hidden;transition:0.3s;padding-top:60px;}
-    .sidebar a{padding:12px 16px;text-decoration:none;color:#fff;display:block;transition:0.2s;}
-    .sidebar a:hover{background:#575757;}
-    .sidebar-btn{font-size:24px;cursor:pointer;padding:10px;}
-    .main{transition:margin-left 0.3s;padding:16px;}
-    /* Card style */
-    .card{background:#fff;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
-    /* Dark mode */
-    .dark{background:#111;color:#eee;}
-    .dark .card{background:#222;color:#eee;}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Echanj Plus — v5.0.1</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#0b1220; --card:#ffffff; --accent:#0066ff;
+    --muted:#6b7280; --success:#16a34a; --danger:#ef4444; --radius:12px;
+    font-family:Inter,system-ui,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:linear-gradient(180deg,#f7f9fc,var(--bg));color:#0b1220}
+  /* Fullscreen auth overlay */
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.80);display:flex;align-items:center;justify-content:center;z-index:9999}
+  .auth-card{width:420px;max-width:96%;background:#fff;padding:20px;border-radius:14px;box-shadow:0 10px 40px rgba(2,6,23,0.35)}
+  h1,h2{margin:0}
+  h1{color:var(--accent);font-size:20px;margin-bottom:8px}
+  label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ee;margin-top:8px;font-size:14px}
+  button{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-ghost{background:transparent;border:1px solid rgba(11,18,32,0.06);color:var(--muted)}
+  .small{font-size:13px;color:var(--muted);margin-top:8px}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f5f9;border:1px solid rgba(11,18,32,0.03);font-size:13px}
+  /* Layout after auth */
+  .topbar{height:60px;background:var(--accent);color:#fff;display:flex;align-items:center;padding:0 16px;position:fixed;left:0;right:0;top:0;z-index:50}
+  .menu-btn{font-size:22px;cursor:pointer;margin-right:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .container{display:flex;margin-top:60px;height:calc(100vh - 60px)}
+  .sidebar{width:260px;background:#071022;color:#e6eef8;padding:18px;border-right:1px solid rgba(255,255,255,0.03);overflow:auto}
+  .sidebar .item{padding:10px;border-radius:8px;cursor:pointer;margin-bottom:8px}
+  .sidebar .item:hover{background:rgba(255,255,255,0.04)}
+  .main{flex:1;padding:20px;overflow:auto}
+  .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 20px rgba(2,6,23,0.04);border:1px solid rgba(2,6,23,0.03);color:#0b1220}
+  .row{display:flex;gap:8px}
+  .tx-list{max-height:320px;overflow:auto;margin-top:10px}
+  .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(2,6,23,0.04);margin-bottom:8px;background:#fbfdff}
+  .toast{position:fixed;right:16px;bottom:16px;background:#0b1220;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:0 6px 24px rgba(2,6,23,0.3);display:none;z-index:99999}
+  .stars{display:flex;gap:6px;align-items:center}
+  .star{font-size:22px;cursor:pointer;color:lightgray}
+  .star.active{color:gold}
+  .muted{color:var(--muted)}
+  .hide{display:none !important}
+  /* Responsive */
+  @media (max-width:880px){ .container{flex-direction:column} .sidebar{width:100%;height:auto;order:2} .main{order:1} }
+</style>
 </head>
 <body>
 
-<!-- 🔑 LOGIN / SIGNUP -->
-<div id="auth-screen" class="center">
-  <div class="auth-container">
-    <h2 id="auth-title">Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Modpas">
-    <button id="loginBtn">Login</button>
-    <button id="signupBtn">Signup</button>
-    <button id="resetBtn">Forget Password</button>
+<!-- AUTH overlay (full screen) -->
+<div id="authOverlay" class="overlay" aria-hidden="false">
+  <div class="auth-card" role="dialog" aria-modal="true">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Echanj Plus</h1>
+      <div class="pill">v5.0.1</div>
+    </div>
+
+    <!-- mode tabs -->
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button id="tabLogin" class="btn-ghost" style="flex:1">Konekte</button>
+      <button id="tabSignup" class="btn-ghost" style="flex:1">Enskri</button>
+    </div>
+
+    <!-- login form -->
+    <div id="loginForm" style="margin-top:12px">
+      <label>Imèl</label><input id="loginEmail" type="email" placeholder="imel@egzanp.com"/>
+      <label>Modpas</label><input id="loginPass" type="password" placeholder="Modpas"/>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="btnLogin" class="btn-primary" style="flex:1">Konekte</button>
+        <button id="btnGuest" class="btn-ghost">Teste</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <a id="forgotLink" href="#" class="small">Mwen bliye modpas</a>
+        <div id="loginMsg" class="small muted"></div>
+      </div>
+    </div>
+
+    <!-- signup form -->
+    <div id="signupForm" class="hide" style="margin-top:12px">
+      <label>Non konplè</label><input id="signupName" type="text" placeholder="Non ou"/>
+      <label>Telefòn (+509...)</label><input id="signupPhone" type="tel" placeholder="+509XXXXXXXX"/>
+      <label>Chwazi sèks</label>
+      <select id="signupGender"><option value="">--Chwazi--</option><option value="gason">Gason</option><option value="fi">Fi</option></select>
+      <label>Imèl</label><input id="signupEmail" type="email" placeholder="imel@egzanp.com"/>
+      <label>Modpas (Deben kòmanse ak yon gwo lèt)</label><input id="signupPass" type="password" placeholder="Modpas"/>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="btnSignup" class="btn-primary" style="flex:1">Enskri</button>
+        <button id="btnCancelSignup" class="btn-ghost" style="flex:1">Anile</button>
+      </div>
+      <div id="signupMsg" class="small muted" style="margin-top:8px"></div>
+    </div>
   </div>
 </div>
 
-<!-- 📊 DASHBOARD -->
-<div id="dashboard-screen" class="hidden">
-  <div id="mySidebar" class="sidebar">
-    <a href="javascript:void(0)" onclick="closeSidebar()">❌ Fèmen</a>
-    <a href="#" onclick="showSection('home')">🏠 Dashboard</a>
-    <a href="#" onclick="showSection('profile')">👤 Profile</a>
-    <a href="#" onclick="showSection('sendMinutes')">📞 Voye Minit</a>
-    <a href="#" onclick="showSection('payment')">💰 Peman</a>
-    <a href="#" onclick="showSection('feedback')">⭐ Feedback</a>
-    <a href="#" onclick="logout()">🚪 Logout</a>
+<!-- Topbar + app -->
+<div class="topbar hide" id="topbar">
+  <div class="menu-btn" id="menuBtn">☰</div>
+  <div class="brand"><strong>Echanj Plus</strong></div>
+  <div style="margin-left:auto;display:flex;gap:12px;align-items:center">
+    <div id="userBadge" class="pill muted">—</div>
+    <button id="logoutBtn" class="btn-ghost">Dekonekte</button>
   </div>
+</div>
 
-  <div id="main" class="main">
-    <span class="sidebar-btn" onclick="openSidebar()">☰</span>
-    <h2>Byenveni nan Echanj Plus</h2>
-    <div id="section-home" class="card">Sa a se Dashboard ou</div>
-    <div id="section-profile" class="card hidden">
-      <h3>Profile</h3>
-      <input type="text" id="name" placeholder="Non">
-      <input type="text" id="phone" placeholder="Telefòn">
-      <select id="gender">
-        <option value="">Sèks</option>
-        <option value="gason">Gason</option>
-        <option value="fi">Fi</option>
-      </select>
-      <button onclick="saveProfile()">Save</button>
+<div class="container hide" id="app">
+  <!-- sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="width:44px;height:44px;border-radius:8px;background:#081226"></div>
+      <div>
+        <div id="sidebarName" style="font-weight:700">Itilizatè</div>
+        <div id="sidebarPhone" class="muted" style="font-size:13px">—</div>
+      </div>
     </div>
-    <div id="section-sendMinutes" class="card hidden">
-      <h3>Voye Minit</h3>
-      <input type="number" id="minutes" placeholder="Antre kantite minit">
-      <select id="operator">
-        <option value="digicel">Digicel</option>
-        <option value="natcom">Natcom</option>
-      </select>
-      <button onclick="calcFee()">Kalkile Frè</button>
-      <p id="feeResult"></p>
+
+    <div class="item" data-section="dashboard">🏠 Dashboard</div>
+    <div class="item" data-section="profile">👤 Profile</div>
+    <div class="item" data-section="dialer">📞 Voye Minit</div>
+    <div class="item" data-section="feedback">⭐ Evalyasyon</div>
+    <div class="item" data-section="payment">💳 Peman</div>
+    <div style="border-top:1px solid rgba(255,255,255,0.03);margin-top:12px;padding-top:12px">
+      <div class="item" id="openWhats">📩 Kontakte — WhatsApp</div>
+      <div class="item" id="openTx">📂 Tranzaksyon</div>
+      <div class="item" id="appSettings">⚙️ Paramèt</div>
     </div>
-    <div id="section-payment" class="card hidden">
-      <h3>Peman</h3>
+  </nav>
+
+  <!-- main -->
+  <main class="main" id="main">
+    <!-- Dashboard -->
+    <section id="section-dashboard" class="card">
+      <h2>Dashboard</h2>
+      <p class="muted">Tout tranzaksyon ak kòmantè ou ap parèt anba la.</p>
+      <div style="margin-top:12px" id="publicComments"></div>
+    </section>
+
+    <!-- Profile -->
+    <section id="section-profile" class="card hide" style="margin-top:16px">
+      <h2>Profile</h2>
+      <label>Non konplè</label><input id="profileName" />
+      <label>Telefòn</label><input id="profilePhoneInput" />
+      <label>Sèks</label>
+      <select id="profileGender"><option value="">--Chwazi--</option><option value="gason">Gason</option><option value="fi">Fi</option></select>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="saveProfileBtn" class="btn-primary">Anrejistre</button>
+        <button id="cancelProfileBtn" class="btn-ghost">Anile</button>
+      </div>
+      <div id="profileMsg" class="small muted" style="margin-top:8px"></div>
+    </section>
+
+    <!-- Dialer -->
+    <section id="section-dialer" class="card hide" style="margin-top:16px">
+      <h2>Voye Minit (USSD)</h2>
+      <label>Telefòn ou (from)</label><input id="dialerFrom" placeholder="+509XXXXXXXX"/>
+      <div class="row" style="margin-top:8px">
+        <select id="dialOperator" style="flex:1">
+          <option value="digicel">Digicel</option>
+          <option value="natcom">Natcom</option>
+        </select>
+        <input id="dialAmount" type="number" placeholder="100" style="width:120px"/>
+      </div>
+      <div class="small" style="margin-top:10px">Frè sistèm (17.5%): <strong id="dialFee">—</strong> • Ou resevwa: <strong id="dialReceive">—</strong></div>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="dialBtn" class="btn-primary">Ouvri Dialer ak Konpoze</button>
+        <button id="previewBtn" class="btn-ghost">Preview</button>
+      </div>
+
+      <div id="dialGateMsg" class="small muted" style="margin-top:10px">Sistèm ap tann verifikasyon transfè.</div>
+    </section>
+
+    <!-- Feedback -->
+    <section id="section-feedback" class="card hide" style="margin-top:16px">
+      <h2>Evalye konfyans ou</h2>
+      <div class="stars" id="starContainer" style="margin-top:8px">
+        <span class="star" data-val="1">★</span>
+        <span class="star" data-val="2">★</span>
+        <span class="star" data-val="3">★</span>
+        <span class="star" data-val="4">★</span>
+        <span class="star" data-val="5">★</span>
+      </div>
+      <label style="margin-top:10px">Kòmantè</label>
+      <textarea id="feedbackText" placeholder="Ekri kòmantè ou..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="publishFeedback" class="btn-primary">Pibliye</button>
+        <button id="clearFeedback" class="btn-ghost">Efase</button>
+      </div>
+    </section>
+
+    <!-- Payment -->
+    <section id="section-payment" class="card hide" style="margin-top:16px">
+      <h2>Peman</h2>
+      <label>Chwazi metòd</label>
       <select id="paymentMethod">
-        <option value="">Chwazi metòd</option>
+        <option value="">--Chwazi--</option>
         <option value="moncash">MonCash</option>
         <option value="natcash">NatCash</option>
-        <option value="lakay">Paryaj Lakay</option>
-        <option value="pam">Paryaj Pam</option>
+        <option value="parayaj_lakay">Paryaj Lakay</option>
+        <option value="parayaj_pam">Paryaj Pam</option>
       </select>
-      <input type="text" id="accountName" placeholder="Non kont">
-      <input type="text" id="accountNumber" placeholder="Nimero kont">
-      <input type="number" id="amount" placeholder="Montan">
-      <button onclick="makePayment()">Peye</button>
-    </div>
-    <div id="section-feedback" class="card hidden">
-      <h3>Feedback</h3>
-      <select id="stars">
-        <option value="1">⭐</option>
-        <option value="2">⭐⭐</option>
-        <option value="3">⭐⭐⭐</option>
-        <option value="4">⭐⭐⭐⭐</option>
-        <option value="5">⭐⭐⭐⭐⭐</option>
-      </select>
-      <textarea id="comment" placeholder="Ekri kòmantè"></textarea>
-      <button onclick="sendFeedback()">Voye</button>
-    </div>
-  </div>
+
+      <div id="paymentFields" style="margin-top:10px"></div>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="sendPaymentBtn" class="btn-primary">Voye sou WhatsApp & Sove</button>
+      </div>
+    </section>
+
+    <!-- Transactions -->
+    <section id="section-transactions" class="card hide" style="margin-top:16px">
+      <h2>Tranzaksyon Ou</h2>
+      <div id="txList" class="tx-list"></div>
+    </section>
+
+  </main>
 </div>
 
-<!-- 🔥 FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.firebasestorage.app",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-  measurementId: "G-J1BQRF32ZW"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
+<div id="toast" class="toast"></div>
 
-/* AUTH */
-const authScreen=document.getElementById("auth-screen");
-const dashScreen=document.getElementById("dashboard-screen");
-document.getElementById("loginBtn").onclick=()=>{
-  auth.signInWithEmailAndPassword(email.value,password.value)
-  .then(()=>{authScreen.classList.add("hidden");dashScreen.classList.remove("hidden");})
-  .catch(e=>alert(e.message));
-};
-document.getElementById("signupBtn").onclick=()=>{
-  auth.createUserWithEmailAndPassword(email.value,password.value)
-  .then(()=>{alert("Kreye ak siksè");})
-  .catch(e=>alert(e.message));
-};
-document.getElementById("resetBtn").onclick=()=>{
-  auth.sendPasswordResetEmail(email.value).then(()=>alert("Check imèl ou")).catch(e=>alert(e.message));
-};
-auth.onAuthStateChanged(u=>{
-  if(u){authScreen.classList.add("hidden");dashScreen.classList.remove("hidden");}
-  else{authScreen.classList.remove("hidden");dashScreen.classList.add("hidden");}
-});
-function logout(){auth.signOut();}
+<!-- Firebase (modular) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, set, push, get, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
-/* SIDEBAR */
-function openSidebar(){document.getElementById("mySidebar").style.width="250px";document.getElementById("main").style.marginLeft="250px";}
-function closeSidebar(){document.getElementById("mySidebar").style.width="0";document.getElementById("main").style.marginLeft="0";}
-function showSection(section){
-  ["home","profile","sendMinutes","payment","feedback"].forEach(s=>{
-    document.getElementById("section-"+s).classList.add("hidden");
+  // -------------- CONFIG (w ap itilize firebaseConfig ou te bay la) --------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    projectId: "echanj-plus-778cd",
+    storageBucket: "echanj-plus-778cd.firebasestorage.app",
+    messagingSenderId: "111144762929",
+    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+    measurementId: "G-J1BQRF32ZW"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  // constants
+  const SYSTEM_DIGICEL = '+50947111123';
+  const SYSTEM_NATCOM = '32160708';
+  const FEE_RATE = 0.175; // 17.5%
+  const WA_NUMBER = '50947111123'; // sistem whatsapp (no plus sign)
+
+  // UI references
+  const authOverlay = document.getElementById('authOverlay');
+  const tabLogin = document.getElementById('tabLogin');
+  const tabSignup = document.getElementById('tabSignup');
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const btnLogin = document.getElementById('btnLogin');
+  const btnSignup = document.getElementById('btnSignup');
+  const btnGuest = document.getElementById('btnGuest');
+  const btnCancelSignup = document.getElementById('btnCancelSignup');
+  const loginMsg = document.getElementById('loginMsg');
+  const signupMsg = document.getElementById('signupMsg');
+
+  const topbar = document.getElementById('topbar');
+  const appEl = document.getElementById('app');
+  const sidebar = document.getElementById('sidebar');
+  const menuBtn = document.getElementById('menuBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userBadge = document.getElementById('userBadge');
+  const sidebarName = document.getElementById('sidebarName');
+  const sidebarPhone = document.getElementById('sidebarPhone');
+
+  // sections
+  const sections = {
+    dashboard: document.getElementById('section-dashboard'),
+    profile: document.getElementById('section-profile'),
+    dialer: document.getElementById('section-dialer'),
+    feedback: document.getElementById('section-feedback'),
+    payment: document.getElementById('section-payment'),
+    transactions: document.getElementById('section-transactions')
+  };
+
+  // auth controls
+  tabLogin.addEventListener('click', ()=> { loginForm.classList.remove('hide'); signupForm.classList.add('hide'); });
+  tabSignup.addEventListener('click', ()=> { signupForm.classList.remove('hide'); loginForm.classList.add('hide'); });
+  btnCancelSignup.addEventListener('click', ()=> { signupForm.classList.add('hide'); loginForm.classList.remove('hide'); });
+
+  // helper UI
+  function toast(msg, ms=3500){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',ms); }
+  function showAppForUser(user){
+    authOverlay.style.display='none';
+    topbar.classList.remove('hide'); appEl.classList.remove('hide');
+    // load profile badge & lists
+    loadUserProfile(user.uid);
+    loadTransactions(user.uid);
+    loadPublicComments();
+  }
+  function hideApp(){ authOverlay.style.display='flex'; topbar.classList.add('hide'); appEl.classList.add('hide'); }
+
+  // Signup
+  btnSignup.addEventListener('click', async ()=>{
+    const name = document.getElementById('signupName').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const gender = document.getElementById('signupGender').value;
+    const email = document.getElementById('signupEmail').value.trim();
+    const pass = document.getElementById('signupPass').value;
+    signupMsg.textContent = '';
+    if(!name || !phone || !gender || !email || !pass){ signupMsg.textContent='Ranpli tout chan yo.'; signupMsg.style.color='salmon'; return; }
+    if(!/^[A-Z]/.test(pass)){ signupMsg.textContent='Modpas dwe kòmanse ak yon lèt majiskil.'; signupMsg.style.color='salmon'; return; }
+    try{
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      // save profile
+      await set(ref(db, `users/${cred.user.uid}`), { name, phone, gender, email, created: Date.now() });
+      signupMsg.textContent = 'Enskripsyon reyisi!'; signupMsg.style.color='green';
+      toast('Kont kreye. W ap konekte...');
+      // update displayName
+      await updateProfile(cred.user, { displayName: name }).catch(()=>null);
+    }catch(e){ signupMsg.textContent = e.message; signupMsg.style.color='salmon'; console.error(e); }
   });
-  document.getElementById("section-"+section).classList.remove("hidden");
-}
 
-/* PROFILE */
-function saveProfile(){
-  const user=auth.currentUser;
-  if(!user)return;
-  db.ref("profiles/"+user.uid).set({
-    name:document.getElementById("name").value,
-    phone:document.getElementById("phone").value,
-    gender:document.getElementById("gender").value
+  // Login
+  btnLogin.addEventListener('click', async ()=>{
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    loginMsg.textContent = '';
+    if(!email || !pass){ loginMsg.textContent='Ranpli imel ak modpas.'; loginMsg.style.color='salmon'; return; }
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
+      loginMsg.textContent='Konekte...'; loginMsg.style.color='green';
+      toast('Ou konekte avèk siksè');
+    }catch(e){ loginMsg.textContent = e.message; loginMsg.style.color='salmon'; console.error(e); }
   });
-  alert("Profile sove ✅");
-}
 
-/* Voye Minit */
-function calcFee(){
-  const minutes=parseFloat(document.getElementById("minutes").value);
-  if(!minutes){alert("Antre minit");return;}
-  const fee=18;const received=minutes-fee;
-  document.getElementById("feeResult").innerText=`Frè: ${fee} Gdes | Resevwa: ${received} Gdes`;
-}
+  // Guest (test)
+  btnGuest.addEventListener('click', ()=> {
+    // create a temporary pseudo-user locally (no firebase auth)
+    // NOTE: guest can't persist to firebase unless you implement anonymous auth
+    toast('Guest mode: limitasyon aplike');
+    // hide overlay and show app with guest label
+    authOverlay.style.display='none'; topbar.classList.remove('hide'); appEl.classList.remove('hide');
+    userBadge.textContent = 'Guest';
+    sidebarName.textContent = 'Guest';
+    sidebarPhone.textContent = '—';
+  });
 
-/* PEMAN */
-function makePayment(){
-  const method=document.getElementById("paymentMethod").value;
-  const name=document.getElementById("accountName").value;
-  const num=document.getElementById("accountNumber").value;
-  const amt=document.getElementById("amount").value;
-  const user=auth.currentUser;
-  if(!method||!amt){alert("Ranpli tout chan yo");return;}
-  db.ref("payments/"+user.uid).push({method,name,num,amt,date:Date.now()});
-  window.open("https://wa.me/50947111123?text=Mwen%20fini%20peman%20"+amt,"_blank");
-}
+  // Reset password
+  document.getElementById('forgotLink').addEventListener('click', async (e)=>{
+    e.preventDefault();
+    const email = prompt('Antre imel ou pou resevwa yon lyen reset:');
+    if(!email) return;
+    try{ await sendPasswordResetEmail(auth, email); alert('Tcheke imèl ou; lyen reset voye.'); }catch(e){ alert(e.message); }
+  });
 
-/* FEEDBACK */
-function sendFeedback(){
-  const stars=document.getElementById("stars").value;
-  const comment=document.getElementById("comment").value;
-  const user=auth.currentUser;
-  db.ref("feedback/"+user.uid).push({stars,comment,date:Date.now()});
-  alert("Mèsi pou feedback ou ⭐");
-}
-</script>
-</body>
-  </html>
+  // Logout
+  logoutBtn.addEventListener('click', async ()=>{ await signOut(auth); hideApp(); toast('Dekonekte'); });
+
+  // onAuth
+  onAuthStateChanged(auth, user => {
+    if(user){
+      // show app
+      showAppForUser(user);
+      // set badge
+      userBadge.textContent = user.email || user.displayName || 'Itilizatè';
+    } else {
+      hideApp();
+    }
+  });
+
+  // Sidebar navigation
+  document.querySelectorAll('.sidebar .item').forEach(el=>{
+    el.addEventListener('click', ()=> {
+      const sec = el.dataset.section;
+      // hide all
+      Object.values(sections).forEach(s=>s.classList.add('hide'));
+      // show selection
+      if(sec && sections[sec]) sections[sec].classList.remove('hide');
+      // small visual
+      document.querySelectorAll('.sidebar .item').forEach(i=>i.style.background='transparent');
+      el.style.background='rgba(255,255,255,0.03)';
+    });
+  });
+  // ensure dashboard visible by default after login
+  // menu toggle for small screens
+  menuBtn.addEventListener('click', ()=> sidebar.classList.toggle('hide'));
+
+  // ------------------ PROFILE ------------------
+  async function loadUserProfile(uid){
+    try{
+      const snap = await get(ref(db, `users/${uid}`));
+      const data = snap.exists() ? snap.val() : {};
+      sidebarName.textContent = data.name || (auth.currentUser && auth.currentUser.displayName) || 'Itilizatè';
+      sidebarPhone.textContent = data.phone || '—';
+      // prefill profile form
+      document.getElementById('profileName').value = data.name || '';
+      document.getElementById('profilePhoneInput').value = data.phone || '';
+      document.getElementById('profileGender').value = data.gender || '';
+    }catch(e){ console.error('loadProfile', e); }
+  }
+  document.getElementById('saveProfileBtn').addEventListener('click', async ()=>{
+    const name = document.getElementById('profileName').value.trim();
+    const phone = document.getElementById('profilePhoneInput').value.trim();
+    const gender = document.getElementById('profileGender').value;
+    if(!name || !phone || !gender){ document.getElementById('profileMsg').textContent='Ranpli tout chan yo'; return; }
+    try{
+      const uid = auth.currentUser.uid;
+      await set(ref(db, `users/${uid}`), { name, phone, gender, email: auth.currentUser.email, updated: Date.now() });
+      document.getElementById('profileMsg').textContent='Profile sove ✓'; document.getElementById('profileMsg').style.color='green';
+      sidebarName.textContent = name; sidebarPhone.textContent = phone;
+      await updateProfile(auth.currentUser, { displayName: name }).catch(()=>null);
+    }catch(e){ document.getElementById('profileMsg').textContent = e.message; }
+  });
+
+  /
