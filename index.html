@@ -1,422 +1,362 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Echanj Plus — Tout an 1</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echanj Plus</title>
 <style>
-  :root{
-    --page:#ffffff; --muted:#6b7280; --primary:#0b84ff; --danger:#ef4444; --radius:12px;
-    font-family:Inter,system-ui,Arial,sans-serif;
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
   }
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:#f6f8fb;color:#071022}
-  header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#fff;box-shadow:0 2px 8px rgba(2,6,23,0.04)}
-  .brand{display:flex;gap:12px;align-items:center}
-  .brand h1{margin:0;color:var(--primary);font-size:18px}
-  .main{max-width:1100px;margin:22px auto;padding:10px;display:grid;grid-template-columns:1fr 380px;gap:16px}
-  .card{background:#fff;padding:16px;border-radius:var(--radius);border:1px solid rgba(2,6,23,0.04)}
-  h2{margin:0 0 8px 0;color:var(--primary)}
-  label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
-  input,select,textarea,button{font-family:inherit}
-  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:transparent;color:inherit;margin-top:8px}
-  textarea{min-height:92px;resize:vertical}
-  .row{display:flex;gap:8px}
-  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
-  .btn-primary{background:linear-gradient(180deg,var(--primary),#0669d9);color:#fff}
-  .btn-ghost{background:transparent;border:1px solid rgba(2,6,23,0.06);color:var(--muted)}
-  .small{font-size:13px;color:var(--muted);margin-top:8px}
-  .tx-list{max-height:320px;overflow:auto;margin-top:10px}
-  .tx-item{padding:10px;border-radius:8px;border:1px solid rgba(2,6,23,0.03);margin-bottom:8px;background:linear-gradient(180deg, rgba(2,6,23,0.01), transparent)}
-  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999}
-  .auth-card{width:460px;background:#fff;padding:22px;border-radius:12px;border:1px solid rgba(2,6,23,0.06)}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f5f9;border:1px solid rgba(2,6,23,0.04);font-size:13px;color:#0f172a}
-  .hide{display:none!important}
-  .toast{position:fixed;right:18px;bottom:18px;background:#0b1220;color:#fff;padding:12px 14px;border-radius:10px;z-index:100000;display:none}
-  .profile-badge{display:flex;gap:8px;align-items:center}
-  .profile-badge .name{font-weight:700}
-  @media (max-width:980px){ .main{grid-template-columns:1fr;padding:12px} .auth-card{width:92%} }
+  /* LOGIN / SIGNUP */
+  #auth-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f0f2f5;
+  }
+  .auth-container {
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 350px;
+  }
+  .auth-container h2 { text-align: center; margin-bottom: 20px; color: #333; }
+  .auth-container input {
+    width: 100%; padding: 10px; margin: 8px 0;
+    border-radius: 6px; border: 1px solid #ccc; font-size: 16px;
+  }
+  .auth-container button {
+    width: 100%; padding: 10px; margin: 10px 0;
+    border: none; border-radius: 6px;
+    background: #007bff; color: #fff; font-size: 16px; cursor: pointer;
+  }
+  .auth-container button:hover { background: #0056b3; }
+  .toggle-link { text-align: center; margin-top: 10px; cursor: pointer; color: #007bff; }
+  .error { color: red; font-size: 14px; margin: 5px 0; }
+  .success { color: green; font-size: 14px; margin: 5px 0; }
+
+  /* DASHBOARD */
+  #dashboard-screen { display: none; }
+  .dashboard { display: flex; height: 100vh; }
+  .sidebar {
+    width: 220px; background-color: #2c3e50; color: white;
+    display: flex; flex-direction: column; padding-top: 20px;
+  }
+  .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; }
+  .sidebar button {
+    background: none; border: none; color: white;
+    padding: 15px 20px; text-align: left; width: 100%;
+    font-size: 16px; cursor: pointer; transition: background 0.3s;
+  }
+  .sidebar button:hover, .sidebar button.active { background-color: #34495e; }
+  .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .placeholder {
+    background-color: #ecf0f1; padding: 30px; border-radius: 8px;
+    text-align: center; color: #7f8c8d; font-size: 18px;
+  }
+
+  /* PROFILE */
+  .profile-container { background: white; padding: 20px; border-radius: 10px; width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin:auto; }
+  .profile-container input, .profile-container select {
+    width: 100%; padding: 10px; margin-bottom: 15px;
+    border-radius: 5px; border: 1px solid #ccc;
+  }
+  .profile-container button { width: 100%; padding: 12px; background: #007BFF; border: none; border-radius: 5px; color: white; font-size: 16px; }
+  .profile-preview { display: block; margin: 0 auto 15px; width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #007BFF; }
+
+  /* PAYMENT */
+  .payment-container {
+    max-width: 500px; margin: auto; background: #fff; padding: 20px;
+    border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  .payment-container select, .payment-container input {
+    width: 100%; padding: 10px; margin-bottom: 15px;
+    border-radius: 5px; border: 1px solid #ccc;
+  }
+  .payment-container button {
+    width: 100%; padding: 12px; background: #4CAF50; color: #fff;
+    border: none; border-radius: 5px; cursor: pointer;
+  }
+
+  /* FEEDBACK */
+  .feedback-container {
+    background: white; padding: 20px; border-radius: 10px; max-width: 600px; margin:auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .stars { display: flex; justify-content: center; margin: 10px 0; }
+  .stars span { font-size: 2rem; cursor: pointer; color: #ccc; }
+  .stars span.selected { color: gold; }
+  textarea { width: 100%; height: 100px; margin-top: 10px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; resize: none; }
+  .comment-item { background: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <img id="logo" src="" alt="logo" style="width:40px;height:40px;border-radius:8px;background:#fff;display:none"/>
-    <h1>Echanj Plus</h1>
-  </div>
-  <div style="display:flex;gap:12px;align-items:center">
-    <div id="userBadge" class="profile-badge" style="display:none;cursor:pointer">
-      <div class="pill name" id="badgeName">Itilizatè</div>
-      <div class="pill" id="badgePhone"></div>
+<!-- LOGIN / SIGNUP -->
+<div id="auth-screen">
+  <div class="auth-container">
+    <h2 id="form-title">Login</h2>
+    <div id="error-message" class="error"></div>
+    <div id="success-message" class="success"></div>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button id="submit-btn">Login</button>
+    <div class="toggle-link" id="toggle-form">Don't have an account? Signup</div>
+    <div style="text-align:center; margin-top:5px;">
+      <a href="#" id="forgot-password">Forgot Password?</a>
     </div>
-    <button id="openAuthBtn" class="btn btn-ghost">Konekte / Enskri</button>
-    <button id="logoutBtn" class="btn btn-ghost hide">Dekonekte</button>
-  </div>
-</header>
-
-<main class="main">
-  <!-- LEFT: Dialer + Comments -->
-  <section>
-    <section class="card" id="dialCard">
-      <h2>Etap 1 — Voye Minit (Dialer)</h2>
-      <div class="small">Nimewo sistèm: Digicel <strong>+50947111123</strong> • Natcom <strong>32160708</strong></div>
-
-      <label>Telefòn (opsyonèl)</label>
-      <input id="sender" placeholder="+509XXXXXXXX"/>
-
-      <div class="row" style="margin-top:10px">
-        <select id="operator" style="flex:1">
-          <option value="">-- Chwazi --</option>
-          <option value="digicel">Digicel</option>
-          <option value="natcom">Natcom</option>
-        </select>
-        <input id="amount" type="number" placeholder="100" style="width:140px" min="1"/>
-      </div>
-
-      <div class="row" style="margin-top:12px">
-        <button id="ussdBtn1" class="btn btn-primary">Dial Konpoze 1</button>
-        <button id="ussdBtn2" class="btn btn-primary" style="display:none">Dial Konpoze 2</button>
-        <button id="ussdBtn3" class="btn btn-primary" style="display:none">Dial Konfime</button>
-        <button id="previewDial" class="btn btn-ghost">Preview</button>
-      </div>
-
-      <div class="small" style="margin-top:10px">Frè sistèm (17.5%): <strong id="feeMin">—</strong> • Montan ou resevwa: <strong id="netMin">—</strong></div>
-      <div id="dialStatus" class="small muted" style="margin-top:8px">Estati: <span id="dialStatusText">—</span></div>
-    </section>
-
-    <section class="card" style="margin-top:16px" id="commentCard">
-      <h2>Etap 2 — Evalye & Kòmantè</h2>
-      <label>Nan ki nivo ou fè sistèm lan konfyans?</label>
-      <div id="stars" style="display:flex;gap:6px;margin-top:8px">
-        <span class="star" data-n="1" style="font-size:22px;cursor:pointer">⭐</span>
-        <span class="star" data-n="2" style="font-size:22px;cursor:pointer">⭐</span>
-        <span class="star" data-n="3" style="font-size:22px;cursor:pointer">⭐</span>
-        <span class="star" data-n="4" style="font-size:22px;cursor:pointer">⭐</span>
-        <span class="star" data-n="5" style="font-size:22px;cursor:pointer">⭐</span>
-      </div>
-
-      <label style="margin-top:10px">Kòmantè</label>
-      <textarea id="commentText" placeholder="Ekri kòmantè ou…"></textarea>
-      <div class="row" style="margin-top:10px">
-        <button id="submitComment" class="btn btn-primary">Anrejistre & Pwochen</button>
-        <button id="clearComment" class="btn btn-ghost">Efase</button>
-      </div>
-    </section>
-  </section>
-
-  <!-- RIGHT: Payment & Tx -->
-  <aside class="card" id="paymentCard">
-    <h2>Etap 3 — Peman</h2>
-    <div class="small">Chwazi metòd peman — chan yo monte otomatik.</div>
-
-    <label>Metòd peman</label>
-    <select id="payMethod">
-      <option value="">-- Chwazi --</option>
-      <option value="moncash">MonCash</option>
-      <option value="natcash">NatCash</option>
-      <option value="paryaj_lakay">Paryaj Lakay</option>
-      <option value="paryaj_pam">Paryaj Pam</option>
-    </select>
-
-    <div id="payFields" style="margin-top:10px"></div>
-
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="sendPay" class="btn btn-primary" style="flex:1">Soumèt & WhatsApp</button>
-      <button id="previewPay" class="btn btn-ghost">Preview</button>
-    </div>
-
-    <hr style="margin:12px 0;border-color:rgba(2,6,23,0.06)">
-
-    <h3 style="margin:0 0 8px 0;color:var(--primary);font-size:15px">Tranzaksyon Ou</h3>
-    <div id="txList" class="tx-list"><div class="small">Pa gen tranzaksyon chaje.</div></div>
-
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button id="exportCsv" class="btn btn-ghost" style="flex:1">Export CSV</button>
-      <button id="clearUi" class="btn btn-ghost">Clear UI</button>
-    </div>
-  </aside>
-</main>
-
-<!-- Auth overlay (full-screen, mandatory) -->
-<div id="authOverlay" class="overlay">
-  <div class="auth-card">
-    <h2 style="margin:0 0 6px 0;color:var(--primary)">Obligatwa — Konekte / Enskri</h2>
-    <div class="small muted">Ou dwe konekte pou itilize Echanj Plus.</div>
-
-    <label style="margin-top:12px">Mode</label>
-    <select id="authMode"><option value="login">Konekte</option><option value="register">Enskri</option></select>
-
-    <div id="registerFields" style="margin-top:8px;display:none">
-      <label>Non konplè</label><input id="authName" placeholder="Non konplè"/>
-      <label>Telefòn (+509...)</label><input id="authPhone" placeholder="+509XXXXXXXX"/>
-      <label>Sèks</label>
-      <select id="authGender"><option value="">Chwazi</option><option value="fi">Fi</option><option value="gason">Gason</option></select>
-    </div>
-
-    <label style="margin-top:8px">Imèl</label><input id="authEmail" type="email" placeholder="imel@egzanp.com"/>
-    <label>Modpas</label><input id="authPass" type="password" placeholder="Modpas (Min 6, kòmanse ak Majiskil)"/>
-
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="authAction" class="btn btn-primary">Konekte</button>
-      <button id="guestBtn" class="btn btn-ghost">Teste kòm Guest</button>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;margin-top:10px">
-      <a href="#" id="showForgot" style="color:var(--primary);font-size:13px">Reset Modpas</a>
-      <a href="#" id="toggleAuth" style="color:var(--primary);font-size:13px">Anrejistre</a>
-    </div>
-    <div id="authMsg" class="small" style="margin-top:8px;color:var(--danger)"></div>
   </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- DASHBOARD -->
+<div id="dashboard-screen">
+  <div class="dashboard">
+    <div class="sidebar">
+      <h2>Echanj Plus</h2>
+      <button class="tab-btn active" data-target="dashboard">Dashboard</button>
+      <button class="tab-btn" data-target="profil">Profil</button>
+      <button class="tab-btn" data-target="voyeMinit">Voye Minit</button>
+      <button class="tab-btn" data-target="peman">Peman</button>
+      <button class="tab-btn" data-target="feedback">Feedback</button>
+      <button class="tab-btn" data-target="settings">Settings</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    <div class="main-content">
+      <div id="dashboard" class="section active">
+        <div class="placeholder">Byenveni sou Dashboard Echanj Plus</div>
+      </div>
 
-<!-- Firebase compat scripts (sa fasil pou entegre) -->
+      <!-- PROFILE -->
+      <div id="profil" class="section">
+        <div class="profile-container">
+          <h2>Profile</h2>
+          <form id="profileForm">
+            <img src="" alt="Preview" class="profile-preview" id="profilePreview" style="display:none;">
+            <input type="file" id="photo" accept="image/*">
+            <input type="text" id="name" placeholder="Non" required>
+            <input type="email" id="emailProfile" placeholder="Imèl" required>
+            <input type="text" id="phone" placeholder="Telefòn" required>
+            <select id="gender" required>
+              <option value="">Chwazi sèks ou</option>
+              <option value="Masculin">Masculin</option>
+              <option value="Feminin">Feminin</option>
+            </select>
+            <button type="submit">Save</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- VOYE MINIT -->
+      <div id="voyeMinit" class="section">
+        <div class="placeholder">
+          <h2>Voye Minit</h2>
+          <input type="number" id="minutesInput" placeholder="Antre kantite minit">
+          <select id="operatorSelect">
+            <option value="">--Chwazi Operatè--</option>
+            <option value="digicel">Digicel</option>
+            <option value="natcom">Natcom</option>
+          </select>
+          <button id="sendBtn">Voye</button>
+        </div>
+      </div>
+
+      <!-- PEMAN -->
+      <div id="peman" class="section">
+        <div class="payment-container">
+          <h2>Peman</h2>
+          <select id="method">
+            <option value="">-- Chwazi Metòd --</option>
+            <option value="moncash">MonCash</option>
+            <option value="natcash">NatCash</option>
+            <option value="paryaj_lakay">Paryaj Lakay</option>
+            <option value="paryaj_pam">Paryaj Pam</option>
+          </select>
+          <div id="moncash-fields" class="hidden">
+            <input type="text" id="mc-name" placeholder="Non kont lan">
+            <input type="text" id="mc-number" placeholder="Nimero kont lan">
+            <input type="number" id="mc-amount" placeholder="Montan">
+          </div>
+          <div id="natcash-fields" class="hidden">
+            <input type="text" id="nc-name" placeholder="Non kont lan">
+            <input type="text" id="nc-number" placeholder="Nimero kont lan">
+            <input type="number" id="nc-amount" placeholder="Montan">
+          </div>
+          <div id="paryaj-lakay-fields" class="hidden">
+            <input type="text" id="pl-number" placeholder="Nimero kont lan">
+            <input type="number" id="pl-amount" placeholder="Montan">
+          </div>
+          <div id="paryaj-pam-fields" class="hidden">
+            <input type="text" id="pp-number" placeholder="Nimero kont lan">
+            <input type="number" id="pp-amount" placeholder="Montan">
+          </div>
+          <button id="sendPayBtn">Voye Peman</button>
+        </div>
+      </div>
+
+      <!-- FEEDBACK -->
+      <div id="feedback" class="section">
+        <div class="feedback-container">
+          <h2>Feedback</h2>
+          <div class="stars">
+            <span data-value="1">⭐</span><span data-value="2">⭐</span>
+            <span data-value="3">⭐</span><span data-value="4">⭐</span>
+            <span data-value="5">⭐</span>
+          </div>
+          <p id="trust-level" style="text-align:center;">Konfyans: 0%</p>
+          <textarea id="comment" placeholder="Ekri komantè w la..."></textarea>
+          <button id="sendFbBtn">Voye Feedback</button>
+          <div id="commentsContainer"><h3>Tout Komantè:</h3></div>
+        </div>
+      </div>
+
+      <div id="settings" class="section">
+        <div class="placeholder">Settings ap vini pita</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <script>
-/* ==========================
-   RANPLASE firebaseConfig AK VAPID_KEY
-   Mete pwòp firebaseConfig w la (ou di w gen li).
-   ========================== */
+/* ---------------- FIREBASE CONFIG ---------------- */
 const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw", // ranplase si w bezwen
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.firebasestorage.app",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-  measurementId: "G-J1BQRF32ZW"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
-const VAPID_KEY = "METE_PUBLIC_VAPID_KEY_LA"; // ranplase ak key ou si w vle FCM web push
-
-/* ==========================
-   INIT FIREBASE
-   ========================== */
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.database();
-const messaging = firebase.messaging();
+const database = firebase.database();
+const storage = firebase.storage();
 
-/* ==========================
-   CONSTANTS & UI
-   ========================== */
-const SYSTEM_DIGICEL = '+50947111123';
-const SYSTEM_NATCOM = '32160708';
-const FEE_RATE = 0.175;
+/* ---------------- LOGIN / SIGNUP ---------------- */
+let isLogin = true;
+const formTitle = document.getElementById('form-title');
+const submitBtn = document.getElementById('submit-btn');
+const toggleForm = document.getElementById('toggle-form');
+const errorMessage = document.getElementById('error-message');
+const successMessage = document.getElementById('success-message');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 
-const authOverlay = document.getElementById('authOverlay');
-const authMode = document.getElementById('authMode');
-const registerFields = document.getElementById('registerFields');
-const authAction = document.getElementById('authAction');
-const toggleAuth = document.getElementById('toggleAuth');
-const authMsg = document.getElementById('authMsg');
-const guestBtn = document.getElementById('guestBtn');
-const showForgot = document.getElementById('showForgot');
-
-const openAuthBtn = document.getElementById('openAuthBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const userBadge = document.getElementById('userBadge');
-const badgeName = document.getElementById('badgeName');
-const badgePhone = document.getElementById('badgePhone');
-
-const amountInput = document.getElementById('amount');
-const operatorSelect = document.getElementById('operator');
-const feeMin = document.getElementById('feeMin');
-const netMin = document.getElementById('netMin');
-const ussdBtn1 = document.getElementById('ussdBtn1');
-const ussdBtn2 = document.getElementById('ussdBtn2');
-const ussdBtn3 = document.getElementById('ussdBtn3');
-const previewDial = document.getElementById('previewDial');
-const dialStatusText = document.getElementById('dialStatusText');
-
-const stars = Array.from(document.querySelectorAll('.star'));
-const commentText = document.getElementById('commentText');
-const submitComment = document.getElementById('submitComment');
-const clearComment = document.getElementById('clearComment');
-
-const payMethod = document.getElementById('payMethod');
-const payFields = document.getElementById('payFields');
-const sendPay = document.getElementById('sendPay');
-const previewPay = document.getElementById('previewPay');
-
-const txList = document.getElementById('txList');
-
-const toastEl = document.getElementById('toast');
-
-/* ==========================
-   HELPERS
-   ========================== */
-function toast(msg, t=4200){ toastEl.textContent = msg; toastEl.style.display='block'; setTimeout(()=>toastEl.style.display='none', t); }
-function uid(n=6){ return Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2,2+n); }
-function calcFee(v){ return Math.round(Number(v) * FEE_RATE); }
-
-/* ==========================
-   AUTH UI / FLOW
-   ========================== */
-openAuthBtn.addEventListener('click', ()=> authOverlay.style.display='flex');
-authMode.addEventListener('change', ()=>{
-  const m = authMode.value;
-  registerFields.style.display = m === 'register' ? 'block' : 'none';
-  authAction.textContent = m === 'register' ? 'Enskri' : 'Konekte';
-  toggleAuth.textContent = m === 'register' ? 'Konekte' : 'Anrejistre';
-});
-toggleAuth.addEventListener('click', ()=>{
-  authMode.value = authMode.value === 'login' ? 'register' : 'login';
-  authMode.dispatchEvent(new Event('change'));
-});
-showForgot.addEventListener('click', async (e)=>{ e.preventDefault(); const email = prompt('Antre imel pou reset modpas:'); if(email) { try{ await auth.sendPasswordResetEmail(email); alert('Imel reset voye.'); }catch(err){ alert(err.message); } } });
-
-authAction.addEventListener('click', async ()=>{
-  authMsg.textContent = '';
-  const mode = authMode.value;
-  const email = document.getElementById('authEmail').value.trim();
-  const pass = document.getElementById('authPass').value;
-  if(!email || !pass){ authMsg.textContent='Ranpli imel ak modpas'; return; }
-  if(pass.length < 6){ authMsg.textContent='Modpas minimòm 6 karaktè'; return; }
-  if(!/^[A-Z]/.test(pass)){ authMsg.textContent='Modpas dwe kòmanse ak yon lèt majiskil'; return; }
-  try{
-    if(mode === 'register'){
-      const name = document.getElementById('authName').value.trim();
-      const phone = document.getElementById('authPhone').value.trim();
-      const gender = document.getElementById('authGender').value;
-      if(!name || !phone || !gender){ authMsg.textContent='Ranpli non, telefòn, sèks'; return; }
-      const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      const user = cred.user;
-      await db.ref(`users/${user.uid}`).set({ name, phone, gender, email, createdAt: Date.now() });
-      toast('Enskripsyon fini. Byenveni!');
-      authOverlay.style.display='none';
-    } else {
-      const cred = await auth.signInWithEmailAndPassword(email, pass);
-      toast('Konekte avèk siksè');
-      authOverlay.style.display='none';
-    }
-  }catch(err){ authMsg.textContent = err.message; }
+toggleForm.addEventListener('click', () => {
+  isLogin = !isLogin;
+  formTitle.textContent = isLogin ? 'Login' : 'Signup';
+  submitBtn.textContent = isLogin ? 'Login' : 'Signup';
+  toggleForm.textContent = isLogin ? "Don't have an account? Signup" : "Already have an account? Login";
+  errorMessage.textContent = '';
+  successMessage.textContent = '';
 });
 
-guestBtn.addEventListener('click', ()=>{
-  // guest testing mode
-  const guest = { uid: 'guest-'+uid(4), email: 'guest@example.com' };
-  handleLoggedIn(guest, true);
-  authOverlay.style.display='none';
-  toast('W ap teste kòm Guest — kèk fonksyon limite.');
+submitBtn.addEventListener('click', () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  if(!email || !password){ errorMessage.textContent = 'Tanpri ranpli tout chan yo.'; return; }
+  if(password.length < 6){ errorMessage.textContent = 'Modpas dwe gen omwen 6 karaktè.'; return; }
+
+  if(isLogin){
+    auth.signInWithEmailAndPassword(email, password)
+    .then(() => showDashboard())
+    .catch(err => errorMessage.textContent = err.message);
+  } else {
+    auth.createUserWithEmailAndPassword(email, password)
+    .then(() => showDashboard())
+    .catch(err => errorMessage.textContent = err.message);
+  }
 });
 
-/* badge click to edit profile */
-document.getElementById('userBadge').addEventListener('click', async ()=>{
-  const user = auth.currentUser;
-  if(!user || user.uid.startsWith('guest')){ toast('Guest pa ka modifye profile'); return; }
-  try{
-    const s = await db.ref(`users/${user.uid}`).get();
-    const u = s.exists()? s.val() : {};
-    const newName = prompt('Non konplè:', u.name||'');
-    if(newName === null) return;
-    const newPhone = prompt('Telefòn (+509...):', u.phone||'');
-    if(newPhone === null) return;
-    await db.ref(`users/${user.uid}`).update({ name: newName, phone: newPhone });
-    badgeName.textContent = newName;
-    badgePhone.textContent = newPhone;
-    toast('Profile mete ajou');
-  }catch(e){ toast('Erè mete ajou profile'); }
+document.getElementById('forgot-password').addEventListener('click', () => {
+  const email = emailInput.value.trim();
+  if(!email){ errorMessage.textContent = 'Antre email ou pou reset.'; return; }
+  auth.sendPasswordResetEmail(email)
+  .then(()=> successMessage.textContent = 'Imèl reset voye!')
+  .catch(err=> errorMessage.textContent = err.message);
 });
 
-/* auth state listener */
-auth.onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(user => { if(user) showDashboard(); });
+
+function showDashboard(){
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('dashboard-screen').style.display = 'block';
+}
+
+/* ---------------- DASHBOARD NAVIGATION ---------------- */
+const buttons = document.querySelectorAll('.tab-btn');
+const sections = document.querySelectorAll('.section');
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    sections.forEach(sec => sec.classList.remove('active'));
+    document.getElementById(btn.dataset.target).classList.add('active');
+  });
+});
+document.getElementById('logoutBtn').addEventListener('click', ()=> auth.signOut().then(()=>{
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('dashboard-screen').style.display = 'none';
+}));
+
+/* ---------------- PROFILE ---------------- */
+const profileForm = document.getElementById('profileForm');
+const profilePreview = document.getElementById('profilePreview');
+const photoInput = document.getElementById('photo');
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(file){ profilePreview.src = URL.createObjectURL(file); profilePreview.style.display='block'; }
+});
+auth.onAuthStateChanged(user => {
   if(user){
-    // standard user logged in
-    handleLoggedIn(user, false);
-    authOverlay.style.display='none';
-    await loadTx();
-    await setUpFCM();
-    liveComments();
-  } else {
-    // logged out
-    document.getElementById('userBadge').style.display='none';
-    document.getElementById('openAuthBtn').style.display='inline-block';
-    document.getElementById('logoutBtn').classList.add('hide');
-    authOverlay.style.display='flex';
-    txList.innerHTML = '<div class="small">Ou poko konekte.</div>';
-  }
-});
-
-function handleLoggedIn(user, isGuest){
-  document.getElementById('openAuthBtn').style.display='none';
-  document.getElementById('logoutBtn').classList.remove('hide');
-  document.getElementById('userBadge').style.display='flex';
-  if(isGuest){
-    badgeName.textContent = 'Guest';
-    badgePhone.textContent = '';
-  } else {
-    // load profile
-    db.ref(`users/${user.uid}`).get().then(s=>{
-      const u = s.exists()? s.val() : {};
-      badgeName.textContent = u.name || user.displayName || 'Itilizatè';
-      badgePhone.textContent = u.phone || '';
-    }).catch(()=>{ badgeName.textContent = user.email || 'Itilizatè'; badgePhone.textContent=''; });
-  }
-}
-
-/* ==========================
-   DIALER + SAVE TRANSACTION
-   ========================== */
-function updateFeePreview(){
-  const v = Number(amountInput.value || 0);
-  if(!v){ feeMin.textContent='—'; netMin.textContent='—'; return; }
-  const fee = calcFee(v);
-  feeMin.textContent = fee + ' HTG';
-  netMin.textContent = (v - fee) + ' HTG';
-}
-amountInput.addEventListener('input', updateFeePreview);
-operatorSelect.addEventListener('change', ()=>{
-  const op = operatorSelect.value;
-  if(op === 'digicel'){ ussdBtn2.style.display='inline-block'; ussdBtn3.style.display='inline-block'; }
-  else { ussdBtn2.style.display='none'; ussdBtn3.style.display='none'; }
-});
-
-function buildUSSD(op, amt, step){
-  if(op === 'natcom') return `*123*88888888*${SYSTEM_NATCOM}*${amt}#`;
-  if(op === 'digicel'){
-    if(step === 3) return `*128*1#`;
-    return `*128*509${SYSTEM_DIGICEL.replace('+','')}*${amt}#`;
-  }
-  return '';
-}
-
-async function savePendingTx(op, amt){
-  const user = auth.currentUser;
-  if(!user) throw new Error('Ou dwe konekte');
-  const txRef = db.ref(`transactions/${user.uid}`).push();
-  const tx = { id: txRef.key, uid: user.uid, type: 'send_minutes', operator: op, from: document.getElementById('sender').value.trim()||'', to: op==='digicel'?SYSTEM_DIGICEL:SYSTEM_NATCOM, minutes: Number(amt), fee: calcFee(amt), net: Number(amt)-calcFee(amt), ts: Date.now(), status: 'pending' };
-  await txRef.set(tx);
-  await loadTx();
-  return tx;
-}
-
-ussdBtn1.addEventListener('click', async ()=>{
-  try{
-    if(!auth.currentUser && !document.getElementById('openAuthBtn').classList.contains('hide')){ toast('Ou dwe konekte'); return; }
-    const op = operatorSelect.value; const amt = amountInput.value;
-    if(!op || !amt) return alert('Chwazi operatè ak montan.');
-    const tx = await savePendingTx(op, amt);
-    const code = buildUSSD(op, amt, 1);
-    // open phone dialer (mobile)
-    window.location.href = 'tel:' + encodeURIComponent(code);
-    dialStatusText.textContent = 'Dialer ouvè. Siveyans tx...';
-    toast('Dialer ap ouvri sou mobil (si telepon sipòte).');
-    // listen for status change on this tx
-    db.ref(`transactions/${auth.currentUser.uid}/${tx.id}/status`).on('value', snap=>{
-      const s = snap.val();
-      if(s === 'success'){ dialStatusText.textContent = 'Transfè verifye — ou ka kontinye.'; toast('Transfè verifye!'); }
+    database.ref('users/'+user.uid).once('value').then(snap=>{
+      const d = snap.val();
+      if(d){
+        document.getElementById('name').value = d.name||'';
+        document.getElementById('emailProfile').value = d.email||user.email||'';
+        document.getElementById('phone').value = d.phone||'';
+        document.getElementById('gender').value = d.gender||'';
+        if(d.photoUrl){ profilePreview.src=d.photoUrl; profilePreview.style.display='block'; }
+      }
     });
-  }catch(e){ alert(e.message || e); }
+  }
+});
+profileForm.addEventListener('submit', async e=>{
+  e.preventDefault();
+  const user = auth.currentUser; if(!user) return;
+  const userId = user.uid;
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('emailProfile').value;
+  const phone = document.getElementById('phone').value;
+  const gender = document.getElementById('gender').value;
+  const file = photoInput.files[0];
+  let photoUrl='';
+  if(file){
+    const storageRef = storage.ref('profile_photos/'+userId+'/'+file.name);
+    await storageRef.put(file); photoUrl= await storageRef.getDownloadURL();
+  }
+  database.ref('users/'+userId).set({name,email,phone,gender,photoUrl});
 });
 
-ussdBtn2.addEventListener('click', ()=>{ const op = operatorSelect.value; const amt = amountInput.value; if(op!=='digicel') return alert('Konpoze 2 se pou Digicel sèlman.'); const code = buildUSSD(op, amt, 2); window.location.href = 'tel:' + encodeURIComponent(code); });
-ussdBtn3.addEventListener('click', ()=>{ const op = operatorSelect.value; if(op!=='digicel') return alert('Konfime se pou Digicel sèlman.'); const code = buildUSSD(op,0,3); window.location.href = 'tel:' + encodeURIComponent(code); });
-
-previewDial.addEventListener('click', ()=>{ const op = operatorSelect.value; const amt = amountInput.value; if(!op||!amt) return alert('Chwazi operatè ak montan'); alert('USSD preview: ' + buildUS
+/* ---------------- VOYE MINIT ---------------- */
+function calculateFee(mins){ return mins - (mins*0.175); }
+const minutesInput = document.getElementById('minutesInput');
+const operatorSelect = document.getElementById('operatorSelect');
+document.getElementById('sendBtn').addEventListener('click', ()=>{
+  const mins=parseFloat(minutesInput.value); const operator=operatorSelect.value;
+  if(!mins||!operator){alert('Ranpli tout chan yo'); return;}
+  const received = calculateFee(mins); let ussdCode='';
+  if(operator==='natcom'){ ussdCode=`*123*88888888*321607
