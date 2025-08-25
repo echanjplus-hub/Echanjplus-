@@ -85,7 +85,17 @@
     <div class="tab" data-tab="pay" onclick="go('pay')">💳</div>
     <div class="tab" data-tab="profile" onclick="go('profile')">👤</div>
   </nav>  <div id="toast" class="toast"></div>  <script>
-    const firebaseConfig = {apiKey:"REPLACE_WITH_YOUR_APIKEY",authDomain:"REPLACE_WITH_YOUR_AUTHDOMAIN",databaseURL:"REPLACE_WITH_YOUR_DBURL",projectId:"REPLACE_WITH_YOUR_PID",storageBucket:"REPLACE_WITH_SB",messagingSenderId:"REPLACE_WITH_MSGID",appId:"REPLACE_WITH_APPID"};
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+      authDomain: "echanj-plus-778cd.firebaseapp.com",
+      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+      projectId: "echanj-plus-778cd",
+      storageBucket: "echanj-plus-778cd.firebasestorage.app",
+      messagingSenderId: "111144762929",
+      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+      measurementId: "G-J1BQRF32ZW"
+    };
+
     const SYSTEM = {digicel:'+50947111123',natcom:'+50932160708',email:'echanjplus@gmail.com'};
     const FEE_PERCENT = 17.5;
     const WHATSAPP_TARGET = SYSTEM.digicel;
@@ -131,9 +141,3 @@
         document.getElementById('screen-dashboard').classList.add('active');
         const uid = user.uid;
         const snap = await db.ref('users/'+uid).once('value');
-        const data = snap.val() || {};
-        document.getElementById('user-display').textContent = data.name || user.email;
-        document.getElementById('pf_name').value = data.name || '';
-        document.getElementById('pf_phone').value = data.phone || '';
-        document.getElementById('pf_email').value = user.email || '';
-      } else￼Enter
