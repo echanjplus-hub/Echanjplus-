@@ -2,54 +2,74 @@
 <html lang="ht">
 <head>
   <meta charset="UTF-8">
-  <title>SMSARS - Mizajou</title>
+  <title>ECHANJ PLUS - Mizajou</title>
   <style>
-    body {
+    /* Full ekran ak reset style */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298); /* pwofesyonèl koulè ble */
+      color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
-      color: #333;
       flex-direction: column;
       text-align: center;
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 5rem; /* Grand tit */
+      font-weight: bold;
+      letter-spacing: 2px;
       margin-bottom: 20px;
-      animation: bounce 2.5s infinite;
+      animation: pulse 2s infinite;
     }
 
     p {
-      font-size: 2.5rem;
-      margin-bottom: 50px;
-      color: #ff4d6d;
+      font-size: 1.8rem;
+      margin-bottom: 40px;
+      color: #ffd700; /* Yon ti manyen pwofesyonèl ak koulè lò */
     }
 
+    /* Loader senp ak animation */
     .loader {
-      font-size: 2rem;
+      width: 80px;
+      height: 80px;
+      border: 10px solid rgba(255, 255, 255, 0.2);
+      border-top: 10px solid #ffffff;
+      border-radius: 50%;
       animation: spin 1s linear infinite;
     }
 
+    /* Animasyon */
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-50px); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.9; }
+    }
+
+    /* Responsive pou ti ekran */
+    @media (max-width: 768px) {
+      h1 { font-size: 3rem; }
+      p { font-size: 1.2rem; }
+      .loader { width: 60px; height: 60px; border-width: 8px; }
     }
   </style>
 </head>
 <body>
-  <h1>📡 ECHANJ PLUS 🚀</h1>
-  <p>⚡ Sistèm lan ap fè mizajou, tanpri rete tann... ⏳</p>
-  <div class="loader">🔄</div>
-  <p>💌 Nou ap prepare bwat SMS ou a! 🎉</p>
+  <h1>ECHANJ PLUS</h1>
+  <p>Sistèm lan ap fè mizajou, tanpri rete tann...</p>
+  <div class="loader"></div>
 </body>
 </html>
-
