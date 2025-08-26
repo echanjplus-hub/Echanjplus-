@@ -1,108 +1,59 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Echanj Plus — App</title>
-<meta name="theme-color" content="#0b1f4a" />
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<style>
-:root{
-  --bg:#0b1f4a;         /* ble fonse */
-  --card:#f3f4f6;       /* vèt trè lejè / white */
-  --text:#f9f9f9;       /* blan */
-  --muted:#cbd5e1;      /* tèks fèn */
-  --primary:#16a34a;    /* vèt pou bouton */
-  --accent:#0b7a3a;     /* vèt fonse */
-  --danger:#dc2626;
-  --radius:18px;
-  --gap:12px;
-  --maxw:520px;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
-.app{min-height:100svh;min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);display:grid;place-items:center}
-.full-card{width:min(100%,var(--maxw));background:var(--card);border-radius:20px;padding:20px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 8px 30px rgba(0,0,0,0.2);color:#0b1f4a}
-h1{margin:0;font-size:1.35rem}
-p{margin:6px 0;color:var(--muted)}
-label{font-size:.9rem;color:var(--muted);display:block;margin-top:8px}
-input,select,textarea{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(11,31,74,0.2);margin-top:6px;background:#fff;color:#0b1f4a}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echanj Plus</title>
+  <link rel="stylesheet" href="style.css">
 
-button.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:14px;border:0;background:var(--primary);color:white;font-weight:800;margin-top:12px;box-shadow:0 6px 16px rgba(22,163,74,.25);cursor:pointer}
-button.btn.secondary{background:#f3f4f6;color:var(--text);border:1px solid rgba(11,31,74,0.2);box-shadow:none}
-button.btn[disabled]{opacity:.6;cursor:not-allowed}
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-.row{display:grid;gap:12px}
-.cols-2{grid-template-columns:1fr 1fr}
-.center{text-align:center}
-.muted{color:var(--muted)}
-.small{font-size:.85rem}
-
-/* Ekran yo */
-[data-screen]{display:none}
-[data-screen].active{display:grid;place-items:center;height:100%}
-
-/* Auth */
-.auth-card{width:100%;max-width:420px;height:100%;display:flex;flex-direction:column;justify-content:center;}
-
-/* Toast & overlay */
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:#16a34a;color:white;padding:10px 14px;border-radius:10px;display:none;z-index:10}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;place-items:center;z-index:9}
-.spinner{width:40px;height:40px;border-radius:50%;border:4px solid #f3f4f6;border-top-color:var(--primary);animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Badges */
-.badge{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid rgba(0,0,0,0.08);background:#fff}
-.code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace}
-</style>
+  <script src="app.js" defer></script>
 </head>
 <body>
-<div id="app" class="app">
-  <!-- AUTH -->
-  <section id="screen-auth" class="active" data-screen>
+<div id="app">
+
+  <!-- LOGIN / SIGNUP -->
+  <section id="auth-screen" data-screen class="active">
     <div class="full-card auth-card center">
       <h1>Echanj Plus</h1>
-      <p class="muted center">Konekte oswa kreye kont pou kontinye.</p>
-      <div class="auth-forms">
-        <div id="login-form">
-          <label>Imèl</label>
-          <input id="login-email" type="email" autocomplete="email" placeholder="email@exemple.com" />
-          <label>Modpas</label>
-          <input id="login-pass" type="password" autocomplete="current-password" placeholder="Modpas" />
-          <button class="btn" id="btn-login">Konekte</button>
-          <button class="btn secondary" onclick="show('signup')">Pa gen kont? Enskri</button>
-        </div>
-        <div id="signup-form" style="display:none">
-          <label>Imèl</label>
-          <input id="su-email" type="email" autocomplete="email" placeholder="email@exemple.com" />
-          <label>Modpas</label>
-          <input id="su-pass" type="password" autocomplete="new-password" placeholder="8+ karaktè" />
-          <label>Non</label>
-          <input id="su-name" autocomplete="name" placeholder="Jean Echanj" />
-          <label>Telefòn</label>
-          <input id="su-phone" autocomplete="tel" placeholder="+509 33 12 34 56" />
-          <button class="btn" id="btn-signup">Kreye kont</button>
-          <button class="btn secondary" onclick="show('login')">Deja gen kont? Konekte</button>
-        </div>
+      <div id="login-form">
+        <label>Imèl</label>
+        <input type="email" id="login-email" placeholder="email@exemple.com">
+        <label>Modpas</label>
+        <input type="password" id="login-pass" placeholder="Modpas">
+        <button class="btn" id="btn-login">Konekte</button>
+        <button class="btn secondary" onclick="showAuth('signup')">Pa gen kont? Enskri</button>
       </div>
-      <p class="small muted center">Kontakte: <strong>echanjplus@gmail.com</strong></p>
+      <div id="signup-form" style="display:none">
+        <label>Non</label>
+        <input type="text" id="su-name" placeholder="Jean Echanj">
+        <label>Telefòn</label>
+        <input type="text" id="su-phone" placeholder="+509 33 12 34 56">
+        <label>Imèl</label>
+        <input type="email" id="su-email" placeholder="email@exemple.com">
+        <label>Modpas</label>
+        <input type="password" id="su-pass" placeholder="8+ karaktè">
+        <button class="btn" id="btn-signup">Kreye kont</button>
+        <button class="btn secondary" onclick="showAuth('login')">Deja gen kont? Konekte</button>
+      </div>
     </div>
   </section>
 
   <!-- DASHBOARD -->
-  <section id="screen-dashboard" data-screen>
+  <section id="dashboard-screen" data-screen>
     <div class="full-card">
       <h1>🏠 Akèy</h1>
-      <p class="muted">Byenveni, <span id="user-display" class="badge">itilizatè</span></p>
-      <div class="row cols-2" style="margin-top:10px">
+      <p>Byenveni, <span id="user-display" class="badge">Itilizatè</span></p>
+      <div class="row cols-2">
         <button class="btn" onclick="go('send')">📤 Voye Minit</button>
         <button class="btn" onclick="go('pay')">💳 Peman</button>
       </div>
-      <div class="row cols-2" style="margin-top:8px">
+      <div class="row cols-2">
         <button class="btn secondary" onclick="go('profile')">👤 Pwofil</button>
         <button class="btn secondary" onclick="go('about')">ℹ️ About</button>
       </div>
@@ -110,19 +61,84 @@ button.btn[disabled]{opacity:.6;cursor:not-allowed}
   </section>
 
   <!-- SEND MINUTES -->
-  <section id="screen-send" data-screen>
+  <section id="send-screen" data-screen>
     <div class="full-card">
       <h1>📤 Voye Minit</h1>
-      <div class="row">
-        <label>Operatè</label>
-        <select id="op" onchange="updateSendUI()">
-          <option value="digicel">Digicel</option>
-          <option value="natcom">Natcom</option>
-        </select>
-        <label>Kantite minit</label>
-        <input id="minutes" inputmode="numeric" placeholder="Ex: 50" oninput="updateUSSD()" />
-        <div class="badge">ID Kliyan: <span id="auto-id" class="code"></span></div>
-        <div class="badge">Nimewo Sistèm: <span id="sys-num" class="code"></span></div>
-        <div class="row">
-          <label>Kòd pou konpoze</label>
-          <
+      <label>Operatè</label>
+      <select id="op">
+        <option value="digicel">Digicel</option>
+        <option value="natcom">Natcom</option>
+      </select>
+      <label>Kantite minit</label>
+      <input id="minutes" type="number" placeholder="Ex: 50">
+      <div class="row cols-2">
+        <button class="btn" onclick="sendMinutes()">Voye</button>
+        <button class="btn secondary" onclick="go('dashboard')">⬅️ Tounen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAYMENT -->
+  <section id="pay-screen" data-screen>
+    <div class="full-card">
+      <h1>💳 Peman</h1>
+      <label>Metòd</label>
+      <select id="pay-method" onchange="renderPayForm()">
+        <option value="moncash">MonCash</option>
+        <option value="natcash">NatCash</option>
+        <option value="paryajlakay">Paryaj Lakay</option>
+        <option value="paryajpam">Paryaj Pam</option>
+      </select>
+      <div id="pay-forms">
+        <div data-payform="moncash">
+          <label>Non Kont</label><input id="mc_name" placeholder="Echanj Plus">
+          <label>Nimewo Kont</label><input id="mc_acc" placeholder="+509 44 00 00 00">
+          <label>Montan (Gdes)</label><input id="mc_amt" placeholder="500">
+        </div>
+        <div data-payform="natcash" style="display:none">
+          <label>Non Kont</label><input id="nc_name" placeholder="Echanj Plus">
+          <label>Nimewo Kont</label><input id="nc_acc" placeholder="+509 42 00 00 00">
+          <label>Montan (Gdes)</label><input id="nc_amt" placeholder="500">
+        </div>
+        <div data-payform="paryajlakay" style="display:none">
+          <label>Nimewo Kont</label><input id="pl_acc" placeholder="123456">
+          <label>Remak (opsyonèl)</label><input id="pl_note">
+        </div>
+        <div data-payform="paryajpam" style="display:none">
+          <label>Nimewo Kont</label><input id="pp_acc" placeholder="654321">
+          <label>Remak (opsyonèl)</label><input id="pp_note">
+        </div>
+      </div>
+      <div class="row cols-2">
+        <button class="btn" id="btn-savepay" onclick="savePayment()">✅ Sove / Peye</button>
+        <button class="btn secondary" onclick="go('dashboard')">⬅️ Tounen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="profile-screen" data-screen>
+    <div class="full-card">
+      <h1>👤 Pwofil</h1>
+      <label>Non</label><input id="pf_name">
+      <label>Telefòn</label><input id="pf_phone">
+      <label>Imèl</label><input id="pf_email" disabled>
+      <div class="row cols-2">
+        <button class="btn" onclick="saveProfile()">💾 Sove</button>
+        <button class="btn secondary" onclick="go('dashboard')">⬅️ Tounen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about-screen" data-screen>
+    <div class="full-card center">
+      <h1>ℹ️ Sou Echanj Plus</h1>
+      <p class="muted small">Platfòm pou voye minit ak fè peman rapid an Ayiti.</p>
+      <p>Digicel: <strong>+50947111123</strong><br>Natcom: <strong>+50932160708</strong></p>
+    </div>
+  </section>
+
+</div>
+</body>
+    </html>
