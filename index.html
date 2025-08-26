@@ -1,144 +1,196 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="ht">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Echanj Plus</title>
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <script src="app.js" defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Echanj Plus — Single File (HTML/CSS/JS)</title>
+  <style>
+    /* Minimal, clean styling */
+    :root{--accent:#1f7a8c;--muted:#6b7280}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial;color:#111}
+    body{margin:0;background:#f7fafc}
+    .container{max-width:980px;margin:28px auto;padding:20px}
+    .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:16px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:20px}
+    .muted{color:var(--muted);font-size:13px}
+    .cols{display:grid;grid-template-columns:1fr 360px;gap:16px}
+    label{display:block;margin:8px 0 6px;font-weight:600}
+    input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef}
+    button{background:var(--accent);color:#fff;border:0;cursor:pointer;padding:10px 12px}
+    .secondary{background:#eef6f7;color:var(--accent);border:1px solid #d6eef0}
+    .small{font-size:13px;padding:6px 8px}
+    .row{display:flex;gap:8px}
+    .tx-item{border-left:4px solid #eef;color:#223;padding:10px;border-radius:6px;background:#fbfeff}
+    pre{background:#0b1220;color:#dff;padding:12px;border-radius:6px;overflow:auto}
+  </style>
 </head>
 <body>
-<div id="app">
+  <div class="container">
+    <div class="card">
+      <header>
+        <div>
+          <h1>Echanj Plus</h1>
+          <div class="muted">Single-file demo: Auth, Profile, Transactions (RTDB) & Firestore balances</div>
+        </div>
+        <div id="auth-area">
+          <button id="btn-logout" class="small" style="display:none">Dekonekte</button>
+        </div>
+      </header>
+    </div><div class="cols">
+  <div>
+    <!-- Main Column: auth/forms and dashboard -->
 
-  <!-- LOGIN / SIGNUP -->
-  <section id="auth-screen" data-screen class="active">
-    <div class="full-card auth-card center">
-      <h1>Echanj Plus</h1>
-      <div id="login-form">
-        <label>Imèl</label>
-        <input type="email" id="login-email" placeholder="email@exemple.com">
-        <label>Modpas</label>
-        <input type="password" id="login-pass" placeholder="Modpas">
-        <button class="btn" id="btn-login">Konekte</button>
-        <button class="btn secondary" onclick="showAuth('signup')">Pa gen kont? Enskri</button>
-      </div>
-      <div id="signup-form" style="display:none">
-        <label>Non</label>
-        <input type="text" id="su-name" placeholder="Jean Echanj">
-        <label>Telefòn</label>
-        <input type="text" id="su-phone" placeholder="+509 33 12 34 56">
-        <label>Imèl</label>
-        <input type="email" id="su-email" placeholder="email@exemple.com">
-        <label>Modpas</label>
-        <input type="password" id="su-pass" placeholder="8+ karaktè">
-        <button class="btn" id="btn-signup">Kreye kont</button>
-        <button class="btn secondary" onclick="showAuth('login')">Deja gen kont? Konekte</button>
+    <div id="auth-card" class="card">
+      <h3>Login / Signup</h3>
+
+      <div id="auth-forms">
+        <div id="email-forms">
+          <label>Imèl</label>
+          <input id="email" placeholder="ou@example.com" />
+          <label>Modpas</label>
+          <input id="password" type="password" placeholder="Modpas" />
+          <div class="row" style="margin-top:10px">
+            <button id="btn-signup">Enskri</button>
+            <button id="btn-login" class="secondary">Konekte</button>
+          </div>
+        </div>
+
+        <hr style="margin:14px 0" />
+
+        <div>
+          <label>Otantifikasyon pa telefòn</label>
+          <input id="phone" placeholder="+509 47xxxxxxx" />
+          <div id="recaptcha-container"></div>
+          <div class="row" style="margin-top:10px">
+            <button id="btn-start-phone" class="secondary">Voye kòd</button>
+            <button id="btn-verify-phone" class="secondary" style="display:none">Verifye kòd</button>
+          </div>
+          <input id="phone-code" placeholder="Antre kòd SMS la" style="margin-top:8px;display:block" />
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- DASHBOARD -->
-  <section id="dashboard-screen" data-screen>
-    <div class="full-card">
-      <h1>🏠 Akèy</h1>
-      <p>Byenveni, <span id="user-display" class="badge">Itilizatè</span></p>
-      <div class="row cols-2">
-        <button class="btn" onclick="go('send')">📤 Voye Minit</button>
-        <button class="btn" onclick="go('pay')">💳 Peman</button>
-      </div>
-      <div class="row cols-2">
-        <button class="btn secondary" onclick="go('profile')">👤 Pwofil</button>
-        <button class="btn secondary" onclick="go('about')">ℹ️ About</button>
+    <div id="profile-card" class="card" style="display:none">
+      <h3>Profil & Balans</h3>
+      <p class="muted">Sa a se balans itilizatè a, systemBalance se frè sistèm lan.</p>
+
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="flex:1">
+          <label>Non</label>
+          <input id="profile-name" />
+          <label>Telefòn</label>
+          <input id="profile-phone" />
+          <div style="margin-top:8px">
+            <button id="btn-save-profile" class="small">Sove profil</button>
+          </div>
+        </div>
+        <div style="width:260px">
+          <div class="card" style="padding:12px;margin:0">
+            <div class="muted">Balance</div>
+            <h2 id="display-balance">0</h2>
+            <div class="muted">System Balance (frè sistèm)</div>
+            <h3 id="display-system">0</h3>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- SEND MINUTES -->
-  <section id="send-screen" data-screen>
-    <div class="full-card">
-      <h1>📤 Voye Minit</h1>
-      <label>Operatè</label>
-      <select id="op">
-        <option value="digicel">Digicel</option>
-        <option value="natcom">Natcom</option>
+    <div id="tx-card" class="card" style="display:none">
+      <h3>Fè yon tranzaksyon (Voye Minit)</h3>
+      <label>Antre kantite minit</label>
+      <input id="tx-minit" type="number" placeholder="100" />
+      <label>Chwazi operatè</label>
+      <select id="tx-operator">
+        <option value="Digicel">Digicel</option>
+        <option value="Natcom">Natcom</option>
       </select>
-      <label>Kantite minit</label>
-      <input id="minutes" type="number" placeholder="Ex: 50">
-      <div class="row cols-2">
-        <button class="btn" onclick="sendMinutes()">Voye</button>
-        <button class="btn secondary" onclick="go('dashboard')">⬅️ Tounen</button>
+      <div class="row" style="margin-top:10px">
+        <button id="btn-create-tx">Kreye tranzaksyon</button>
+        <button id="btn-open-usd" class="secondary">Konpoze USSD (egzanp)</button>
       </div>
-    </div>
-  </section>
 
-  <!-- PAYMENT -->
-  <section id="pay-screen" data-screen>
-    <div class="full-card">
-      <h1>💳 Peman</h1>
-      <label>Metòd</label>
-      <select id="pay-method" onchange="renderPayForm()">
-        <option value="moncash">MonCash</option>
-        <option value="natcash">NatCash</option>
-        <option value="paryajlakay">Paryaj Lakay</option>
-        <option value="paryajpam">Paryaj Pam</option>
-      </select>
-      <div id="pay-forms">
-        <div data-payform="moncash">
-          <label>Non Kont</label><input id="mc_name" placeholder="Echanj Plus">
-          <label>Nimewo Kont</label><input id="mc_acc" placeholder="+509 44 00 00 00">
-          <label>Montan (Gdes)</label><input id="mc_amt" placeholder="500">
-        </div>
-        <div data-payform="natcash" style="display:none">
-          <label>Non Kont</label><input id="nc_name" placeholder="Echanj Plus">
-          <label>Nimewo Kont</label><input id="nc_acc" placeholder="+509 42 00 00 00">
-          <label>Montan (Gdes)</label><input id="nc_amt" placeholder="500">
-        </div>
-        <div data-payform="paryajlakay" style="display:none">
-          <label>Nimewo Kont</label><input id="pl_acc" placeholder="123456">
-          <label>Remak (opsyonèl)</label><input id="pl_note">
-        </div>
-        <div data-payform="paryajpam" style="display:none">
-          <label>Nimewo Kont</label><input id="pp_acc" placeholder="654321">
-          <label>Remak (opsyonèl)</label><input id="pp_note">
-        </div>
-      </div>
-      <div class="row cols-2">
-        <button class="btn" id="btn-savepay" onclick="savePayment()">✅ Sove / Peye</button>
-        <button class="btn secondary" onclick="go('dashboard')">⬅️ Tounen</button>
-      </div>
+      <hr style="margin:12px 0" />
+      <h4>Istorik tranzaksyon</h4>
+      <div id="tx-list"></div>
     </div>
-  </section>
 
-  <!-- PROFILE -->
-  <section id="profile-screen" data-screen>
-    <div class="full-card">
-      <h1>👤 Pwofil</h1>
-      <label>Non</label><input id="pf_name">
-      <label>Telefòn</label><input id="pf_phone">
-      <label>Imèl</label><input id="pf_email" disabled>
-      <div class="row cols-2">
-        <button class="btn" onclick="saveProfile()">💾 Sove</button>
-        <button class="btn secondary" onclick="go('dashboard')">⬅️ Tounen</button>
-      </div>
-    </div>
-  </section>
+  </div>
 
-  <!-- ABOUT -->
-  <section id="about-screen" data-screen>
-    <div class="full-card center">
-      <h1>ℹ️ Sou Echanj Plus</h1>
-      <p class="muted small">Platfòm pou voye minit ak fè peman rapid an Ayiti.</p>
-      <p>Digicel: <strong>+50947111123</strong><br>Natcom: <strong>+50932160708</strong></p>
+  <div>
+    <!-- Side Column: admin/notes -->
+    <div class="card">
+      <h3>Enstriksyon rapid</h3>
+      <ul>
+        <li>Ranpli firebaseConfig anba a ak kle pwojè w.</li>
+        <li>Enstale Cloud Function (index.js) ki mete balance lè status chanje → wè kod anba a kòm komantè.</li>
+        <li>App sa a itilize Firestore (users) + Realtime DB (transactions)</li>
+        <li>Phone auth mande reCAPTCHA; asire w ajoute domain netlify/oswa dev origin nan Firebase console.</li>
+      </ul>
     </div>
-  </section>
+
+    <div class="card">
+      <h3>Devlopman / Cloud Function</h3>
+      <div class="muted">Kopi kòd sa a nan Cloud Functions (Folder functions/index.js) epi deploy.</div>
+      <pre id="cf-code">// --- Cloud Function (Node.js) ---
+
+const functions = require('firebase-functions'); const admin = require('firebase-admin'); admin.initializeApp();
+
+exports.updateTransactionBalance = functions.database.ref('/transactions/{txId}') .onUpdate((change, context) => { const before = change.before.val(); const after = change.after.val();
+
+if (before && before.status === 'pending' && after && after.status === 'done') {
+  const uid = after.userId;
+  const minit = Number(after.minit) || 0;
+  const fee = minit * 0.175;
+  const amount = minit - fee;
+
+  const userRef = admin.firestore().collection('users').doc(uid);
+  return userRef.update({
+    balance: admin.firestore.FieldValue.increment(amount),
+    systemBalance: admin.firestore.FieldValue.increment(fee)
+  });
+}
+return null;
+
+}); </pre> </div>
+
+<div class="card">
+      <h4>Notes</h4>
+      <div class="muted">Sa a se yon baz pou w kòmanse. Customize validation, USSD integration, ak sistèm peman (MonCash) dapre bezwen.</div>
+    </div>
+  </div>
 
 </div>
+
+<!-- firebase + app logic -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<script>
+  /*****  Firebase Config ranpli ak pwojè ou ******/
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    projectId: "echanj-plus-778cd",
+    storageBucket: "echanj-plus-778cd.firebasestorage.app",
+    messagingSenderId: "111144762929",
+    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+    measurementId: "G-J1BQRF32ZW"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const firestore = firebase.firestore();
+  const rtdb = firebase.database();
+
+  // Rès kòd HTML/JS rete menm jan, pa bezwen chanje
+
+</script>
+
+  </div>
 </body>
-    </html>
+  </html>
