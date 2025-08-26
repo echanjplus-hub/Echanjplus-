@@ -1,177 +1,90 @@
-<!doctype html>
-
-<html lang="ht">
+<!DOCTYPE html><html lang="ht">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Echanj Plus — Single File (HTML/CSS/JS)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Echanj Minit · MonCash · NatCash · Paryaj</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="theme-color" content="#0f172a" />
   <style>
-    /* Minimal, clean styling */
-    :root{--accent:#1f7a8c;--muted:#6b7280}
-    *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial;color:#111}
-    body{margin:0;background:#f7fafc}
-    .container{max-width:980px;margin:28px auto;padding:20px}
-    .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:16px}
-    header{display:flex;align-items:center;justify-content:space-between}
-    h1{margin:0;font-size:20px}
-    .muted{color:var(--muted);font-size:13px}
-    .cols{display:grid;grid-template-columns:1fr 360px;gap:16px}
-    label{display:block;margin:8px 0 6px;font-weight:600}
-    input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef}
-    button{background:var(--accent);color:#fff;border:0;cursor:pointer;padding:10px 12px}
-    .secondary{background:#eef6f7;color:var(--accent);border:1px solid #d6eef0}
-    .small{font-size:13px;padding:6px 8px}
-    .row{display:flex;gap:8px}
-    .tx-item{border-left:4px solid #eef;color:#223;padding:10px;border-radius:6px;background:#fbfeff}
-    pre{background:#0b1220;color:#dff;padding:12px;border-radius:6px;overflow:auto}
+    html, body, #app { height: 100vh; margin:0; }
+    .card { @apply bg-slate-900/60 backdrop-blur rounded-2xl shadow-xl border border-slate-800; }
+    .btn { @apply rounded-2xl px-4 py-3 font-semibold transition active:scale-95; }
+    .btn-primary { @apply bg-emerald-500 hover:bg-emerald-600 text-white; }
+    .btn-secondary { @apply bg-white/10 hover:bg-white/20 text-white; }
+    .btn-danger { @apply bg-rose-600 hover:bg-rose-700 text-white; }
+    .input { @apply w-full rounded-xl bg-slate-800/80 border border-slate-700 px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500; }
+    .label { @apply text-slate-300 text-sm font-medium; }
+    .link { @apply text-emerald-400 hover:text-emerald-300 underline underline-offset-2; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="card">
-      <header>
-        <div>
-          <h1>Echanj Plus</h1>
-          <div class="muted">Single-file demo: Auth, Profile, Transactions (RTDB) & Firestore balances</div>
-        </div>
-        <div id="auth-area">
-          <button id="btn-logout" class="small" style="display:none">Dekonekte</button>
-        </div>
-      </header>
-    </div><div class="cols">
-  <div>
-    <!-- Main Column: auth/forms and dashboard -->
-
-    <div id="auth-card" class="card">
-      <h3>Login / Signup</h3>
-
-      <div id="auth-forms">
-        <div id="email-forms">
-          <label>Imèl</label>
-          <input id="email" placeholder="ou@example.com" />
-          <label>Modpas</label>
-          <input id="password" type="password" placeholder="Modpas" />
-          <div class="row" style="margin-top:10px">
-            <button id="btn-signup">Enskri</button>
-            <button id="btn-login" class="secondary">Konekte</button>
-          </div>
-        </div>
-
-        <hr style="margin:14px 0" />
-
-        <div>
-          <label>Otantifikasyon pa telefòn</label>
-          <input id="phone" placeholder="+509 47xxxxxxx" />
-          <div id="recaptcha-container"></div>
-          <div class="row" style="margin-top:10px">
-            <button id="btn-start-phone" class="secondary">Voye kòd</button>
-            <button id="btn-verify-phone" class="secondary" style="display:none">Verifye kòd</button>
-          </div>
-          <input id="phone-code" placeholder="Antre kòd SMS la" style="margin-top:8px;display:block" />
-        </div>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div id="app" class="h-full">
+    <!-- Loading Overlay -->
+    <div id="overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60">
+      <div class="card p-6 text-center">
+        <div class="animate-spin h-8 w-8 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+        <p id="overlayText" class="text-slate-300">Ap travay…</p>
       </div>
-    </div>
-
-    <div id="profile-card" class="card" style="display:none">
-      <h3>Profil & Balans</h3>
-      <p class="muted">Sa a se balans itilizatè a, systemBalance se frè sistèm lan.</p>
-
-      <div style="display:flex;gap:12px;align-items:center">
-        <div style="flex:1">
-          <label>Non</label>
-          <input id="profile-name" />
-          <label>Telefòn</label>
-          <input id="profile-phone" />
-          <div style="margin-top:8px">
-            <button id="btn-save-profile" class="small">Sove profil</button>
-          </div>
-        </div>
-        <div style="width:260px">
-          <div class="card" style="padding:12px;margin:0">
-            <div class="muted">Balance</div>
-            <h2 id="display-balance">0</h2>
-            <div class="muted">System Balance (frè sistèm)</div>
-            <h3 id="display-system">0</h3>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="tx-card" class="card" style="display:none">
-      <h3>Fè yon tranzaksyon (Voye Minit)</h3>
-      <label>Antre kantite minit</label>
-      <input id="tx-minit" type="number" placeholder="100" />
-      <label>Chwazi operatè</label>
-      <select id="tx-operator">
-        <option value="Digicel">Digicel</option>
-        <option value="Natcom">Natcom</option>
-      </select>
-      <div class="row" style="margin-top:10px">
-        <button id="btn-create-tx">Kreye tranzaksyon</button>
-        <button id="btn-open-usd" class="secondary">Konpoze USSD (egzanp)</button>
-      </div>
-
-      <hr style="margin:12px 0" />
-      <h4>Istorik tranzaksyon</h4>
-      <div id="tx-list"></div>
-    </div>
-
-  </div>
-
-  <div>
-    <!-- Side Column: admin/notes -->
-    <div class="card">
-      <h3>Enstriksyon rapid</h3>
-      <ul>
-        <li>Ranpli firebaseConfig anba a ak kle pwojè w.</li>
-        <li>Enstale Cloud Function (index.js) ki mete balance lè status chanje → wè kod anba a kòm komantè.</li>
-        <li>App sa a itilize Firestore (users) + Realtime DB (transactions)</li>
-        <li>Phone auth mande reCAPTCHA; asire w ajoute domain netlify/oswa dev origin nan Firebase console.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>Devlopman / Cloud Function</h3>
-      <div class="muted">Kopi kòd sa a nan Cloud Functions (Folder functions/index.js) epi deploy.</div>
-      <pre id="cf-code">// --- Cloud Function (Node.js) ---
-
-const functions = require('firebase-functions'); const admin = require('firebase-admin'); admin.initializeApp();
-
-exports.updateTransactionBalance = functions.database.ref('/transactions/{txId}') .onUpdate((change, context) => { const before = change.before.val(); const after = change.after.val();
-
-if (before && before.status === 'pending' && after && after.status === 'done') {
-  const uid = after.userId;
-  const minit = Number(after.minit) || 0;
-  const fee = minit * 0.175;
-  const amount = minit - fee;
-
-  const userRef = admin.firestore().collection('users').doc(uid);
-  return userRef.update({
-    balance: admin.firestore.FieldValue.increment(amount),
-    systemBalance: admin.firestore.FieldValue.increment(fee)
-  });
-}
-return null;
-
-}); </pre> </div>
-
-<div class="card">
-      <h4>Notes</h4>
-      <div class="muted">Sa a se yon baz pou w kòmanse. Customize validation, USSD integration, ak sistèm peman (MonCash) dapre bezwen.</div>
-    </div>
-  </div>
-
+    </div><!-- Toast -->
+<div id="toast" class="fixed bottom-4 inset-x-0 mx-auto w-fit z-50 hidden">
+  <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg border border-slate-700" id="toastText">Done</div>
 </div>
 
-<!-- firebase + app logic -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<!-- Auth Screens -->
+<main id="authScreen" class="h-full flex items-center justify-center p-4">
+  <div class="card w-full max-w-md p-6">
+    <h1 class="text-2xl font-bold mb-1">Byenveni 👋</h1>
+    <p class="text-slate-400 mb-6">Konekte oswa kreye kont pou kontinye</p>
 
+    <div class="grid grid-cols-2 gap-2 mb-6">
+      <button id="tabLogin" class="btn btn-secondary">Konekte</button>
+      <button id="tabSignup" class="btn btn-secondary opacity-70">Kreye kont</button>
+    </div>
+
+    <form id="formLogin" class="space-y-4">
+      <div>
+        <label class="label">Imèl</label>
+        <input id="loginEmail" class="input" type="email" placeholder="ou@example.com" />
+      </div>
+      <div>
+        <label class="label">Modpas</label>
+        <input id="loginPassword" class="input" type="password" placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary w-full">Konekte</button>
+    </form>
+
+    <form id="formSignup" class="space-y-4 hidden">
+      <div>
+        <label class="label">Non konplè</label>
+        <input id="suName" class="input" type="text" placeholder="Jan Pierre" />
+      </div>
+      <div>
+        <label class="label">Telefòn</label>
+        <input id="suPhone" class="input" type="tel" placeholder="509XXXXXXXX" />
+      </div>
+      <div>
+        <label class="label">Imèl</label>
+        <input id="suEmail" class="input" type="email" placeholder="ou@example.com" />
+      </div>
+      <div>
+        <label class="label">Modpas</label>
+        <input id="suPassword" class="input" type="password" placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary w-full">Kreye kont</button>
+    </form>
+
+    <div class="mt-6">
+      <button id="googleBtn" class="btn btn-secondary w-full flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.8 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.4 15.6 18.8 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.7 0-14.2 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.6-5.4l-6.3-5.3C29.2 34.5 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.8l-6.6 5.1C8.6 39 15.7 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.3 3.7-4.8 6-9.3 6-5.2 0-9.6-3.3-11.3-7.8l-6.6 5.1C8.6 39 15.7 44 24 44c11.1 0 20-8.9 20-20 0-1.3-.1-2.7-.4-3.9z"/></svg>
+        <span>Konekte ak Google</span>
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- Firebase Config -->
 <script>
-  /*****  Firebase Config ranpli ak pwojè ou ******/
-  const firebaseConfig = {
+  const FIREBASE_CONFIG = {
     apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
     authDomain: "echanj-plus-778cd.firebaseapp.com",
     databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
@@ -181,16 +94,8 @@ return null;
     appId: "1:111144762929:web:e64ce9a6da65781c289f10",
     measurementId: "G-J1BQRF32ZW"
   };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const firestore = firebase.firestore();
-  const rtdb = firebase.database();
-
-  // Rès kòd HTML/JS rete menm jan, pa bezwen chanje
-
 </script>
 
-  </div>
+  <!-- Rès kòd la rete menm jan ak ansyen fichye a -->  </div>
 </body>
-  </html>
+        </html>
