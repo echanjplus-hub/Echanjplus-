@@ -1,101 +1,54 @@
-<!DOCTYPE html><html lang="ht">
+<!DOCTYPE html>
+<html lang="ht">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Echanj Minit · MonCash · NatCash · Paryaj</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <meta name="theme-color" content="#0f172a" />
+  <meta charset="UTF-8">
+  <title>SMSARS - Mizajou</title>
   <style>
-    html, body, #app { height: 100vh; margin:0; }
-    .card { @apply bg-slate-900/60 backdrop-blur rounded-2xl shadow-xl border border-slate-800; }
-    .btn { @apply rounded-2xl px-4 py-3 font-semibold transition active:scale-95; }
-    .btn-primary { @apply bg-emerald-500 hover:bg-emerald-600 text-white; }
-    .btn-secondary { @apply bg-white/10 hover:bg-white/20 text-white; }
-    .btn-danger { @apply bg-rose-600 hover:bg-rose-700 text-white; }
-    .input { @apply w-full rounded-xl bg-slate-800/80 border border-slate-700 px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500; }
-    .label { @apply text-slate-300 text-sm font-medium; }
-    .link { @apply text-emerald-400 hover:text-emerald-300 underline underline-offset-2; }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      color: #333;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      animation: bounce 1.5s infinite;
+    }
+
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #ff4d6d;
+    }
+
+    .loader {
+      font-size: 2rem;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100">
-  <div id="app" class="h-full">
-    <!-- Loading Overlay -->
-    <div id="overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60">
-      <div class="card p-6 text-center">
-        <div class="animate-spin h-8 w-8 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-        <p id="overlayText" class="text-slate-300">Ap travay…</p>
-      </div>
-    </div><!-- Toast -->
-<div id="toast" class="fixed bottom-4 inset-x-0 mx-auto w-fit z-50 hidden">
-  <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg border border-slate-700" id="toastText">Done</div>
-</div>
-
-<!-- Auth Screens -->
-<main id="authScreen" class="h-full flex items-center justify-center p-4">
-  <div class="card w-full max-w-md p-6">
-    <h1 class="text-2xl font-bold mb-1">Byenveni 👋</h1>
-    <p class="text-slate-400 mb-6">Konekte oswa kreye kont pou kontinye</p>
-
-    <div class="grid grid-cols-2 gap-2 mb-6">
-      <button id="tabLogin" class="btn btn-secondary">Konekte</button>
-      <button id="tabSignup" class="btn btn-secondary opacity-70">Kreye kont</button>
-    </div>
-
-    <form id="formLogin" class="space-y-4">
-      <div>
-        <label class="label">Imèl</label>
-        <input id="loginEmail" class="input" type="email" placeholder="ou@example.com" />
-      </div>
-      <div>
-        <label class="label">Modpas</label>
-        <input id="loginPassword" class="input" type="password" placeholder="••••••••" />
-      </div>
-      <button type="submit" class="btn btn-primary w-full">Konekte</button>
-    </form>
-
-    <form id="formSignup" class="space-y-4 hidden">
-      <div>
-        <label class="label">Non konplè</label>
-        <input id="suName" class="input" type="text" placeholder="Jan Pierre" />
-      </div>
-      <div>
-        <label class="label">Telefòn</label>
-        <input id="suPhone" class="input" type="tel" placeholder="509XXXXXXXX" />
-      </div>
-      <div>
-        <label class="label">Imèl</label>
-        <input id="suEmail" class="input" type="email" placeholder="ou@example.com" />
-      </div>
-      <div>
-        <label class="label">Modpas</label>
-        <input id="suPassword" class="input" type="password" placeholder="••••••••" />
-      </div>
-      <button type="submit" class="btn btn-primary w-full">Kreye kont</button>
-    </form>
-
-    <div class="mt-6">
-      <button id="googleBtn" class="btn btn-secondary w-full flex items-center justify-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.8 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.4 15.6 18.8 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.7 0-14.2 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.6-5.4l-6.3-5.3C29.2 34.5 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.8l-6.6 5.1C8.6 39 15.7 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.3 3.7-4.8 6-9.3 6-5.2 0-9.6-3.3-11.3-7.8l-6.6 5.1C8.6 39 15.7 44 24 44c11.1 0 20-8.9 20-20 0-1.3-.1-2.7-.4-3.9z"/></svg>
-        <span>Konekte ak Google</span>
-      </button>
-    </div>
-  </div>
-</main>
-
-<!-- Firebase Config -->
-<script>
-  const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus-778cd",
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-    messagingSenderId: "111144762929",
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-    measurementId: "G-J1BQRF32ZW"
-  };
-</script>
-
-  <!-- Rès kòd la rete menm jan ak ansyen fichye a -->  </div>
+<body>
+  <h1>📡 SMSARS 🚀</h1>
+  <p>⚡ Sistèm lan ap fè mizajou, tanpri rete tann... ⏳</p>
+  <div class="loader">🔄</div>
+  <p>💌 Nou ap prepare bwat SMS ou a! 🎉</p>
 </body>
-        </html>
+</html>
