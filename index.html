@@ -1,343 +1,653 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Echanj Plus</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ECHANJ PLUS</title>
 <style>
-/* GLOBAL */
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
-body,html{width:100%;height:100%;background:#0d3b66;color:#fff;display:flex;justify-content:center;align-items:center;}
-button{cursor:pointer;border:none;border-radius:8px;padding:10px 15px;font-size:16px;}
-.hidden{display:none;}
-/* CARD LAYOUT */
-.card{background:#1d4e89;padding:20px;border-radius:18px;box-shadow:0 4px 10px rgba(0,0,0,0.3);width:90%;max-width:400px;text-align:center;}
-h1,h2{margin-bottom:20px;}
-input,select{width:90%;padding:10px;margin:10px 0;border-radius:8px;border:none;font-size:16px;}
-.btn-green{background:#21d07a;color:#000;}
-.btn-red{background:#e63946;color:#fff;}
-.btn-blue{background:#00a8cc;color:#fff;}
-.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:999;display:none;}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#21d07a;color:#000;padding:10px 20px;border-radius:8px;}
-a{color:#ffd60a;text-decoration:underline;}
-small{font-size:12px;color:#ffd60a;}
+  :root{
+    --bg:#0b2540; --card:#0f3355; --muted:#a8c4e6; --primary:#22c55e; --accent:#60a5fa; --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:#fff}
+  /* center app */
+  .app-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+  .card{width:100%;max-width:460px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border-radius:18px;padding:20px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+  h1{font-size:22px;margin:0 0 12px 0;letter-spacing:0.6px}
+  h2{font-size:18px;margin:0 0 10px 0;color:var(--muted)}
+  label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+  input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;margin-top:6px}
+  button{cursor:pointer;border:0;border-radius:10px;padding:10px 12px;margin-top:12px;font-weight:600}
+  .btn-primary{background:var(--primary);color:#072018}
+  .btn-accent{background:var(--accent);color:#05233a}
+  .btn-danger{background:var(--danger);color:#fff}
+  .muted{color:var(--muted);font-size:13px;margin-top:8px}
+  .link{color:#ffd54a;text-decoration:underline;cursor:pointer}
+  .row{display:flex;gap:8px}
+  .row > *{flex:1}
+  .hidden{display:none}
+  .small{font-size:12px;color:var(--muted)}
+  /* toast & overlay */
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:60}
+  .loaderBox{background:#fff;padding:18px;border-radius:12px;color:#000;font-weight:700}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:var(--primary);color:#052018;padding:10px 16px;border-radius:10px;font-weight:700;z-index:80}
+  /* splash */
+  #splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--bg);z-index:70;flex-direction:column}
+  #splashSquare{width:140px;height:140px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;box-shadow:0 10px 30px rgba(2,6,23,0.15)}
+  /* animation for square text changing opacity/translate */
+  @keyframes floatFade {
+    0% { transform: translateY(0) scale(1); opacity:1 }
+    25%{ transform: translateY(-12px) scale(0.98); opacity:0.65 }
+    50%{ transform: translateX(12px) scale(1.02); opacity:0.9 }
+    75%{ transform: translateY(8px) scale(0.99); opacity:0.7 }
+    100%{ transform: translateX(0) scale(1); opacity:1 }
+  }
+  .animSquare{animation:floatFade 2.4s ease-in-out infinite}
+  /* responsive */
+  @media (max-width:420px){ .card{padding:16px} #splashSquare{width:120px;height:120px;font-size:16px} }
 </style>
 </head>
 <body>
+  <!-- SPLASH (10s) -->
+  <div id="splash">
+    <div id="splashSquare" class="animSquare">ECHANJ<br>PLUS</div>
+    <div class="muted" style="margin-top:14px;font-size:13px">Ap prepare aplikasyon an...</div>
+  </div>
 
-<!-- LOADING OVERLAY -->
-<div id="loading" class="overlay"><h2>Ap chaje...</h2></div>
-
-<!-- TOAST -->
-<div id="toast" class="toast hidden"></div>
-
-<!-- LOGIN/SIGNUP -->
-<div id="authScreen" class="card">
-    <h1>ECHANJ PLUS</h1>
-    <div id="authForms">
-        <div id="loginForm">
-            <input type="email" id="loginEmail" placeholder="Imèl">
-            <input type="password" id="loginPassword" placeholder="Modpas">
-            <button class="btn-green" onclick="login()">Konekte</button>
-            <p>Pa gen kont? <a href="#" onclick="showSignup()">Kreye kont</a></p>
-            <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
+  <!-- APP -->
+  <div class="app-wrap" id="app">
+    <!-- AUTH SCREEN (login + signup + terms in same area) -->
+    <div class="card" id="authCard">
+      <h1 style="font-weight:900">ECHANJ PLUS</h1>
+      <div id="authArea">
+        <!-- login -->
+        <div id="loginView">
+          <h2>Login</h2>
+          <label>Email</label>
+          <input id="loginEmail" type="email" placeholder="eg. ou@domen.com" autocomplete="username">
+          <label>Modpas</label>
+          <input id="loginPassword" type="password" placeholder="••••••" autocomplete="current-password">
+          <button class="btn-primary" id="btnLogin">Konekte</button>
+          <div class="muted">Pa gen kont? <span class="link" id="showSignup">Kreye kont</span></div>
+          <div class="muted"><span class="link" id="showTerms">Kondisyon Itilizasyon</span></div>
+          <hr style="margin:14px 0;border-color:rgba(255,255,255,0.04)">
+          <div class="small muted">Oswa konekte / kreye kont ak telefòn</div>
+          <label>Telefòn (+509...)</label>
+          <input id="phoneInput" type="tel" placeholder="+50937xxxxxx">
+          <div class="row" style="margin-top:8px">
+            <button id="btnSendOtp" class="btn-accent">Voye kòd</button>
+            <input id="otpInput" placeholder="Kòd 6 chif" style="flex:1">
+            <button id="btnVerifyOtp" class="btn-primary">Verifye</button>
+          </div>
+          <div id="recaptcha-container"></div>
         </div>
-        <div id="signupForm" class="hidden">
-            <input type="text" id="signupName" placeholder="Non">
-            <input type="email" id="signupEmail" placeholder="Imèl">
-            <input type="text" id="signupPhone" placeholder="Telefòn">
-            <input type="password" id="signupPassword" placeholder="Modpas">
-            <button class="btn-green" onclick="signup()">Kreye kont</button>
-            <p>Gen kont? <a href="#" onclick="showLogin()">Konekte</a></p>
-            <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
+
+        <!-- signup -->
+        <div id="signupView" class="hidden">
+          <h2>Kreye kont</h2>
+          <label>Non</label>
+          <input id="signupName" placeholder="Non konplè">
+          <label>Telefòn (+509...)</label>
+          <input id="signupPhone" placeholder="+50937xxxxxx">
+          <label>Email</label>
+          <input id="signupEmail" type="email" placeholder="ou@domen.com">
+          <label>Modpas</label>
+          <input id="signupPassword" type="password" placeholder="••••••">
+          <button class="btn-primary" id="btnSignup">Kreye kont</button>
+          <div class="muted">Gen kont? <span class="link" id="backToLogin">Konekte</span></div>
+          <div class="muted"><span class="link" id="showTermsFromSignup">Kondisyon Itilizasyon</span></div>
         </div>
+
+        <!-- terms (inline but same card) -->
+        <div id="termsView" class="hidden">
+          <h2>Kondisyon Itilizasyon</h2>
+          <div style="max-height:260px;overflow:auto;text-align:left;color:var(--muted);font-size:13px">
+            <p>1. Sèvis disponib sèlman pou moun ki rete an Ayiti.</p>
+            <p>2. Laj minimòm: 18 ane oswa plis.</p>
+            <p>3. Chak itilizatè gen yon sèl kont.</p>
+            <p>4. Enfòmasyon bay la dwe veritab.</p>
+            <p>5. Tranzaksyon final, pa gen ranvèsman.</p>
+            <p>6. Aktivite ilegal oswa fwod entèdi.</p>
+            <p>7. Sistèm ka mete limit sou tranzaksyon.</p>
+            <p>8. Kont ka bloke si gen vyolasyon.</p>
+            <p>9. Done itilizatè yo pwoteje epi itilize sèlman pou sèvis la.</p>
+            <p>10. Nenpòt reklamasyon dwe fèt atravè WhatsApp oswa Imèl ofisyèl.</p>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button id="acceptTerms" class="btn-primary">Mwen dakò</button>
+            <button id="cancelTerms" class="btn-accent">Retounen</button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<!-- TERMS -->
-<div id="termsScreen" class="card hidden">
-    <h2>Kondisyon Itilizasyon</h2>
-    <p>1. Sèvis disponib sèlman pou moun ki rete an Ayiti.</p>
-    <p>2. Laj minimòm: 18 ane oswa plis.</p>
-    <p>3. Chak itilizatè gen yon sèl kont.</p>
-    <p>4. Enfòmasyon bay la dwe veritab.</p>
-    <p>5. Tranzaksyon final, pa gen ranvèsman.</p>
-    <p>6. Aktivite ilegal oswa fwod entèdi.</p>
-    <p>7. Sistèm ka mete limit sou tranzaksyon.</p>
-    <p>8. Kont ka bloke si gen vyolasyon.</p>
-    <p>9. Done itilizatè yo pwoteje epi itilize sèlman pou sèvis la.</p>
-    <p>10. Nenpòt reklamasyon dwe fèt atravè WhatsApp oswa Imèl ofisyèl.</p>
-    <button class="btn-blue" onclick="showScreen('authScreen')">Tounen</button>
-</div>
+    <!-- MAIN APP (hidden until auth) -->
+    <div class="card hidden" id="mainApp" style="max-width:900px;width:100%">
+      <!-- top bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px">
+        <div style="font-weight:900;font-size:18px">ECHANJ PLUS</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div id="userEmail" class="small muted"></div>
+          <button id="btnLogout" class="btn-danger">Dekonekte</button>
+        </div>
+      </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="card hidden">
-    <h1>ECHANJ PLUS</h1>
-    <p id="welcomeMsg">Byenveni, sèvis la se pou ou fè 1e tranzaksyon ou an.</p>
-    <div id="flowMsg"><small>OK pou kite mesaj sa a</small></div>
-    <button class="btn-blue" onclick="showScreen('sendMinutes')">📤 Voye Minit</button><br>
-    <button class="btn-blue" onclick="showScreen('payment')">💳 Peman</button><br>
-    <button class="btn-blue" onclick="showScreen('profile')">👤 Pwofil</button><br>
-    <button class="btn-blue" onclick="showScreen('about')">ℹ️ About</button><br>
-    <button class="btn-red" onclick="logout()">Dekonekte</button>
-</div>
+      <div style="display:grid;grid-template-columns:1fr;gap:12px">
+        <!-- dashboard view -->
+        <div id="view-dashboard">
+          <h2 id="welcomeText">Byenveni, sèvis la se pou ou fè 1e tranzaksyon ou an.</h2>
+          <div class="muted">Ok pou kite mesaj sa a</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+            <button class="btn-primary" id="gotoSend">📤 Voye Minit</button>
+            <button class="btn-primary" id="gotoPayment">💳 Peman</button>
+            <button class="btn-accent" id="gotoProfile">👤 Pwofil</button>
+            <button class="btn-accent" id="gotoAbout">ℹ️ About</button>
+          </div>
+        </div>
 
-<!-- SEND MINUTES -->
-<div id="sendMinutes" class="card hidden">
-    <h2>Voye Minit</h2>
-    <select id="operatorSelect">
-        <option value="digicel">Digicel</option>
-        <option value="natcom">Natcom</option>
-    </select>
-    <input type="number" id="minutesInput" placeholder="Antre kantite minit">
-    <button class="btn-green" onclick="composeUSSD()">Konpoze USSD</button>
-    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
-</div>
+        <!-- send minutes -->
+        <div id="view-send" class="hidden">
+          <h2>Voye Minit</h2>
+          <label>Operatè</label>
+          <select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
+          <label>Kantite Minit</label>
+          <input id="sendMinutes" type="number" min="1" placeholder="eg. 50">
+          <div class="row">
+            <button id="btnCompose" class="btn-primary">Konpoze USSD</button>
+            <button id="btnSell" class="btn-accent">Sove kòm Vann (Sale)</button>
+          </div>
+          <div class="muted small" style="margin-top:8px">Nimewo Sistèm: Digicel <b>+50947111123</b> · Natcom <b>+50932160708</b></div>
+          <button style="margin-top:10px" class="btn-accent" id="backFromSend">Tounen</button>
+        </div>
 
-<!-- PAYMENT -->
-<div id="payment" class="card hidden">
-    <h2>Peman</h2>
-    <p>Wallet: <span id="walletBalance">0</span> minit / <span id="walletGdes">0</span> Gdes</p>
-    <select id="paymentMethod">
-        <option value="moncash">MonCash</option>
-        <option value="natcash">NatCash</option>
-        <option value="paryajLakay">Paryaj Lakay</option>
-        <option value="paryajPam">Paryaj Pam</option>
-    </select>
-    <input type="text" id="payName" placeholder="Non kont">
-    <input type="text" id="payNumber" placeholder="Nimewo kont">
-    <input type="number" id="payAmount" placeholder="Montan">
-    <button class="btn-green" onclick="savePayment()">Sove / Peye</button>
-    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
-</div>
+        <!-- payment / wallet -->
+        <div id="view-payment" class="hidden">
+          <h2>Peman & Wallet</h2>
+          <div class="muted small">Sale Balance (minit): <span id="saleBalance">0</span> • Withdraw Balance (Gdes): <b id="withdrawBal">0.00</b></div>
+          <label>Metòd Peman</label>
+          <select id="payMethod">
+            <option value="moncash">MonCash</option>
+            <option value="natcash">NatCash</option>
+            <option value="paryajLakay">Paryaj Lakay</option>
+            <option value="paryajPam">Paryaj Pam</option>
+          </select>
+          <label>Non Kont</label><input id="payName">
+          <label>Nimewo Kont</label><input id="payNumber">
+          <label>Montan (Gdes)</label><input id="payAmount" type="number" min="1">
+          <div class="row">
+            <button id="btnPay" class="btn-primary">Sove / Peye (Demann)</button>
+            <button id="backFromPay" class="btn-accent">Tounen</button>
+          </div>
+        </div>
 
-<!-- PROFILE -->
-<div id="profile" class="card hidden">
-    <h2>Pwofil</h2>
-    <input type="text" id="profileName" placeholder="Non">
-    <input type="text" id="profilePhone" placeholder="Telefòn">
-    <input type="email" id="profileEmail" placeholder="Imèl" readonly>
-    <p>Balans: <span id="profileBalance">0</span> Gdes</p>
-    <button class="btn-green" onclick="saveProfile()">Sove</button>
-    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
-</div>
+        <!-- profile -->
+        <div id="view-profile" class="hidden">
+          <h2>Pwofil</h2>
+          <label>Non</label><input id="profName">
+          <label>Telefòn</label><input id="profPhone">
+          <label>Imèl (readonly)</label><input id="profEmail" readonly>
+          <div class="muted small">Balans Retire (Gdes): <span id="profWithdraw">0.00</span></div>
+          <div class="row">
+            <button id="btnSaveProfile" class="btn-primary">Sove</button>
+            <button id="backFromProfile" class="btn-accent">Tounen</button>
+          </div>
+        </div>
 
-<!-- ABOUT -->
-<div id="about" class="card hidden">
-    <h2>About</h2>
-    <p>Nimewo sistèm Digicel: +50947111123</p>
-    <p>Nimewo sistèm Natcom: +50932160708</p>
-    <p>Imèl: echanjplus@gmail.com</p>
-    <p><a href="https://www.facebook.com/share/19pCBnyujR/" target="_blank">Facebook</a> | <a href="https://youtube.com/@echanjplus?si=KtZiO5TmpXDbjynG" target="_blank">YouTube</a></p>
-    <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
-    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
-</div>
+        <!-- about -->
+        <div id="view-about" class="hidden">
+          <h2>About</h2>
+          <p class="small muted">Sistèm pou echanj minit Ayiti — Echanj Plus</p>
+          <p class="small muted">Digicel: +50947111123 · Natcom: +50932160708</p>
+          <p class="small muted">Kontak: echanjplus@gmail.com</p>
+          <div class="row">
+            <button id="openTerms" class="btn-accent">Kondisyon Itilizasyon</button>
+            <button id="backFromAbout" class="btn-accent">Tounen</button>
+          </div>
+        </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+        <!-- transactions list -->
+        <div id="view-tx" class="hidden">
+          <h2>Transaksyon</h2>
+          <div id="txList" style="max-height:220px;overflow:auto"></div>
+          <div class="row">
+            <button id="btnExportCSV" class="btn-accent">Telechaje CSV</button>
+            <button id="backFromTx" class="btn-accent">Tounen</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- loader & toast placeholders -->
+  <div id="loader" class="overlay hidden"><div class="loaderBox">Ap tann...</div></div>
+  <div id="toastEl" class="toast hidden">Message</div>
+
+  <!-- Firebase SDKs v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-// Firebase Config
+/* ---------------------------
+  Firebase config (from you)
+----------------------------*/
 const firebaseConfig = {
   apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
   authDomain: "echanj-plus-778cd.firebaseapp.com",
   databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
   projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.appspot.com",
-  messagingSenderId: "704291021670",
-  appId: "1:704291021670:web:4a04e7bcd7b5e0ff6c9e1a"
+  storageBucket: "echanj-plus-778cd.firebasestorage.app",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+  measurementId: "G-J1BQRF32ZW"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 const fs = firebase.firestore();
 
-// Utils
-function showScreen(id){
-    document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
+/* ---------------------------
+  UI helpers
+----------------------------*/
+const $ = id => document.getElementById(id);
+function show(el){ el.classList.remove('hidden'); }
+function hide(el){ el.classList.add('hidden'); }
+function toast(msg, time=3000){
+  const t = $('toastEl'); t.textContent = msg; t.classList.remove('hidden');
+  setTimeout(()=>t.classList.add('hidden'), time);
 }
-function showLoading(){document.getElementById('loading').style.display='flex';}
-function hideLoading(){document.getElementById('loading').style.display='none';}
-function showToast(msg){
-    const toast=document.getElementById('toast');
-    toast.innerText=msg;
-    toast.classList.remove('hidden');
-    setTimeout(()=>toast.classList.add('hidden'),3000);
+function loader(on=true){
+  const l = $('loader');
+  if(on) l.classList.remove('hidden'); else l.classList.add('hidden');
 }
-function showSignup(){document.getElementById('signupForm').classList.remove('hidden'); document.getElementById('loginForm').classList.add('hidden'); showScreen('authScreen');}
-function showLogin(){document.getElementById('loginForm').classList.remove('hidden'); document.getElementById('signupForm').classList.add('hidden'); showScreen('authScreen');}
-function showTerms(){showScreen('termsScreen');}
+function showSplashThen(fn){
+  // Show splash for 10 seconds then call fn
+  setTimeout(()=>{ $('splash').style.display='none'; fn(); }, 10000);
+}
 
-// Show auth on load
+/* ---------------------------
+  SPLASH -> then show auth
+----------------------------*/
 window.addEventListener('load', ()=>{
-    hideLoading();
-    showScreen('authScreen');
+  // prepare recaptcha later
+  showSplashThen(()=> {
+    // after splash hide, show auth (or main app if already authenticated)
+    // auth.onAuthStateChanged will handle view
+    // show auth card by default
+    $('authCard').classList.remove('hidden');
+    // render recaptcha for phone auth
+    if (!window.recaptchaVerifier){
+      try {
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible'});
+        window.recaptchaVerifier.render();
+      } catch(e){}
+    }
+  });
 });
 
-// Login
-function login(){
-    const email=document.getElementById('loginEmail').value;
-    const pass=document.getElementById('loginPassword').value;
-    showLoading();
-    auth.signInWithEmailAndPassword(email,pass)
-    .then(()=>{hideLoading(); showScreen('dashboard'); loadProfile();})
-    .catch(e=>{hideLoading(); showToast(e.message);});
+/* ---------------------------
+  NAV / VIEW MANAGEMENT
+----------------------------*/
+function openMain(){ $('authCard').classList.add('hidden'); $('mainApp').classList.remove('hidden'); }
+function closeMain(){ $('mainApp').classList.add('hidden'); $('authCard').classList.remove('hidden'); }
+function showView(name){
+  const views = ['dashboard','send','payment','profile','about','tx'];
+  views.forEach(v=>{
+    const el = $('view-'+v);
+    if(el) el.classList.add('hidden');
+  });
+  const map = {send:'send', payment:'payment', profile:'profile', about:'about', tx:'tx', dashboard:'dashboard'};
+  const el = $('view-'+(map[name]||'dashboard'));
+  if(el) el.classList.remove('hidden');
 }
 
-// Signup
-function signup(){
-    const email=document.getElementById('signupEmail').value;
-    const pass=document.getElementById('signupPassword').value;
-    const name=document.getElementById('signupName').value;
-    const phone=document.getElementById('signupPhone').value;
-    showLoading();
-    auth.createUserWithEmailAndPassword(email,pass)
-    .then(res=>{
-        const uid=res.user.uid;
-        fs.collection('users').doc(uid).set({
-            name,email,phone,balance:0,systemBalance:0,dateCreated:new Date()
-        }).then(()=>{
-            hideLoading();
-            showToast('Kont kreye avèk siksè!');
-            showScreen('dashboard');
-            loadProfile();
-        });
-    })
-    .catch(e=>{hideLoading(); showToast(e.message);});
+/* ---------------------------
+  BUTTON WIRING
+----------------------------*/
+$('showSignup').addEventListener('click', ()=>{ hide($('loginView')); show($('signupView')); });
+$('backToLogin').addEventListener('click', ()=>{ hide($('signupView')); show($('loginView')); });
+$('showTerms').addEventListener('click', ()=>{ hide($('loginView')); hide($('signupView')); show($('termsView')); });
+$('showTermsFromSignup').addEventListener('click', ()=>{ hide($('loginView')); hide($('signupView')); show($('termsView')); });
+$('cancelTerms').addEventListener('click', ()=>{ hide($('termsView')); show($('loginView')); });
+$('acceptTerms').addEventListener('click', ()=>{ hide($('termsView')); show($('signupView')); });
+
+$('btnLogin').addEventListener('click', login);
+$('btnSignup').addEventListener('click', signup);
+$('btnLogout').addEventListener('click', ()=>auth.signOut());
+$('gotoSend').addEventListener('click', ()=>showView('send'));
+$('gotoPayment').addEventListener('click', ()=>showView('payment'));
+$('gotoProfile').addEventListener('click', ()=>showView('profile'));
+$('gotoAbout').addEventListener('click', ()=>showView('about'));
+$('gotoPayment').addEventListener('click', ()=>showView('payment'));
+$('backFromSend').addEventListener('click', ()=>showView('dashboard'));
+$('backFromPay').addEventListener('click', ()=>showView('dashboard'));
+$('backFromProfile').addEventListener('click', ()=>showView('dashboard'));
+$('backFromAbout').addEventListener('click', ()=>showView('dashboard'));
+$('openTerms').addEventListener('click', ()=>{ hide($('mainApp')); $('termsView').classList.remove('hidden'); $('view-about').classList.add('hidden'); });
+$('btnExportCSV').addEventListener('click', exportCSV);
+
+/* ---------------------------
+  AUTH (email + phone) 
+----------------------------*/
+async function login(){
+  const email = $('loginEmail').value.trim();
+  const pass = $('loginPassword').value;
+  if(!email || !pass){ toast('Antre imèl ak modpas.'); return; }
+  loader(true);
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+    loader(false);
+    toast('Konekte ak siksè!');
+  } catch(err){
+    loader(false);
+    toast(err.message || 'Erè login');
+    console.error(err);
+  }
 }
 
-// Logout
-function logout(){auth.signOut().then(()=>{showScreen('authScreen');});}
+async function signup(){
+  const name = $('signupName').value.trim();
+  const phone = $('signupPhone').value.trim();
+  const email = $('signupEmail').value.trim();
+  const pass = $('signupPassword').value;
+  if(!name || !phone || !email || !pass){ toast('Ranpli tout chan yo.'); return; }
+  loader(true);
+  try{
+    const res = await auth.createUserWithEmailAndPassword(email, pass);
+    const uid = res.user.uid;
+    // create user doc with saleBalance & withdrawBalance
+    await fs.collection('users').doc(uid).set({
+      name, email, phone, saleBalance: 0, withdrawBalance: 0, dateCreated: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    loader(false);
+    toast('Kont kreye avèk siksè!');
+  } catch(err){
+    loader(false);
+    toast(err.message || 'Erè signup');
+    console.error(err);
+  }
+}
 
-// Load Profile
-function loadProfile(){
-    const uid=auth.currentUser.uid;
-    fs.collection('users').doc(uid).get().then(doc=>{
-        if(doc.exists){
-            const data=doc.data();
-            document.getElementById('profileName').value=data.name;
-            document.getElementById('profilePhone').value=data.phone;
-            document.getElementById('profileEmail').value=data.email;￼Enter<!DOCTYPE html>
-<html lang="ht">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Echanj Plus</title>
-<style>
-/* GLOBAL */
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
-body,html{width:100%;height:100%;background:#0d3b66;color:#fff;display:flex;justify-content:center;align-items:center;}
-button{cursor:pointer;border:none;border-radius:8px;padding:10px 15px;font-size:16px;}
-.hidden{display:none;}
-/* CARD LAYOUT */
-.card{background:#1d4e89;padding:20px;border-radius:18px;box-shadow:0 4px 10px rgba(0,0,0,0.3);width:90%;max-width:400px;text-align:center;}
-h1,h2{margin-bottom:20px;}
-input,select{width:90%;padding:10px;margin:10px 0;border-radius:8px;border:none;font-size:16px;}
-.btn-green{background:#21d07a;color:#000;}
-.btn-red{background:#e63946;color:#fff;}
-.btn-blue{background:#00a8cc;color:#fff;}
-.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:999;display:none;}
-{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#21d07a;color:#000;padding:10px 20px;border-radius:8px;}
-a{color:#ffd60a;text-decoration:underline;}
-small{font-size:12px;color:#ffd60a;}
-</style>
-</head>
-<body>
+/* PHONE AUTH (SMS) */
+$('btnSendOtp').addEventListener('click', async ()=>{
+  const phone = $('phoneInput').value.trim();
+  if(!phone){ toast('Antre nimewo telefòn'); return; }
+  loader(true);
+  try{
+    // ensure recaptchaVerifier exists
+    if(!window.recaptchaVerifier){
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible'});
+      await window.recaptchaVerifier.render();
+    }
+    const confirmation = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
+    window._confirmationResult = confirmation;
+    loader(false); toast('Kòd voye sou telefòn'); 
+  } catch(err){ loader(false); toast(err.message || 'Erè SMS'); console.error(err); }
+});
 
-<!-- LOADING OVERLAY -->
-<div id="loading" class="overlay"><h2>Ap chaje...</h2></div>
+$('btnVerifyOtp').addEventListener('click', async ()=>{
+  const code = $('otpInput').value.trim();
+  if(!code || !window._confirmationResult){ toast('Antre kòd la oswa voye kòd la anvan.'); return; }
+  loader(true);
+  try{
+    const res = await window._confirmationResult.confirm(code);
+    // if new user, create user doc if not exists
+    const uid = res.user.uid;
+    const doc = await fs.collection('users').doc(uid).get();
+    if(!doc.exists){
+      await fs.collection('users').doc(uid).set({ name: res.user.phoneNumber, email: res.user.phoneNumber, phone: res.user.phoneNumber, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+    loader(false); toast('Telefòn verifye, konekte!');
+  } catch(err){ loader(false); toast(err.message||'Erè verifye'); console.error(err); }
+});
 
-<!-- TOAST -->
-<div id="toast" class="toast hidden"></div>
+/* ---------------------------
+  AUTH STATE HANDLER
+----------------------------*/
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    // hide auth, show main app after splash ended
+    closeMain(); // hides main? ensure start from clean
+    // ensure splash hidden if it is done
+    if(document.getElementById('splash').style.display !== 'none') {
+      // wait until splash removed (it will remove itself after 10s) - we still prepare UI
+      // do nothing, we'll let splash finish
+    }
+    // show main app
+    openMain();
+    showView('dashboard');
+    $('userEmail').textContent = user.email || user.phoneNumber || '';
+    await loadUserProfile();
+    await loadTransactionsList();
+  } else {
+    // no user: show auth card (after splash)
+    // keep main hidden
+    closeMain();
+    show($('authCard'));
+  }
+});
 
-<!-- LOGIN/SIGNUP -->
-<div id="authScreen" class="card">
-    <h1>ECHANJ PLUS</h1>
-    <div id="authForms">
-        <div id="loginForm">
-            <input type="email" id="loginEmail" placeholder="Imèl">
-            <input type="password" id="loginPassword" placeholder="Modpas">
-            <button class="btn-green" onclick="login()">Konekte</button>
-            <p>Pa gen kont? <a href="#" onclick="showSignup()">Kreye kont</a></p>
-            <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
-        </div>
-        <div id="signupForm" class="hidden">
-            <input type="text" id="signupName" placeholder="Non">
-            <input type="email" id="signupEmail" placeholder="Imèl">
-            <input type="text" id="signupPhone" placeholder="Telefòn">
-            <input type="password" id="signupPassword" placeholder="Modpas">
-            <button class="btn-green" onclick="signup()">Kreye kont</button>
-            <p>Gen kont? <a href="#" onclick="showLogin()">Konekte</a></p>
-            <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
-        </div>
-    </div>
-</div>
+/* ---------------------------
+  USER PROFILE + BALANCE HELPERS
+----------------------------*/
+async function loadUserProfile(){
+  const u = auth.currentUser;
+  if(!u) return;
+  const docRef = fs.collection('users').doc(u.uid);
+  const doc = await docRef.get();
+  if(!doc.exists) return;
+  const data = doc.data();
+  $('profName').value = data.name || '';
+  $('profPhone').value = data.phone || '';
+  $('profEmail').value = data.email || u.email || '';
+  $('saleBalance').textContent = (data.saleBalance || 0);
+  // computing withdrawBalance shown (we keep stored withdrawBalance)
+  const wb = parseFloat((data.withdrawBalance || 0).toFixed(2));
+  $('withdrawBal').textContent = wb.toFixed(2);
+  $('profWithdraw').textContent = wb.toFixed(2);
+  // welcome text
+  $('welcomeText').textContent = `Byenveni ${data.name || 'Itilizatè'}, sèvis la se pou ou fè 1e tranzaksyon ou an.`;
+}
 
-<!-- TERMS -->
-<div id="termsScreen" class="card hidden">
-    <h2>Kondisyon Itilizasyon</h2>
-    <p>1. Sèvis disponib sèlman pou moun ki rete an Ayiti.</p>
-    <p>2. Laj minimòm: 18 ane oswa plis.</p>
-    <p>3. Chak itilizatè gen yon sèl kont.</p>
-    <p>4. Enfòmasyon bay la dwe veritab.</p>
-    <p>5. Tranzaksyon final, pa gen ranvèsman.</p>
-    <p>6. Aktivite ilegal oswa fwod entèdi.</p>
-    <p>7. Sistèm ka mete limit sou tranzaksyon.</p>
-    <p>8. Kont ka bloke si gen vyolasyon.</p>
-    <p>9. Done itilizatè yo pwoteje epi itilize sèlman pou sèvis la.</p>
-    <p>10. Nenpòt reklamasyon dwe fèt atravè WhatsApp oswa Imèl ofisyèl.</p>
-    <button class="btn-blue" onclick="showScreen('authScreen')">Tounen</button>
-</div>
+/* balance calculation:
+   1 minit => 0.82 Gdes
+   after system fee 17.5% => amount * 0.82 * 0.825
+*/
+function computeGdesFromMinutes(mins){
+  const x = Number(mins) * 0.82 * 0.825;
+  return Number(isFinite(x)? x : 0);
+}
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="card hidden">
-    <h1>ECHANJ PLUS</h1>
-    <p id="welcomeMsg">Byenveni, sèvis la se pou ou fè 1e tranzaksyon ou an.</p>
-    <div id="flowMsg"><small>OK pou kite mesaj sa a</small></div>
-    <button class="btn-blue" onclick="showScreen('sendMinutes')">📤 Voye Minit</button><br>
-    <button class="btn-blue" onclick="showScreen('payment')">💳 Peman</button><br>
-    <button class="btn-blue" onclick="showScreen('profile')">👤 Pwofil</button><br>
-    <button class="btn-blue" onclick="showScreen('about')">ℹ️ About</button><br>
-    <button class="btn-red" onclick="logout()">Dekonekte</button>
-</div>
+/* ---------------------------
+  TRANSACTIONS (Realtime DB) + BALANCE UPDATES
+----------------------------*/
+async function logTransaction(payload){
+  // payload must include userId when called from server or client; we set here
+  const txId = 'tx_' + Date.now();
+  const u = auth.currentUser;
+  if(!u) throw new Error('Pa konekte');
+  payload.userId = u.uid;
+  payload.createdAt = Date.now();
+  await db.ref('transactions/' + txId).set(payload);
+  return txId;
+}
 
-<!-- SEND MINUTES -->
-<div id="sendMinutes" class="card hidden">
-    <h2>Voye Minit</h2>
-    <select id="operatorSelect">
-        <option value="digicel">Digicel</option>
-        <option value="natcom">Natcom</option>
-    </select>
-    <input type="number" id="minutesInput" placeholder="Antre kantite minit">
-    <button class="btn-green" onclick="composeUSSD()">Konpoze USSD</button>
-    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
-</div>
+async function sellMinutesRecord(operator, minutes, ussd){
+  const u = auth.currentUser; if(!u) throw new Error('Pa konekte');
+  loader(true);
+  try{
+    const gdes = computeGdesFromMinutes(minutes);
+    // update Firestore user doc atomically
+    const ref = fs.collection('users').doc(u.uid);
+    await ref.update({
+      saleBalance: firebase.firestore.FieldValue.increment(Number(minutes)),
+      withdrawBalance: firebase.firestore.FieldValue.increment(Number(gdes))
+    });
+    // log transaction
+    await logTransaction({ type:'sale', operator, minutes:Number(minutes), ussd, gdes, status:'pending' });
+    loader(false);
+    toast('Vann an sove; balans ajou.');
+    await loadUserProfile();
+  } catch(err){
+    loader(false); toast(err.message || 'Erè sove vann'); console.error(err);
+  }
+}
 
-<!-- PAYMENT -->
-<div id="payment" class="card hidden">
-    <h2>Peman</h2>
-    <p>Wallet: <span id="walletBalance">0</span> minit / <span id="walletGdes">0</span> Gdes</p>
-    <select id="paymentMethod">
-        <option value="moncash">MonCash</option>
-        <option value="natcash">NatCash</option>
-        <option value="paryajLakay">Paryaj Lakay</option>
-        <option value="paryajPam">Paryaj Pam</option>
-    </select>
-    <input type="text" id="payName" placeholder="Non kont">
-    <input type="text" id="payNumber" placeholder="Nimewo kont">
-    <input type="number" id="payAmount" placeholder="Montan">
-    <button class="btn-green" onclick="savePayment()">Sove / Peye</button>
-    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
-</div>
+/* ---------------------------
+  SEND / USSD ACTIONS
+----------------------------*/
+$('btnCompose').addEventListener('click', ()=>{
+  const op = $('sendOperator').value;
+  const mins = Number($('sendMinutes').value);
+  if(!mins || mins <= 0){ toast('Antre kantite minit valab'); return; }
+  let ussd;
+  if(op === 'digicel'){
+    ussd = `*128*50947111123*${mins}#`;
+  } else {
+    ussd = `*123*88888888*32160708*${mins}#`;
+  }
+  toast('Dialer ap louvri ak kòd USSD...');
+  // Save a pending USSD attempt as well
+  (async ()=>{
+    try{
+      await logTransaction({type:'ussd', operator:op, minutes:mins, ussd, status:'pending'});
+    } catch(e){ console.error('log ussd err', e); }
+    // launch dialer (works on mobile)
+    window.location.href = `tel:${encodeURIComponent(ussd)}`;
+  })();
+});
 
-<!-- PROFILE -->
-<div id="profile" class="card hidden">
-    <h2>Pwofil</h2>
-    <input type="text" id="profileName" placeholder="Non">
-    <input type="text" id="profilePhone" placeholder="Telefòn">
-    <input type="email" id="profileEmail" placeholder="Imèl" readonly>
-    <p>Balans: <span id="profileBalance">0</span> Gdes</p>
-    <button class="btn-green" onclick="saveProfile()">Sove</button>
+/* Sell minutes (save as sale) */
+$('btnSell').addEventListener('click', async ()=>{
+  const op = $('sendOperator').value;
+  const mins = Number($('sendMinutes').value);
+  if(!mins || mins <= 0){ toast('Antre kantite minit valab'); return; }
+  let ussd = (op === 'digicel') ? `*128*50947111123*${mins}#` : `*123*88888888*32160708*${mins}#`;
+  try{
+    await sellMinutesRecord(op, mins, ussd);
+  } catch(err){
+    toast(err.message || 'Erè vann');
+  }
+});
+
+/* ---------------------------
+  PAYMENT / WITHDRAW ACTION
+----------------------------*/
+$('btnPay').addEventListener('click', async ()=>{
+  const method = $('payMethod').value;
+  const name = $('payName').value.trim();
+  const number = $('payNumber').value.trim();
+  const amount = Number($('payAmount').value);
+  if(!amount || amount <= 0){ toast('Antre montan valid'); return; }
+  const u = auth.currentUser; if(!u) return toast('Pa konekte');
+  loader(true);
+  try{
+    // fetch latest withdrawBalance
+    const doc = await fs.collection('users').doc(u.uid).get();
+    const data = doc.data() || {};
+    const currentWithdraw = Number(data.withdrawBalance || 0);
+    if(currentWithdraw < amount){
+      loader(false);
+      return toast('Balans retire pa ase.');
+    }
+    // decrement withdrawBalance
+    await fs.collection('users').doc(u.uid).update({
+      withdrawBalance: firebase.firestore.FieldValue.increment(-Number(amount))
+    });
+    // log transaction
+    const txId = await logTransaction({type:'withdraw', method, name, number, amount, status:'pending'});
+    loader(false);
+    toast('Demann retrè anrejistre. WhatsApp ap louvri pou konfime.');
+    // open whatsapp to system number with message
+    const msg = `Demann retrè:\nItl: ${u.uid}\nMontan: ${amount} Gdes\nMetòd: ${method}\nKont: ${name} ${number}\nTxID: ${txId}`;
+    window.open(`https://wa.me/50947111123?text=${encodeURIComponent(msg)}`, '_blank');
+    await loadUserProfile();
+  } catch(err){
+    loader(false); toast(err.message || 'Erè peman'); console.error(err);
+  }
+});
+
+/* ---------------------------
+  PROFILE SAVE
+----------------------------*/
+$('btnSaveProfile').addEventListener('click', async ()=>{
+  const u = auth.currentUser; if(!u) return toast('Pa konekte');
+  const name = $('profName').value.trim();
+  const phone = $('profPhone').value.trim();
+  if(!name){ toast('Antre non'); return; }
+  loader(true);
+  try{
+    await fs.collection('users').doc(u.uid).update({ name, phone });
+    loader(false); toast('Profil mete ajou');
+    await loadUserProfile();
+  } catch(err){ loader(false); toast(err.message || 'Erè'); console.error(err); }
+});
+
+/* ---------------------------
+  TX LIST + CSV
+----------------------------*/
+async function loadTransactionsList(){
+  const u = auth.currentUser; if(!u) return;
+  const snap = await db.ref('transactions').orderByChild('userId').equalTo(u.uid).once('value');
+  const container = $('txList'); container.innerHTML = '';
+  const rows = [];
+  snap.forEach(ch=>{
+    const v = ch.val(); rows.push(v);
+  });
+  rows.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
+  rows.forEach(r=>{
+    const el = document.createElement('div');
+    el.style.padding='8px';
+    el.style.borderBottom='1px solid rgba(255,255,255,0.03)';
+    el.innerHTML = `<div style="font-weight:700">${r.type || r.method || 'Tx'}</div>
+      <div class="small muted">ID: ${r.userId ? (r.createdAt||'') : ''}</div>
+      <div class="small muted">Detay: ${JSON.stringify(r).slice(0,120)}</div>`;
+    container.appendChild(el);
+  });
+  // stash for CSV
+  window.__txRows = rows;
+}
+
+function exportCSV(){
+  const rows = window.__txRows || [];
+  if(!rows.length) return toast('Pa gen tranzaksyon pou telechaje');
+  const header = ['userId','type','minutes','gdes','amount','method','operator','status','createdAt','ussd'];
+  const csv = [header.join(',')].concat(rows.map(r=> header.map(k=>{
+    let v = r[k] === undefined ? '' : r[k];
+    if(typeof v === 'object') v = JSON.stringify(v);
+    return `"${String(v).replace(/"/g,'""')}"`;
+  }).join(','))).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'transactions.csv'; a.click(); URL.revokeObjectURL(url);
+}
+
+/* ---------------------------
+  UTILITY: load tx on demand
+----------------------------*/
+$('btnExportCSV').addEventListener('click', exportCSV);
+
+/* ---------------------------
+  INITIAL UI: hide loader & toast
+----------------------------*/
+hide = el => el.classList.add('hidden'); // safe redeclare for earlier calls
+show = el => el.classList.remove('hidden');
+// ensure loader and toast hidden
+document.getElementById('loader').classList.add('hidden');
+document.getElementById('toastEl').classList.add('hidden');
+
+/* ---------------------------
+  Safety: show auth after splash if no user
+----------------------------*/
+setTimeout(()=> {
+  if(!auth.currentUser){
+    // show auth card
+    document.getElementById('authCard').classList.remove('hidden');
+  }
+}, 11000); // after splash gone
+</script>
+</body>
+            </html>
