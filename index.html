@@ -1,343 +1,207 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>ECHANJ PLUS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echanj Plus</title>
 <style>
-  :root{
-    --bg:#071c2b; --muted:#9fb8d9; --accent:#FFD700; --accent-dark:#e6c200;
+  /* ===== Full screen + font ===== */
+  * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+  html, body { width:100%; height:100%; background:#0b1e4b; color:#fff; overflow-x:hidden; }
+
+  /* ===== Logo + Kare animasyon ===== */
+  #logoContainer {
+    width:100%; height:200px; display:flex; justify-content:center; align-items:center; position:relative; margin-top:50px;
   }
-  *{box-sizing:border-box;font-family:Arial, Helvetica, sans-serif}
-  html,body{height:100%;margin:0;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased}
-  /* Splash decor (behind forms) */
-  #splashDecor{position:fixed;inset:0;z-index:1;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column}
-  .glass{width:220px;height:220px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(6px);transform-origin:center;animation:rotate 4.4s ease-in-out infinite}
-  @keyframes rotate{0%{transform:rotate(-18deg)}25%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}75%{transform:rotate(18deg)}100%{transform:rotate(-18deg)}}
-  .brandBig{position:fixed;top:28px;left:50%;transform:translateX(-50%);font-size:44px;font-weight:900;z-index:2;pointer-events:none;text-align:center}
-  .brandBig em{color:var(--accent);font-style:normal;text-shadow:0 0 14px rgba(255,215,0,0.5)}
-  /* subtle grafiti */
-  #splashDecor::before{content:'';position:absolute;inset:0;background:
-    radial-gradient(circle at 15% 20%, rgba(0,0,0,0.25) 0 5%, transparent 6%),
-    radial-gradient(circle at 70% 30%, rgba(0,0,0,0.2) 0 7%, transparent 8%);
-    mix-blend-mode:multiply;opacity:0.9;animation:drip 3.6s ease-in-out infinite}
-  @keyframes drip{0%{transform:translateY(0)}50%{transform:translateY(6px)}100%{transform:translateY(0)}}
+  #logoSquare {
+    width:150px; height:150px; background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+    display:flex; justify-content:center; align-items:center; border-radius:20px;
+    animation: rotateSquare 4s linear infinite;
+  }
+  #logoText {
+    font-size:36px; font-weight:bold; color:#ffd700; text-shadow:2px 2px 5px #000;
+  }
+  @keyframes rotateSquare {
+    0%{transform:rotate(0deg);}
+    50%{transform:rotate(180deg);}
+    100%{transform:rotate(360deg);}
+  }
 
-  /* app layout */
-  #app{position:relative;z-index:5;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:22px}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(0,0,0,0.5);width:100%;max-width:520px}
-  h2{margin:0 0 12px 0;font-size:20px}
-  label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
-  input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;margin-top:6px}
-  .row{display:flex;gap:8px}
-  .btn{padding:10px 12px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
-  .btn-primary{background:var(--accent);color:#000}
-  .btn-alt{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)}
-  .small{font-size:13px;color:var(--muted)}
-  .link{color:var(--accent);cursor:pointer;text-decoration:underline}
-  .hidden{display:none}
+  /* ===== Forms ===== */
+  .authContainer { width:100%; display:flex; justify-content:center; margin-top:30px; }
+  .formBox { background: rgba(255,255,255,0.05); padding:30px; border-radius:18px; width:90%; max-width:400px; backdrop-filter: blur(5px); }
+  input { width:100%; padding:10px; margin:10px 0; border-radius:8px; border:none; }
+  button { width:100%; padding:10px; margin:10px 0; border:none; border-radius:8px; background:#ffd700; color:#000; font-weight:bold; cursor:pointer; }
+  .switchLink { text-align:center; margin-top:10px; cursor:pointer; color:#00ffff; }
 
-  /* loader */
-  #loader{display:none;position:fixed;inset:0;background:rgba(2,6,23,0.6);align-items:center;justify-content:center;z-index:60}
-  #loader .box{background:#fff;color:#000;padding:12px 16px;border-radius:10px;font-weight:800}
+  /* ===== Dashboard ===== */
+  #dashboard { display:none; padding:20px; }
+  #dashboard h2 { text-align:center; margin-bottom:20px; }
+  .optionsBar { display:flex; justify-content:center; gap:20px; margin-bottom:20px; }
+  .optionBtn { padding:10px 15px; background:#ffd700; color:#000; border:none; border-radius:10px; cursor:pointer; font-weight:bold; }
 
-  /* main area */
-  #main{display:none;width:100%;max-width:1100px;margin-top:12px}
-  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .brandTop{font-weight:900;font-size:20px}
-  .maskEmail{font-weight:700;color:#fff}
+  /* ===== Wallet Balances ===== */
+  #wallet { display:flex; justify-content:center; gap:20px; margin-bottom:20px; }
+  .balanceCard { background: rgba(255,255,255,0.1); padding:15px 25px; border-radius:15px; text-align:center; }
 
-  /* wallet */
-  .wallet{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg, rgba(255,215,0,0.06), rgba(255,255,255,0.01));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
-  .logoMini{width:46px;height:46px;border-radius:10px;background:radial-gradient(circle at 30% 30%, var(--accent), #000)}
-  .pill{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);min-width:140px}
-  .pill .title{font-size:13px;color:var(--muted)}
-  .val{font-weight:900;font-size:18px}
-
-  /* pages and nav */
-  .pages{margin-top:14px}
-  .page{display:none}
-  .page.active{display:block}
-  nav.bottom{position:fixed;left:0;right:0;bottom:12px;display:flex;justify-content:center;z-index:55}
-  .navInner{width:100%;max-width:1100px;padding:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
-  .navBtn{padding:10px;border-radius:10px;text-align:center;font-weight:800;cursor:pointer;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)}
-  .navBtn.active{background:var(--accent);color:#000}
-
-  /* accordion about */
-  .accItem{border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:8px}
-  .accHead{padding:10px;background:rgba(255,255,255,0.02);cursor:pointer;font-weight:900}
-  .accBody{padding:10px;background:rgba(255,255,255,0.01);display:none;color:var(--muted)}
-
-  @media (max-width:720px){ .brandBig{font-size:34px} .glass{width:180px;height:180px} }
+  /* ===== Modal Kondisyon ===== */
+  #termsModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; }
+  #termsContent { background:#fff; color:#000; padding:20px; border-radius:15px; width:90%; max-width:500px; max-height:80%; overflow-y:auto; }
+  #closeModal { margin-top:20px; padding:10px; cursor:pointer; background:#0b1e4b; color:#fff; border:none; border-radius:10px; }
 </style>
 </head>
 <body>
 
-<!-- Splash decorative (behind forms) -->
-<div id="splashDecor">
-  <div class="glass" aria-hidden="true"></div>
-  <div class="brandBig" aria-hidden="true"><em>ECHANJ</em> PLUS</div>
+<!-- Logo + Kare animasyon -->
+<div id="logoContainer">
+  <div id="logoSquare">
+    <div id="logoText">ECHANJ PLUS</div>
+  </div>
 </div>
 
-<!-- loader -->
-<div id="loader"><div class="box">Ap travay...</div></div>
+<!-- Authentication Forms -->
+<div class="authContainer" id="authSection">
+  <!-- Signup Form -->
+  <div class="formBox" id="signupFormBox">
+    <h3>Enskri</h3>
+    <input type="text" id="signupName" placeholder="Non ou" required>
+    <input type="email" id="signupEmail" placeholder="Imèl" required>
+    <input type="text" id="signupPhone" placeholder="Nimero Telefòn (+509...)" required>
+    <input type="date" id="signupDOB" placeholder="Dat nesans" required>
+    <input type="password" id="signupPassword" placeholder="Modpas" required>
+    <label>
+      <input type="checkbox" id="acceptTerms" required> Mwen li <a href="#" id="openTerms">Kondisyon yo</a> e mwen dakò
+    </label>
+    <button id="signupBtn">Kreye kont</button>
+    <div class="switchLink" id="toLogin">Ou deja gen kont? Konekte</div>
+  </div>
 
-<!-- App container -->
-<div id="app" role="application" aria-live="polite">
+  <!-- Login Form -->
+  <div class="formBox" id="loginFormBox" style="display:none;">
+    <h3>Konekte</h3>
+    <input type="email" id="loginEmail" placeholder="Imèl" required>
+    <input type="password" id="loginPassword" placeholder="Modpas" required>
+    <button id="loginBtn">Konekte</button>
+    <div class="switchLink" id="toSignup">Pa gen kont? Enskri</div>
+  </div>
+</div>
 
-  <!-- AUTH area: signup page shown first -->
-  <div id="authCard" class="card" style="max-width:640px;margin-top:30px;">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="font-weight:900;font-size:22px"><em>ECHANJ</em> PLUS</div>
-      <div class="small">Sèvis pou Ayiti</div>
-    </div>
+<!-- Dashboard -->
+<div id="dashboard">
+  <h2>Byenveni, <span id="userName"></span></h2>
+  <div class="optionsBar">
+    <button class="optionBtn" id="optionHome">Akèy</button>
+    <button class="optionBtn" id="optionPayment">Peman</button>
+    <button class="optionBtn" id="optionProfile">Profil</button>
+  </div>
 
-    <!-- signup / login panes -->
-    <div id="signupPane" style="margin-top:12px;">
-      <h2>Kreye Kont</h2>
-      <label>Non konplè</label><input id="suName" placeholder="Jean Paul">
-      <label>Dat Nesans (JJ / MM / AAAA)</label>
-      <div class="row">
-        <input id="suDay" type="number" min="1" max="31" placeholder="JJ" style="flex:1">
-        <input id="suMonth" type="number" min="1" max="12" placeholder="MM" style="flex:1">
-        <input id="suYear" type="number" min="1900" max="2100" placeholder="AAAA" style="flex:1">
-      </div>
-      <label>Telefòn (+509...)</label><input id="suPhone" placeholder="+50937xxxxxx">
-      <label>Imèl</label><input id="suEmail" type="email" placeholder="ou@exemple.com">
-      <label>Modpas</label><input id="suPass" type="password" placeholder="••••••">
-      <label>Vil</label><input id="suCity" placeholder="Vil">
-      <div style="margin-top:8px" class="small">
-        <input id="suAgree" type="checkbox"> Mwen li epi mwen aksepte <span id="openTermsFromSignup" class="link">Kondisyon Itilizasyon</span>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button id="btnSignup" class="btn btn-primary" style="flex:1" disabled>Kreye Kont</button>
-        <button id="btnGoLogin" class="btn btn-alt" style="flex:1">Mwen gen kont</button>
-      </div>
-    </div>
+  <!-- Wallet Balances -->
+  <div id="wallet">
+    <div class="balanceCard">Sale Balance: <span id="saleBalance">0</span> minit</div>
+    <div class="balanceCard">Withdraw Balance: <span id="withdrawBalance">0</span> Gdes</div>
+  </div>
 
-    <div id="loginPane" class="hidden" style="margin-top:12px;">
-      <h2>Konekte</h2>
-      <label>Imèl</label><input id="liEmail" type="email" placeholder="ou@exemple.com">
-      <label>Modpas</label><input id="liPass" type="password" placeholder="••••••">
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button id="btnLogin" class="btn btn-primary" style="flex:1">Konekte</button>
-        <button id="btnGoSignup" class="btn btn-alt" style="flex:1">Kreye Kont</button>
-      </div>
-      <div style="margin-top:10px" class="small">
-        oubyen konekte ak telefòn:
-        <div style="margin-top:8px;display:flex;gap:8px">
-          <input id="phoneLogin" placeholder="+50937xxxxxx" style="flex:1">
-          <button id="btnSendCode" class="btn btn-alt">Voye</button>
-        </div>
-        <div id="phoneCodeArea" style="margin-top:8px;display:none">
-          <input id="phoneCode" placeholder="Kòd SMS">
-          <button id="btnVerifyCode" class="btn btn-primary" style="margin-top:6px">Verifye</button>
-        </div>
-        <div id="recaptcha-container"></div>
-      </div>
-      <div style="margin-top:10px"><span id="openTermsFromLogin" class="link">Kondisyon Itilizasyon</span></div>
-    </div>
+  <!-- Kontni opsyon -->
+  <div id="optionContent"></div>
+</div>
 
-    <!-- Terms long -->
-    <div id="termsPane" class="hidden" style="margin-top:12px;">
-      <h2>Kondisyon Itilizasyon</h2>
-      <div style="max-height:280px;overflow:auto;color:var(--muted);font-size:13px">
-        <p><b>Disponiblite:</b> Sèvis la disponib sèlman pou moun ki rete an Ayiti. Laj minimòm 18 ane.</p>
-        <p><b>Kont:</b> Yon sèl kont pa itilizatè. Enfòmasyon bay la dwe veritab. Aktivite ilegal entèdi.</p>
-        <p><b>Frè sistèm:</b> Frè sèvis la se <b>15%</b>. Konvèsyon: <b>1 minit = 0.82 Gdes</b>. Sòm resevwa = minit × 0.82 × 0.85.</p>
-        <p><b>Retre:</b> Retre fèt atravè MonCash, Natcash, Paryaj Lakay, Paryaj Pam. Apre demann retrè anrejistre, admin pral konfime sou WhatsApp.</p>
-        <p><b>Profil:</b> Profil ranpli yon sèl fwa; apre sove li vin fèmen pou modifye.</p>
-        <p><b>Done:</b> Done itilizatè yo sere nan Firebase Realtime Database pou profil, ak Firestore pou transactions.</p>
-        <p><b>Chanjman kondisyon:</b> Kondisyon yo ka chanje, yo antre an aplikasyon imedyatman.</p>
-        <p><b>Kontak:</b> WhatsApp: +509 4711 1123 · Imèl: echanjplus@gmail.com</p>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button id="btnTermsBack" class="btn btn-alt" style="flex:1">Retounen</button>
-      </div>
-    </div>
+<!-- Modal Kondisyon -->
+<div id="termsModal">
+  <div id="termsContent">
+    <h3>Kondisyon Sistem Echanj Plus</h3>
+    <p>Tout itilizatè dwe gen 18 ane oswa plis. Sèvis la disponib sèlman pou moun ki nan Ayiti. Tout tranzaksyon final, pa gen ranvèsman...</p>
+    <button id="closeModal">Fèmen</button>
+  </div>
+</div>
 
-  </div> <!-- end auth card -->
-
-  <!-- Main (after login) -->
-  <div id="main" class="card hidden" style="max-width:1100px;margin-top:18px;">
-    <div class="topbar">
-      <div class="brandTop"><em>ECHANJ</em> PLUS</div>
-      <div style="text-align:right">
-        <div id="userMask" class="maskEmail small"></div>
-        <div style="margin-top:6px"><button id="btnLogout" class="btn btn-alt">Dekonekte</button></div>
-      </div>
-    </div>
-
-    <div class="wallet">
-      <div class="logoMini"></div>
-      <div style="flex:1">
-        <div style="font-weight:900">ECHANJ PLUS Wallet</div>
-        <div class="small">Gere minit ak lajan</div>
-      </div>
-      <div style="display:flex;gap:12px">
-        <div class="pill"><div class="title">Sale Balance (minit)</div><div class="val" id="saleBalance">0</div></div>
-        <div class="pill"><div class="title">Withdraw Balance (Gdes)</div><div class="val" id="withdrawBalance">0.00</div></div>
-      </div>
-    </div>
-
-    <div class="pages" id="pagesContainer" style="margin-top:14px">
-      <!-- SEND -->
-      <div id="page-send" class="page active">
-        <h3>Voye Minit</h3>
-        <label>Operatè</label>
-        <select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
-        <label>Kantite minit</label><input id="sendMinutes" type="number" min="1" placeholder="eg. 50">
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button id="btnCompose" class="btn btn-primary">Konpoze USSD</button>
-        </div>
-        <div id="digicelConfirm" class="small muted" style="margin-top:8px;display:none">
-          Pou konfime Digicel peze: <button id="btnConf128" class="btn btn-alt">*128*1#</button>
-        </div>
-      </div>
-
-      <!-- PAY -->
-      <div id="page-pay" class="page" style="display:none">
-        <h3>Peman & Retre</h3>
-        <div class="small muted">Klike Retre pou chwazi metòd.</div>
-        <div style="margin-top:10px" class="wallet">
-          <div class="logoMini"></div>
-          <div style="flex:1"><div class="small">Sale Balance</div><div class="val" id="saleBalance2">0</div></div>
-          <div style="flex:1"><div class="small">Withdraw Balance</div><div class="val" id="withdrawBalance2">0.00</div></div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button id="btnStartWithdraw" class="btn btn-primary">Retre</button>
-            <button id="btnWithdrawAll" class="btn btn-alt">Retre tout</button>
-          </div>
-        </div>
-
-        <div id="withdrawForm" style="margin-top:12px;display:none">
-          <label>Metòd</label>
-          <select id="withdrawMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
-          <div id="formMonNat" style="margin-top:8px">
-            <label>Non Kont</label><input id="withdrawName">
-            <label>Nimewo Kont</label><input id="withdrawAccount">
-          </div>
-          <div id="formParyaj" style="margin-top:8px;display:none">
-            <label>Nimewo</label><input id="withdrawParyaj">
-          </div>
-          <label style="margin-top:8px">Montan (Gdes)</label><input id="withdrawAmount" type="number" min="1">
-          <div style="display:flex;gap:8px;margin-top:10px"><button id="btnSubmitWithdraw" class="btn btn-primary">Sove / Peye</button><button id="btnCancelWithdraw" class="btn btn-alt">Anile</button></div>
-        </div>
-      </div>
-
-      <!-- HOME -->
-      <div id="page-home" class="page" style="display:none">
-        <h3>Akey</h3>
-        <div class="card" style="margin-top:8px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><div class="small muted">Byenveni</div><div id="welcomeName" style="font-weight:900;font-size:18px">Itilizatè</div></div>
-            <div class="small muted">Fè premye tranzaksyon ou kounye a</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PROFILE -->
-      <div id="page-profile" class="page" style="display:none">
-        <h3>Pwofil</h3>
-        <div id="profileEdit">
-          <label>Non</label><input id="pfName">
-          <label>Telefòn</label><input id="pfPhone">
-          <label>Laj</label><input id="pfAge" type="number" min="18">
-          <label>Vil</label><input id="pfCity">
-          <label>Sèks</label><select id="pfSex"><option value="">Chwazi</option><option>Gason</option><option>Fi</option><option>Lòt</option></select>
-          <label>Foto (URL)</label><input id="pfPhoto">
-          <label>Imèl (readonly)</label><input id="pfEmail" readonly>
-          <div style="display:flex;gap:8px;margin-top:10px"><button id="btnSaveProfile" class="btn btn-primary">Sove Profil</button></div>
-        </div>
-
-        <div id="profileView" style="display:none;margin-top:10px">
-          <div style="text-align:center">
-            <img id="pfPhotoView" src="" alt="photo" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.08)">
-            <div style="font-weight:900;margin-top:8px" id="pfNameView"></div>
-            <div class="small muted" id="pfCityView"></div>
-          </div>
-          <div style="margin-top:10px" class="card">
-            <div class="small"><b>Telefòn:</b> <span id="pfPhoneView"></span></div>
-            <div class="small"><b>Laj:</b> <span id="pfAgeView"></span></div>
-            <div class="small"><b>Sèks:</b> <span id="pfSexView"></span></div>
-            <div class="small"><b>Imèl:</b> <span id="pfEmailView"></span></div>
-            <div class="small"><b>Nimewo Kont:</b> <span id="pfAccountView"></span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ABOUT -->
-      <div id="page-about" class="page" style="display:none">
-        <h3>About</h3>
-        <div class="accItem"><div class="accHead">🔼 Kontak & Èd</div><div class="accBody">WhatsApp: +509 4711 1123<br>Imèl: echanjplus@gmail.com<br>Adrès: Anse d’Hainault, Grandans, Ayiti</div></div>
-        <div class="accItem"><div class="accHead">🔼 Kondisyon Sistèm lan</div><div class="accBody">Tout kondisyon sistèm: disponiblite Ayiti, laj≥18, frè 15%, elatriye.</div></div>
-        <div class="accItem"><div class="accHead">🔼 Kondisyon Jeneral</div><div class="accBody">Fonksyonalite: Voye minit, Retre, Profil locked, WhatsApp konfimasyon, elatriye.</div></div>
-        <div class="accItem"><div class="accHead">🔼 SEO & Rezo</div><div class="accBody">SEO: ARS<br><a href='https://www.facebook.com/share/19pCBnyujR/' target='_blank'>Facebook</a><br><a href='https://youtube.com/@echanjplus?si=KtZiO5TmpXDbjynG' target='_blank'>YouTube</a></div></div>
-      </div>
-
-    </div> <!-- pages -->
-  </div> <!-- main card -->
-
-  <!-- bottom nav -->
-  <nav class="bottom">
-    <div class="navInner">
-      <div id="nav-send" class="navBtn">📤 Voye</div>
-      <div id="nav-pay" class="navBtn">💳 Peman</div>
-      <div id="nav-home" class="navBtn active">🏠 Akey</div>
-      <div id="nav-profile" class="navBtn">👤 Profil</div>
-      <div id="nav-about" class="navBtn">ℹ️ About</div>
-    </div>
-  </nav>
-
-</div> <!-- end app -->
-
-<!-- Firebase v10 modular -->
+<!-- Firebase SDK -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref as rdbRef, set as rdbSet, get as rdbGet, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js";
+import { getDatabase, ref, set, update, push, get } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js";
 
-  // ---- YOUR firebaseConfig (you provided earlier) ----
-  const firebaseConfig = {
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus-778cd",
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-    messagingSenderId: "111144762929",
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-    measurementId: "G-J1BQRF32ZW"
-  };
+// ===== Firebase Config =====
+const firebaseConfig = {
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  authDomain: "echanj-plus-778cd.firebaseapp.com",
+  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+  projectId: "echanj-plus-778cd",
+  storageBucket: "echanj-plus-778cd.appspot.com",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const rdb = getDatabase(app);
-  const fs = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-  // short helpers
-  const $ = id => document.getElementById(id);
-  function show(el){ if(!el) return; el.classList.remove('hidden'); el.style.display = 'block'; }
-  function hide(el){ if(!el) return; el.classList.add('hidden'); el.style.display = 'none'; }
-  function toast(msg, t=3000){ const d=document.createElement('div'); d.textContent=msg; d.style.position='fixed'; d.style.left='50%'; d.style.transform='translateX(-50%)'; d.style.bottom='22px'; d.style.background='var(--accent)'; d.style.color='#000'; d.style.padding='10px 14px'; d.style.borderRadius='10px'; d.style.fontWeight='800'; d.style.zIndex=99999; document.body.appendChild(d); setTimeout(()=>d.remove(),t); }
-  function loader(on=true){ $('loader').style.display = on ? 'flex' : 'none' }
-  function maskEmail(e){ if(!e) return ''; const [u,dom] = (e||'').split('@'); return (u? (u.slice(0,4)+'******@'+dom) : e); }
+// ===== Switch Forms =====
+const signupFormBox = document.getElementById('signupFormBox');
+const loginFormBox = document.getElementById('loginFormBox');
+document.getElementById('toLogin').addEventListener('click',()=>{ signupFormBox.style.display='none'; loginFormBox.style.display='block'; });
+document.getElementById('toSignup').addEventListener('click',()=>{ loginFormBox.style.display='none'; signupFormBox.style.display='block'; });
 
-  /* ---------- UI wiring: tabs, terms, nav ---------- */
-  // terms enable signup
-  $('suAgree').addEventListener('change', ()=> $('btnSignup').disabled = !$('suAgree').checked);
+// ===== Modal =====
+const termsModal = document.getElementById('termsModal');
+document.getElementById('openTerms').addEventListener('click',()=>{ termsModal.style.display='flex'; });
+document.getElementById('closeModal').addEventListener('click',()=>{ termsModal.style.display='none'; });
 
-  // open terms
-  $('openTermsFromSignup').onclick = ()=> { $('signupPane').classList.add('hidden'); $('termsPane').classList.remove('hidden'); }
-  $('openTermsFromLogin').onclick = ()=> { $('loginPane').classList.add('hidden'); $('termsPane').classList.remove('hidden'); }
-  $('btnTermsBack').onclick = ()=> { $('termsPane').classList.add('hidden'); $('signupPane').classList.remove('hidden'); $('loginPane').classList.remove('hidden'); $('loginPane').classList.add('hidden'); }
+// ===== Signup =====
+document.getElementById('signupBtn').addEventListener('click',()=>{
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const phone = document.getElementById('signupPhone').value;
+  const dob = document.getElementById('signupDOB').value;
+  const password = document.getElementById('signupPassword').value;
+  const accept = document.getElementById('acceptTerms').checked;
 
-  // switch panes
-  $('btnGoLogin').onclick = ()=> { $('signupPane').classList.add('hidden'); $('loginPane').classList.remove('hidden'); }
-  $('btnGoSignup').onclick = ()=> { $('loginPane').classList.add('hidden'); $('signupPane').classList.remove('hidden'); $('termsPane').classList.add('hidden'); }
+  if(!accept){ alert("Ou dwe aksepte kondisyon yo!"); return; }
 
-  // nav
-  function setActiveNav(key){
-    ['nav-send','nav-pay','nav-home','nav-profile','nav-about'].forEach(id=>{
-      $(id).classList.remove('active');
-    });
-    $('nav-'+key).classList.a
+  // Verify age >=18
+  const birthDate = new Date(dob);
+  const ageDifMs = Date.now() - birthDate.getTime();
+  const ageDate = new Date(ageDifMs);
+  const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+  if(age < 18){ alert("Ou dwe gen 18 ane oswa plis!"); return; }
+
+  createUserWithEmailAndPassword(auth,email,password)
+    .then(userCredential=>{
+      const user = userCredential.user;
+      const userRef = ref(db,'users/'+user.uid);
+      set(userRef,{
+        name, email, phone, dob, saleBalance:0, withdrawBalance:0, createdAt:new Date().toISOString()
+      }).then(()=>{
+        alert("Kreye kont avèk siksè!");
+        signupFormBox.style.display='none';
+        loginFormBox.style.display='block';
+      });
+    })
+    .catch(error=>alert(error.message));
+});
+
+// ===== Login =====
+document.getElementById('loginBtn').addEventListener('click',()=>{
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  signInWithEmailAndPassword(auth,email,password)
+    .then(userCredential=>{
+      const user = userCredential.user;
+      document.getElementById('authSection').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      // Load user info
+      get(ref(db,'users/'+user.uid)).then(snapshot=>{
+        if(snapshot.exists()){
+          const data = snapshot.val();
+          document.getElementById('userName').innerText = data.name;
+          document.getElementById('saleBalance').innerText = data.saleBalance;
+          document.getElementById('withdrawBalance').innerText = data.withdrawBalance.toFixed(2);
+        }
+      });
+    })
+    .catch(error=>alert(error.message));
+});
+</script>
+
+</body>
+                                   </html>
