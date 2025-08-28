@@ -1,419 +1,154 @@
-<!doctype html>
-<html lang="ht">
+<!DOCTYPE html><html lang="ht">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>ECHANJ PLUS</title>
-<style>
-:root{
-  --bg:#071c2b; --muted:#9fb8d9; --accent:#FFD700; --accent-dark:#e6c200;
-  --glass: rgba(255,255,255,0.04);
-}
-*{box-sizing:border-box;font-family:Arial, Helvetica, sans-serif}
-html,body{height:100%;margin:0;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased}
-a{color:inherit}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echanj Plus</title>
+  <style>
+    body, html {margin:0; padding:0; font-family:Arial, sans-serif; background:#0b1c3d; color:#fff; height:100%;}
+    .splash {display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; background:#0b1c3d;}
+    .logo {font-size:2.5rem; font-weight:bold; color:#FFD700; text-shadow:2px 2px 0 #000; margin-bottom:20px;}
+    .square {width:50px; height:50px; border:4px solid #FFD700; border-top:4px solid transparent; border-radius:8px; animation:spin 1s linear infinite;}
+    @keyframes spin {0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+    .hidden {display:none;}.auth-container {max-width:350px; margin:30px auto; background:#fff; color:#000; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.auth-container h2 {text-align:center; color:#0b1c3d;}
+input, select {width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:8px;}
+button {width:100%; padding:10px; margin-top:10px; background:#FFD700; border:none; border-radius:8px; font-weight:bold; cursor:pointer;}
+button:hover {background:#e6c200;}
+a {color:#0b1c3d; font-size:0.9rem; display:block; margin-top:10px; text-align:center;}
 
-/* ===== background / splash (decorative) ===== */
-#splash {
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  display:flex; align-items:center; justify-content:center; flex-direction:column;
-}
-.splash-decor::before{
-  content:""; position:absolute; inset:0;
-  background:
-    radial-gradient(circle at 12% 15%, rgba(0,0,0,0.28) 0 5%, transparent 6%),
-    radial-gradient(circle at 30% 30%, rgba(0,0,0,0.22) 0 7%, transparent 8%),
-    linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02));
-  mix-blend-mode:multiply; opacity:0.95;
-  animation: drip 3.6s ease-in-out infinite;
-}
-@keyframes drip{0%{transform:translateY(0)}50%{transform:translateY(6px)}100%{transform:translateY(0)}}
+.dashboard {display:none; padding:20px;}
+.nav {position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; background:#0b1c3d; padding:10px 0;}
+.nav button {flex:1; margin:0 5px; border-radius:0; background:#FFD700; color:#000;}
+.wallet {background:#fff; color:#000; padding:15px; border-radius:12px; margin-bottom:20px;}
 
-/* glass rotating square under brand */
-.glass {
-  width:240px;height:240px;border-radius:20px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  border:1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 18px 50px rgba(0,0,0,0.55);
-  transform-origin:center;
-  animation: rotate 4.4s ease-in-out infinite;
-}
-@keyframes rotate{0%{transform:rotate(-18deg)}25%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}75%{transform:rotate(18deg)}100%{transform:rotate(-18deg)}}
-
-/* Brand fixed above glass */
-.brand {
-  position:fixed; top:36px; left:50%; transform:translateX(-50%); z-index:5;
-  font-weight:900; font-size:40px; text-align:center; pointer-events:none;
-  color:#fff; text-shadow: 0 0 10px rgba(255,215,0,0.6);
-}
-.brand em{ color:var(--accent); font-style:normal }
-
-/* ===== app layout (auth visible immediately) ===== */
-#app { position:relative; z-index:6; min-height:100vh; padding:18px; display:flex; flex-direction:column; align-items:center; }
-
-/* center auth card */
-.auth-card {
-  width:100%; max-width:520px; margin-top:70px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.04); border-radius:14px; padding:18px; box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-}
-
-/* forms */
-label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
-input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;margin-top:6px}
-.row{display:flex;gap:8px}
-.btn{padding:10px 14px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
-.btn-primary{background:var(--accent);color:#000}
-.btn-alt{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)}
-.small{font-size:13px;color:var(--muted)}
-.link{color:var(--accent);cursor:pointer;text-decoration:underline}
-
-/* loader overlay */
-#loader{display:none;position:fixed;inset:0;background:rgba(2,6,23,0.6);align-items:center;justify-content:center;z-index:50}
-#loader .box{background:#fff;color:#000;padding:12px 16px;border-radius:10px;font-weight:800}
-
-/* main area after login */
-.main-wrap{display:none;width:100%;max-width:1100px;margin:22px auto;}
-
-/* topbar */
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.brand-top{font-size:22px;font-weight:900}
-.maskEmail{font-weight:700}
-
-/* wallet */
-.wallet{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg, rgba(255,215,0,0.06), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
-.logo-mini{width:46px;height:46px;border-radius:12px;background:radial-gradient(circle at 30% 30%, var(--accent), #000)}
-.pill{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);min-width:160px}
-.pill .title{font-size:13px;color:var(--muted)}
-.val{font-weight:900;font-size:20px}
-
-/* pages */
-.pages{margin-top:14px;}
-.page{display:none}
-.page.active{display:block}
-
-/* bottom nav */
-nav.bottom{position:fixed;left:0;right:0;bottom:12px;display:flex;justify-content:center;z-index:30}
-.nav-inner{width:100%;max-width:1100px;padding:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
-.nav-btn{padding:10px;border-radius:10px;text-align:center;font-weight:800;cursor:pointer}
-.nav-btn.active{background:var(--accent);color:#000}
-
-/* accordion styles about */
-.acc-head{padding:10px;background:rgba(255,255,255,0.02);cursor:pointer;font-weight:900;border-bottom:1px solid rgba(255,255,255,0.03)}
-.acc-body{padding:10px;background:rgba(255,255,255,0.01);display:none;color:var(--muted)}
-
-/* small responsive */
-@media (max-width:720px){ .brand{font-size:34px} .auth-card{margin-top:40px;padding:14px} .logo-mini{width:40px;height:40px} .pill{min-width:120px} }
-</style>
+  </style>
 </head>
-<body>
+<body><div id="splash" class="splash">
+  <div class="logo">Echanj Plus</div>
+  <div class="square"></div>
+</div><div id="signup" class="auth-container hidden">
+  <h2>Enskri</h2>
+  <input type="text" id="signupName" placeholder="Non konplè">
+  <input type="email" id="signupEmail" placeholder="Imèl">
+  <input type="password" id="signupPassword" placeholder="Modpas">
+  <input type="text" id="signupPhone" placeholder="Nimewo Telefòn">
+  <input type="number" id="signupAge" placeholder="Laj">
+  <select id="signupGender">
+    <option value="">Sèks</option>
+    <option value="Gason">Gason</option>
+    <option value="Fi">Fi</option>
+  </select>
+  <input type="text" id="signupCity" placeholder="Vil">
+  <label><input type="checkbox" id="terms"> Mwen dakò ak kondisyon yo</label>
+  <div id="recaptcha-container"></div>
+  <button onclick="signup()">Enskri</button>
+  <a href="#" onclick="showLogin()">Ou gen yon kont? Konekte</a>
+</div><div id="login" class="auth-container hidden">
+  <h2>Konekte</h2>
+  <input type="email" id="loginEmail" placeholder="Imèl">
+  <input type="password" id="loginPassword" placeholder="Modpas">
+  <button onclick="login()">Konekte</button>
+  <a href="#" onclick="showSignup()">Ou poko gen kont? Enskri</a>
+</div><div id="dashboard" class="dashboard">
+  <h2>Byenveni nan Echanj Plus</h2>
+  <div class="wallet">
+    <h3>Wallet</h3>
+    <p id="balance">Balans: 0 Gdes</p>
+    <button onclick="simulateTransaction()">Vann 100 Minit</button>
+  </div>
+  <div id="content"></div>
+  <div class="nav">
+    <button onclick="showTab('home')">Akey</button>
+    <button onclick="showTab('payment')">Peman</button>
+    <button onclick="showTab('profile')">Profil</button>
+    <button onclick="showTab('about')">About</button>
+  </div>
+</div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script><script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "",
+    appId: ""
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+  const store = firebase.firestore();
 
-<!-- SPLASH background decor (pointer-events none, auth is above) -->
-<div id="splash" class="splash-decor">
-  <div class="glass" aria-hidden="true"></div>
-  <div class="brand" aria-hidden="true"><em>ECHANJ</em> PLUS</div>
-</div>
+  // Splash → Signup
+  setTimeout(()=>{
+    document.getElementById('splash').classList.add('hidden');
+    document.getElementById('signup').classList.remove('hidden');
+  }, 3000);
 
-<!-- Loader overlay -->
-<div id="loader"><div class="box">Ap tann...</div></div>
+  function showLogin(){
+    document.getElementById('signup').classList.add('hidden');
+    document.getElementById('login').classList.remove('hidden');
+  }
+  function showSignup(){
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('signup').classList.remove('hidden');
+  }
 
-<!-- App container: auth visible immediately -->
-<div id="app">
+  // Signup
+  async function signup(){
+    const email = document.getElementById('signupEmail').value;
+    const pass = document.getElementById('signupPassword').value;
+    const name = document.getElementById('signupName').value;
+    const phone = document.getElementById('signupPhone').value;
+    const age = document.getElementById('signupAge').value;
+    const gender = document.getElementById('signupGender').value;
+    const city = document.getElementById('signupCity').value;
 
-  <!-- AUTH card (visible immediately) -->
-  <div class="auth-card" role="region" aria-label="Authentication">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="font-weight:900;font-size:20px">ECHANJ <em style="color:var(--accent)">PLUS</em></div>
-      <div class="small">Sèvis pou Ayiti</div>
-    </div>
+    if(!document.getElementById('terms').checked){alert('Ou dwe dakò ak kondisyon yo'); return;}
 
-    <!-- tabs -->
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="tabLogin" class="btn btn-primary" style="flex:1">Konekte</button>
-      <button id="tabSignup" class="btn btn-alt" style="flex:1">Kreye Kont</button>
-    </div>
+    try {
+      const userCred = await auth.createUserWithEmailAndPassword(email, pass);
+      const uid = userCred.user.uid;
 
-    <!-- LOGIN pane -->
-    <div id="loginPane" style="margin-top:12px">
-      <label>Imèl</label><input id="loginEmail" type="email" placeholder="ou@exemple.com">
-      <label>Modpas</label><input id="loginPassword" type="password" placeholder="••••••">
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button id="btnLogin" class="btn btn-primary" style="flex:1">Konekte</button>
-        <button id="btnPhone" class="btn btn-alt" style="flex:1">Konekte ak Telefòn</button>
-      </div>
-      <div style="margin-top:10px" class="small">Pa gen kont? <span id="switchToSignup" class="link">Kreye li</span></div>
-      <div style="margin-top:6px" class="small"><span id="openTermsFromLogin" class="link">Kondisyon Itilizasyon</span></div>
-    </div>
+      // generate account number
+      const accountNumber = Date.now();
 
-    <!-- PHONE auth UI (optional) -->
-    <div id="phonePane" class="hidden" style="margin-top:10px">
-      <label>Telefòn (+509...)</label>
-      <input id="phoneNumber" placeholder="+50937xxxxxx">
-      <div id="recaptcha-container"></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="btnSendCode" class="btn btn-primary" style="flex:1">Voye Kòd</button>
-        <button id="btnHidePhone" class="btn btn-alt" style="flex:1">Anile</button>
-      </div>
-      <div id="codeArea" class="hidden" style="margin-top:8px">
-        <label>Kòd verifye</label><input id="phoneCode" placeholder="123456">
-        <button id="btnVerifyCode" class="btn btn-primary" style="margin-top:8px">Verifye & Konekte</button>
-      </div>
-    </div>
+      await db.ref('users/' + uid + '/profile').set({
+        name, email, phone, age, gender, city, accountNumber, balance:0
+      });
 
-    <!-- SIGNUP pane -->
-    <div id="signupPane" class="hidden" style="margin-top:12px">
-      <label>Non konplè</label><input id="suName" placeholder="Jean Paul">
-      <div style="display:flex;gap:8px">
-        <div style="flex:1">
-          <label>Jou</label><input id="suDay" type="number" min="1" max="31" placeholder="JJ">
-        </div>
-        <div style="flex:1">
-          <label>Mwa</label><input id="suMonth" type="number" min="1" max="12" placeholder="MM">
-        </div>
-        <div style="flex:1">
-          <label>Ane</label><input id="suYear" type="number" min="1900" max="2100" placeholder="AAAA">
-        </div>
-      </div>
-      <label>Telefòn</label><input id="suPhone" placeholder="+50937xxxxxx">
-      <label>Imèl</label><input id="suEmail" type="email" placeholder="ou@exemple.com">
-      <label>Modpas</label><input id="suPass" type="password" placeholder="••••••">
-      <div style="margin-top:6px" class="small">
-        <input id="suAgree" type="checkbox"> Mwen li epi mwen aksepte <span id="openTermsFromSignup" class="link">Kondisyon yo</span>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button id="btnSignup" class="btn btn-primary" style="flex:1">Kreye Kont</button>
-        <button id="btnCancelSignup" class="btn btn-alt" style="flex:1">Anile</button>
-      </div>
-    </div>
+      document.getElementById('signup').classList.add('hidden');
+      document.getElementById('dashboard').style.display='block';
+    } catch(e){alert(e.message)}
+  }
 
-    <!-- TERMS pane -->
-    <div id="termsPane" class="hidden" style="margin-top:12px">
-      <h3>Kondisyon Itilizasyon (detaye)</h3>
-      <div style="max-height:240px;overflow:auto;color:var(--muted);font-size:13px;margin-top:8px">
-        <p><b>Disponiblite:</b> Sèvis la disponib sèlman pou moun ki rete an Ayiti. Laj minimòm 18 ane.</p>
-        <p><b>Kont:</b> Yon sèl kont pa itilizatè. Enfòmasyon bay la dwe veritab. Aktivite ilegal, fwod, echanj san otorizasyon entèdi.</p>
-        <p><b>Tranzaksyon:</b> Tout tranzaksyon final; pa gen ranvèsman otomatik. Sistèm ka mete limit tranzaksyon oswa bloke kont si gen suspsyon fwod.</p>
-        <p><b>Frè sistèm:</b> Frè sèvis la se <b>15%</b>. Konvèsyon estanda: 1 minit = 0.82 Gdes. Kantite ou resevwa apre vann = minit × 0.82 × 0.85.</p>
-        <p><b>Peman & Retre:</b> Retre fèt atravè MonCash, NatCash, Paryaj Lakay, Paryaj Pam. Apre demann retrè anrejistre, admin pral konfimasyon sou WhatsApp.</p>
-        <p><b>Sekirite & Done:</b> Done itilizatè yo sere nan Firebase pou fonksyonman sèvis la sèlman. Nou itilize règleman sekirite Firestore / Realtime DB.</p>
-        <p><b>Chanjman kondisyon:</b> Kondisyon yo ka ajiste; yo antre an aplikasyon imedyatman apati piblikasyon.</p>
-        <p><b>Kontak:</b> WhatsApp: +509 4711 1123 · Imèl: echanjplus@gmail.com · Adrès: Anse d’Hainault, Grandans, Ayiti.</p>
-      </div>
-      <div style="margin-top:8px;display:flex;gap:8px">
-        <button id="btnTermsBack" class="btn btn-alt" style="flex:1">Retounen</button>
-      </div>
-    </div>
+  // Login
+  async function login(){
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPassword').value;
+    try {
+      await auth.signInWithEmailAndPassword(email, pass);
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('dashboard').style.display='block';
+    } catch(e){alert(e.message)}
+  }
 
-  </div> <!-- end auth-card -->
+  // Dashboard
+  let balance = 0;
+  function simulateTransaction(){
+    const minit = 100;
+    const gdes = minit*0.82; // frais 17.5%
+    balance += gdes;
+    document.getElementById('balance').innerText = 'Balans: '+balance+' Gdes';
+    const uid = auth.currentUser.uid;
+    store.collection('transactions').add({uid, minit, gdes, time:Date.now()});
+  }
 
-  <!-- MAIN area (logged in) -->
-  <div id="mainWrap" class="main-wrap">
-
-    <!-- top + wallet -->
-    <div class="topbar">
-      <div class="brand-top"><em>ECHANJ</em> PLUS</div>
-      <div style="text-align:right">
-        <div id="userMask" class="maskEmail small"></div>
-        <div style="margin-top:6px"><button id="btnLogout" class="btn btn-alt">Dekonekte</button></div>
-      </div>
-    </div>
-
-    <div class="wallet card">
-      <div class="logo-mini" title="Echanj Plus logo"></div>
-      <div style="flex:1">
-        <div style="font-weight:900">ECHANJ PLUS Wallet</div>
-        <div class="small">Gestion minit & lajan</div>
-      </div>
-      <div style="display:flex;gap:12px">
-        <div class="pill">
-          <div class="title">Sale Balance (minit)</div>
-          <div class="val" id="saleBalance">0</div>
-        </div>
-        <div class="pill">
-          <div class="title">Withdraw Balance (Gdes)</div>
-          <div class="val" id="withdrawBalance">0.00</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- pages -->
-    <div class="pages">
-
-      <!-- SEND page -->
-      <div id="page-send" class="page card">
-        <h3>Voye Minit</h3>
-        <label>Operatè</label>
-        <select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
-        <label>Kantite minit</label><input id="sendMinutes" type="number" min="1" placeholder="eg. 50">
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button id="btnComposeUSSD" class="btn btn-primary">Konpoze USSD</button>
-        </div>
-        <div id="digicelConfirm" class="small muted" style="margin-top:8px;display:none">
-          Apre wap konpoze, pou konfime sou Digicel peze: <button id="btnConfirm128" class="btn btn-alt">*128*1#</button>
-        </div>
-      </div>
-
-      <!-- PAY page -->
-      <div id="page-pay" class="page card" style="display:none">
-        <h3>Peman & Retre</h3>
-        <div class="small muted">Gade wallet epi klike <b>Retre</b> pou chwazi metòd.</div>
-        <div style="margin-top:10px" class="wallet">
-          <div class="logo-mini"></div>
-          <div style="flex:1">
-            <div class="small">Sale Balance</div>
-            <div class="val" id="saleBalance2">0</div>
-          </div>
-          <div style="flex:1">
-            <div class="small">Withdraw Balance</div>
-            <div class="val" id="withdrawBalance2">0.00</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button id="btnStartWithdraw" class="btn btn-primary">Retre</button>
-            <button id="btnWithdrawAll" class="btn btn-alt">Retre tout</button>
-          </div>
-        </div>
-
-        <div id="withdrawForm" style="margin-top:12px;display:none">
-          <label>Metòd</label>
-          <select id="withdrawMethod">
-            <option value="moncash">MonCash</option>
-            <option value="natcash">NatCash</option>
-            <option value="paryajLakay">Paryaj Lakay</option>
-            <option value="paryajPam">Paryaj Pam</option>
-          </select>
-
-          <div id="formMonNat" style="margin-top:8px">
-            <label>Non kont</label><input id="withdrawName">
-            <label>Nimewo kont</label><input id="withdrawAccount">
-          </div>
-
-          <div id="formParyaj" style="margin-top:8px;display:none">
-            <label>Nimewo</label><input id="withdrawParyaj">
-          </div>
-
-          <label style="margin-top:8px">Montan (Gdes)</label><input id="withdrawAmount" type="number" min="1">
-
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button id="btnSubmitWithdraw" class="btn btn-primary">Sove / Peye</button>
-            <button id="btnCancelWithdraw" class="btn btn-alt">Anile</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- HOME page -->
-      <div id="page-home" class="page card" style="display:none">
-        <h3>Akey</h3>
-        <div style="margin-top:8px" class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div class="small muted">Byenveni</div>
-              <div style="font-weight:900;font-size:18px" id="welcomeName">Itilizatè</div>
-            </div>
-            <div class="small muted">Fè premye tranzaksyon ou kounye a</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PROFILE page -->
-      <div id="page-profile" class="page card" style="display:none">
-        <h3>Pwofil</h3>
-        <div id="profileEdit">
-          <label>Non</label><input id="pfName">
-          <label>Telefòn</label><input id="pfPhone">
-          <label>Laj</label><input id="pfAge" type="number" min="18">
-          <label>Vil</label><input id="pfCity">
-          <label>Sèks</label><select id="pfSex"><option value="">Chwazi</option><option>Gason</option><option>Fi</option><option>Lòt</option></select>
-          <label>Foto (URL)</label><input id="pfPhoto">
-          <label>Imèl (readonly)</label><input id="pfEmail" readonly>
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button id="btnSaveProfile" class="btn btn-primary">Sove Profil</button>
-          </div>
-        </div>
-
-        <div id="profileView" style="display:none;margin-top:10px">
-          <div style="text-align:center">
-            <img id="pfPhotoView" src="" alt="photo" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.08)">
-            <div style="font-weight:900;margin-top:8px" id="pfNameView"></div>
-            <div class="small muted" id="pfCityView"></div>
-          </div>
-          <div style="margin-top:10px" class="card">
-            <div class="small"><b>Telefòn:</b> <span id="pfPhoneView"></span></div>
-            <div class="small"><b>Laj:</b> <span id="pfAgeView"></span></div>
-            <div class="small"><b>Sèks:</b> <span id="pfSexView"></span></div>
-            <div class="small"><b>Imèl:</b> <span id="pfEmailView"></span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ABOUT page -->
-      <div id="page-about" class="page card" style="display:none">
-        <h3>About</h3>
-        <div class="acc-item">
-          <div class="acc-head">🔼 Kontak & Èd</div>
-          <div class="acc-body">
-            WhatsApp: <b>+509 4711 1123</b><br>
-            Imèl: <b>echanjplus@gmail.com</b><br>
-            Adrès: <b>Anse d’Hainault, Grandans, Ayiti</b>
-          </div>
-        </div>
-        <div class="acc-item">
-          <div class="acc-head">🔼 Kondisyon Sistèm lan</div>
-          <div class="acc-body">Tout kondisyon sistèm (detaye) — menm tèks kòm kondisyon itilizasyon an.</div>
-        </div>
-        <div class="acc-item">
-          <div class="acc-head">🔼 Kondisyon Jeneral</div>
-          <div class="acc-body">Fonksyonalite: Voye minit, Sove, Retre, Profil locked, WhatsApp konfimasyon.</div>
-        </div>
-        <div class="acc-item">
-          <div class="acc-head">🔼 SEO & Rezo</div>
-          <div class="acc-body">SEO: ARS<br>Facebook / YouTube (lyen yo)</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- bottom nav -->
-    <nav class="bottom">
-      <div class="nav-inner">
-        <div id="nav-send" class="nav-btn">📤 Voye</div>
-        <div id="nav-pay" class="nav-btn">💳 Peman</div>
-        <div id="nav-home" class="nav-btn active">🏠 Akey</div>
-        <div id="nav-profile" class="nav-btn">👤 Profil</div>
-        <div id="nav-about" class="nav-btn">ℹ️ About</div>
-      </div>
-    </nav>
-
-  </div> <!-- end mainWrap -->
-
-</div> <!-- end app -->
-
-<!-- Firebase modular SDK (v10) -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-/* ---------- Firebase config (you gave earlier) ---------- */
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.firebasestorage.app",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-  measurementId: "G-J1BQRF32ZW"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const fs = getFirestore(app);
-const rdb = getDatabase(app);
-
-/* ---------- helpers ---------- */
-const $ = id => document.getElementById(id);
-function show(el){ if(!el) return; el.style.display='block' }
-function hide(el){ if(!el) return; el.style.display='none' }
-function toast(msg,t=2800){ const d=document.createElement('div'); d.textContent=msg; d.style.position='fixed'; d.style.left='50%'; d.style.transform='translateX(-50%)'; d.style.bottom='22px'; d.style.background='var(--accent)'; d.style.color='#000'; d.style.padding='10px 14px'; d.style.borderRadius='10px'; d.style.fontWeight='800'; d.style.zIndex=99999; document.body.appendChi
+  function showTab(tab){
+    const c = document.getElementById('content');
+    if(tab==='home') c.innerHTML = '<h3>Akey</h3><p>Byenveni!</p>';
+    if(tab==='payment') c.innerHTML = '<h3>Peman</h3><p>Opsyon Peman yo la.</p>';
+    if(tab==='profile') c.innerHTML = '<h3>Profil</h3><p>Non: '+auth.currentUser.email+'</p>';
+    if(tab==='about') c.innerHTML = '<h3>About</h3><p>Echanj Plus se yon platfòm transfè minit.</p>';
+  }
+</script></body>
+</html>
