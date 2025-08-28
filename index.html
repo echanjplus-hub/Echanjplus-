@@ -1,66 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ht">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Echanj Plus</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ECHANJ PLUS</title>
 <style>
   :root{
-    --bg:#0b2540; --card:#0f3355; --muted:#a8c4e6; --primary:#22c55e; --accent:#60a5fa; --danger:#ef4444;
+    --bg:#0b2540; --card:rgba(15,51,85,0.56); --glass-border:rgba(255,255,255,0.12);
+    --muted:#a8c4e6; --primary:#22c55e; --accent:#60a5fa; --danger:#ef4444;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:#fff}
-  /* APP LAYOUT */
-  .app-root{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
-  .card{width:100%;max-width:900px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
-  h1{margin:0;font-weight:900}
-  h2{margin:0 0 8px 0;color:var(--muted)}
-  label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
-  input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;margin-top:6px}
-  button{cursor:pointer;border:0;border-radius:10px;padding:10px 12px;margin-top:12px;font-weight:700}
-  .btn-primary{background:var(--primary);color:#052018}
-  .btn-accent{background:var(--accent);color:#05233a}
-  .btn-danger{background:var(--danger);color:#fff}
-  .muted{color:var(--muted);font-size:13px}
-  .link{color:#ffd54a;text-decoration:underline;cursor:pointer}
-  .row{display:flex;gap:8px}
-  .row > *{flex:1}
-  .hidden{display:none}
-  .small{font-size:12px;color:var(--muted)}
-  /* toast & loader */
-  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.55);display:flex;align-items:center;justify-content:center;z-index:120}
-  .loaderBox{background:#fff;padding:16px;border-radius:12px;color:#000;font-weight:700}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:var(--primary);color:#052018;padding:10px 16px;border-radius:10px;font-weight:700;z-index:130}
-  /* SPLASH */
-  #splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--bg);z-index:140;flex-direction:column}
-  #splashSquare{width:160px;height:160px;border-radius:16px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;box-shadow:0 20px 40px rgba(2,6,23,0.12)}
-  /* animation: half-rotation durations 2.2s each direction built into 4.4s cycle */
-  @keyframes backforth {
-    0% { transform: rotate(-30deg); }
-    50% { transform: rotate(30deg); }
-    100% { transform: rotate(-30deg); }
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:var(--bg);color:#fff}
+  /* ---------------- SPLASH ---------------- */
+  #splash{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:#fff;z-index:9999;overflow:hidden;
   }
-  .animSquare{ animation: backforth 4.4s ease-in-out infinite; transform-origin:center; }
-  @media (max-width:420px){ #splashSquare{width:130px;height:130px;font-size:18px} }
-  /* responsive grid inside main card */
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:820px){ .grid2{grid-template-columns:1fr} }
+  /* graffiti paint effect: simple dripping paint using radial-gradients layered */
+  #splash::before{
+    content:"";position:absolute;inset:0;background:
+      radial-gradient(circle at 10% 20%, rgba(0,0,0,0.85) 0 8%, transparent 9%),
+      radial-gradient(circle at 25% 32%, rgba(0,0,0,0.78) 0 10%, transparent 11%),
+      radial-gradient(circle at 70% 22%, rgba(0,0,0,0.7) 0 10%, transparent 12%),
+      linear-gradient(180deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.02) 100%);
+    opacity:1; transform-origin:center;
+    animation: drip 3s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes drip{
+    0%{ transform: translateY(-2px); opacity:0.95 }
+    50%{ transform: translateY(6px); opacity:1 }
+    100%{ transform: translateY(-2px); opacity:0.95 }
+  }
+
+  /* glass card */
+  .glass{
+    width:220px;height:220px;border-radius:18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(6px) saturate(120%);
+    -webkit-backdrop-filter: blur(6px) saturate(120%);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    box-shadow: 0 20px 60px rgba(2,6,23,0.12);
+    transform-origin:center;
+  }
+  .glass h1{margin:0;font-size:20px;font-weight:900;line-height:1;text-align:center}
+  .glass .reflection{
+    position:absolute; width:80%; height:35%; top:12%; left:10%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.00));
+    transform: rotate(-12deg); border-radius:10px; filter: blur(4px); opacity:0.55;
+  }
+
+  /* rotation keyframes: back & forth 5 cycles within 12s */
+  @keyframes swing5 {
+    0%   { transform: rotate(-20deg); }
+    10%  { transform: rotate(20deg); }
+    20%  { transform: rotate(-20deg); }
+    30%  { transform: rotate(20deg); }
+    40%  { transform: rotate(-20deg); }
+    50%  { transform: rotate(20deg); }
+    60%  { transform: rotate(-20deg); }
+    70%  { transform: rotate(20deg); }
+    80%  { transform: rotate(-20deg); }
+    90%  { transform: rotate(20deg); }
+    100% { transform: rotate(-20deg); }
+  }
+  .anim-glass{ animation: swing5 12s ease-in-out forwards; }
+
+  /* subtle inner shadow content */
+  .splash-note{ margin-top:14px; color:#374151; font-size:13px; letter-spacing:0.2px }
+
+  /* ---------------- APP LAYOUT ---------------- */
+  .app-root{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px; }
+  .card{ width:100%; max-width:980px; border-radius:16px; padding:16px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04)); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 14px 40px rgba(2,6,23,0.45); }
+  h2{ margin:0 0 8px 0; color:var(--muted) }
+  label{ display:block; font-size:13px; color:var(--muted); margin-top:10px }
+  input,select,textarea{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:#fff; margin-top:6px; }
+  button{ cursor:pointer; border:0; border-radius:10px; padding:10px 12px; margin-top:10px; font-weight:700 }
+  .btn-primary{ background:var(--primary); color:#072018 }
+  .btn-accent{ background:var(--accent); color:#05233a }
+  .btn-danger{ background:var(--danger); color:#fff }
+  .muted{ color:var(--muted); font-size:13px }
+  .link{ color:#ffd54a; text-decoration:underline; cursor:pointer }
+  .row{ display:flex; gap:8px }
+  .row > *{ flex:1 }
+  .hidden{ display:none }
+  .small{ font-size:12px; color:var(--muted) }
+
+  /* overlay loader & toast */
+  .overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(2,6,23,0.6); z-index:120 }
+  .loaderBox{ background:#fff; padding:14px 18px; border-radius:12px; color:#000; font-weight:700 }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:var(--primary); color:#052018; padding:10px 16px; border-radius:10px; z-index:130; font-weight:700 }
+
+  /* responsive */
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  @media (max-width:900px){ .grid2{ grid-template-columns:1fr } }
 </style>
 </head>
 <body>
   <!-- SPLASH -->
-  <div id="splash">
-    <div id="splashSquare" class="animSquare">ECHANJ<br>PLUS</div>
-    <div class="small" style="color:#6b7280;margin-top:14px">Ap prepare aplikasyon an...</div>
+  <div id="splash" aria-hidden="true">
+    <div class="glass anim-glass" id="glassCard" role="img" aria-label="ECHANJ PLUS">
+      <div class="reflection" aria-hidden="true"></div>
+      <h1>ECHANJ<br>PLUS</h1>
+    </div>
+    <div class="splash-note">Ap prepare aplikasyon an...</div>
   </div>
 
-  <!-- APP ROOT (hidden until splash ends) -->
-  <div class="app-root" id="appRoot" style="display:none">
+  <!-- APP ROOT: hidden until splash end -->
+  <div class="app-root" id="appRoot" style="display:none;">
     <!-- AUTH CARD -->
-    <div class="card" id="authCard" style="max-width:480px">
-      <h1 style="text-align:center">ECHANJ PLUS</h1>
+    <div class="card" id="authCard" style="max-width:480px;">
+      <h1 style="text-align:center;font-weight:900">ECHANJ PLUS</h1>
 
-      <!-- AUTH VIEWS -->
+      <!-- LOGIN -->
       <div id="loginView">
         <h2>Login</h2>
         <label>Imèl</label><input id="loginEmail" type="email" placeholder="ou@domen.com" autocomplete="username">
@@ -69,8 +122,8 @@
         <div class="muted" style="margin-top:8px">Pa gen kont? <span id="showSignup" class="link">Kreye kont</span></div>
         <div class="muted"><span id="showTerms" class="link">Kondisyon Itilizasyon</span></div>
 
-        <hr style="margin:12px 0;border-color:rgba(0,0,0,0.05)">
-        <div class="small muted">Oubyen konekte ak telefòn (SMS)</div>
+        <hr style="margin:12px 0;border-color:rgba(255,255,255,0.04)">
+        <div class="small muted">Oswa konekte ak telefòn (SMS)</div>
         <label>Telefòn (+509...)</label><input id="phoneInput" placeholder="+50937xxxxxx" type="tel">
         <div class="row" style="margin-top:8px">
           <button id="btnSendOtp" class="btn-accent">Voye kòd</button>
@@ -80,6 +133,7 @@
         <div id="recaptcha-container"></div>
       </div>
 
+      <!-- SIGNUP -->
       <div id="signupView" class="hidden">
         <h2>Kreye kont</h2>
         <label>Non</label><input id="signupName" placeholder="Non konplè">
@@ -91,6 +145,7 @@
         <div class="muted"><span id="showTermsFromSignup" class="link">Kondisyon Itilizasyon</span></div>
       </div>
 
+      <!-- TERMS -->
       <div id="termsView" class="hidden">
         <h2>Kondisyon Itilizasyon</h2>
         <div style="max-height:260px;overflow:auto;text-align:left;color:var(--muted);font-size:13px">
@@ -113,7 +168,7 @@
     </div>
 
     <!-- MAIN APP (hidden until auth) -->
-    <div class="card hidden" id="mainApp" style="width:100%;max-width:1000px">
+    <div class="card hidden" id="mainApp" style="width:100%;max-width:1000px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-weight:900;font-size:18px">ECHANJ PLUS</div>
         <div style="display:flex;gap:8px;align-items:center">
@@ -123,7 +178,6 @@
       </div>
 
       <div class="grid2">
-        <!-- left column: views -->
         <div>
           <div id="view-dashboard">
             <h2 id="welcomeText">Byenveni — fè premye tranzaksyon ou</h2>
@@ -138,8 +192,7 @@
 
           <div id="view-send" class="hidden" style="margin-top:12px">
             <h2>Voye Minit</h2>
-            <label>Operatè</label>
-            <select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
+            <label>Operatè</label><select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
             <label>Kantite Minit</label><input id="sendMinutes" type="number" min="1" placeholder="eg. 50">
             <div class="row">
               <button id="btnCompose" class="btn-primary">Konpoze USSD</button>
@@ -152,8 +205,7 @@
           <div id="view-payment" class="hidden" style="margin-top:12px">
             <h2>Peman & Wallet</h2>
             <div class="muted small">Sale Balance (minit): <span id="saleBalance">0</span> • Withdraw Balance (Gdes): <b id="withdrawBal">0.00</b></div>
-            <label>Metòd</label>
-            <select id="payMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
+            <label>Metòd</label><select id="payMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
             <label>Non Kont</label><input id="payName">
             <label>Nimewo Kont</label><input id="payNumber">
             <label>Montan (Gdes)</label><input id="payAmount" type="number" min="1">
@@ -186,7 +238,6 @@
           </div>
         </div>
 
-        <!-- right column: transactions list -->
         <div>
           <div id="view-tx" class="hidden">
             <h2>Transaksyon</h2>
@@ -197,8 +248,7 @@
             </div>
           </div>
 
-          <!-- quick info -->
-          <div id="quickInfo" class="card" style="margin-top:12px;background:transparent;border:0;padding:0">
+          <div id="quickInfo" style="margin-top:12px;padding:12px;border-radius:12px;background:transparent;border:0">
             <div class="muted small">Byenveni: <span id="displayName">—</span></div>
             <div class="muted small">UID: <span id="displayUID">—</span></div>
             <div style="margin-top:8px" class="muted small">Sistèm WhatsApp: +50947111123</div>
@@ -208,18 +258,18 @@
     </div>
   </div>
 
-  <!-- loader & toast placeholders -->
+  <!-- loader & toast -->
   <div id="loader" class="overlay hidden"><div class="loaderBox">Ap tann...</div></div>
   <div id="toastEl" class="toast hidden">Message</div>
 
-  <!-- Firebase v8 SDKs -->
+  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-/* ================= Firebase config (user provided) ================= */
+/* ================== Firebase config ================== */
 const firebaseConfig = {
   apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
   authDomain: "echanj-plus-778cd.firebaseapp.com",
@@ -235,281 +285,36 @@ const auth = firebase.auth();
 const db = firebase.database();
 const fs = firebase.firestore();
 
-/* ================= UI HELPERS ================= */
-const $ = id => document.getElementById(id);
-function show(el){ if(el) el.classList.remove('hidden'); }
-function hide(el){ if(el) el.classList.add('hidden'); }
-<!DOCTYPE html>
-<html lang="ht">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Echanj Plus</title>
-<style>
-  :root{
-    --bg:#0b2540; --card:#0f3355; --muted:#a8c4e6; --primary:#22c55e; --accent:#60a5fa; --danger:#ef4444;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:#fff}
-  /* APP LAYOUT */
-  .app-root{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
-  .card{width:100%;max-width:900px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
-  h1{margin:0;font-weight:900}
-  h2{margin:0 0 8px 0;color:var(--muted)}
-  label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
-  input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;margin-top:6px}
-  button{cursor:pointer;border:0;border-radius:10px;padding:10px 12px;margin-top:12px;font-weight:700}
-  .btn-primary{background:var(--primary);color:#052018}
-  .btn-accent{background:var(--accent);color:#05233a}
-  .btn-danger{background:var(--danger);color:#fff}
-  .muted{color:var(--muted);font-size:13px}
-  .link{color:#ffd54a;text-decoration:underline;cursor:pointer}
-  .row{display:flex;gap:8px}
-  .row > *{flex:1}
-  .hidden{display:none}
-  .small{font-size:12px;color:var(--muted)}
-  /* toast & loader */
-  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.55);display:flex;align-items:center;justify-content:center;z-index:120}
-  .loaderBox{background:#fff;padding:16px;border-radius:12px;color:#000;font-weight:700}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:var(--primary);color:#052018;padding:10px 16px;border-radius:10px;font-weight:700;z-index:130}
-  /* SPLASH */
-  #splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--bg);z-index:140;flex-direction:column}
-  #splashSquare{width:160px;height:160px;border-radius:16px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;box-shadow:0 20px 40px rgba(2,6,23,0.12)}
-  /* animation: half-rotation durations 2.2s each direction built into 4.4s cycle */
-  @keyframes backforth {
-    0% { transform: rotate(-30deg); }
-    50% { transform: rotate(30deg); }
-    100% { transform: rotate(-30deg); }
-  }
-  .animSquare{ animation: backforth 4.4s ease-in-out infinite; transform-origin:center; }
-  @media (max-width:420px){ #splashSquare{width:130px;height:130px;font-size:18px} }
-  /* responsive grid inside main card */
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:820px){ .grid2{grid-template-columns:1fr} }
-</style>
-</head>
-<body>
-  <!-- SPLASH -->
-  <div id="splash">
-    <div id="splashSquare" class="animSquare">ECHANJ<br>PLUS</div>
-    <div class="small" style="color:#6b7280;margin-top:14px">Ap prepare aplikasyon an...</div>
-  </div>
-
-  <!-- APP ROOT (hidden until splash ends) -->
-  <div class="app-root" id="appRoot" style="display:none">
-    <!-- AUTH CARD -->
-    <div class="card" id="authCard" style="max-width:480px">
-      <h1 style="text-align:center">ECHANJ PLUS</h1>
-
-      <!-- AUTH VIEWS -->
-      <div id="loginView">
-        <h2>Login</h2>
-        <label>Imèl</label><input id="loginEmail" type="email" placeholder="ou@domen.com" autocomplete="username">
-        <label>Modpas</label><input id="loginPassword" type="password" placeholder="••••••" autocomplete="current-password">
-        <button id="btnLogin" class="btn-primary">Konekte</button>
-        <div class="muted" style="margin-top:8px">Pa gen kont? <span id="showSignup" class="link">Kreye kont</span></div>
-        <div class="muted"><span id="showTerms" class="link">Kondisyon Itilizasyon</span></div>
-
-        <hr style="margin:12px 0;border-color:rgba(0,0,0,0.05)">
-        <div class="small muted">Oubyen konekte ak telefòn (SMS)</div>
-        <label>Telefòn (+509...)</label><input id="phoneInput" placeholder="+50937xxxxxx" type="tel">
-        <div class="row" style="margin-top:8px">
-          <button id="btnSendOtp" class="btn-accent">Voye kòd</button>
-          <input id="otpInput" placeholder="Kòd 6 chif">
-          <button id="btnVerifyOtp" class="btn-primary">Verifye</button>
-        </div>
-        <div id="recaptcha-container"></div>
-      </div>
-
-      <div id="signupView" class="hidden">
-        <h2>Kreye kont</h2>
-        <label>Non</label><input id="signupName" placeholder="Non konplè">
-        <label>Telefòn (+509...)</label><input id="signupPhone" placeholder="+50937xxxxxx">
-        <label>Imèl</label><input id="signupEmail" type="email" placeholder="ou@domen.com">
-        <label>Modpas</label><input id="signupPassword" type="password" placeholder="••••••">
-        <button id="btnSignup" class="btn-primary">Kreye kont</button>
-        <div class="muted" style="margin-top:8px">Gen kont? <span id="backToLogin" class="link">Konekte</span></div>
-        <div class="muted"><span id="showTermsFromSignup" class="link">Kondisyon Itilizasyon</span></div>
-      </div>
-
-      <div id="termsView" class="hidden">
-        <h2>Kondisyon Itilizasyon</h2>
-        <div style="max-height:260px;overflow:auto;text-align:left;color:var(--muted);font-size:13px">
-          <p>1. Sèvis disponib sèlman pou moun ki rete an Ayiti.</p>
-          <p>2. Laj minimòm: 18 ane oswa plis.</p>
-          <p>3. Chak itilizatè gen yon sèl kont.</p>
-          <p>4. Enfòmasyon bay la dwe veritab.</p>
-          <p>5. Tranzaksyon final, pa gen ranvèsman.</p>
-          <p>6. Aktivite ilegal oswa fwod entèdi.</p>
-          <p>7. Sistèm ka mete limit sou tranzaksyon.</p>
-          <p>8. Kont ka bloke si gen vyolasyon.</p>
-          <p>9. Done itilizatè yo pwoteje epi itilize sèlman pou sèvis la.</p>
-          <p>10. Nenpòt reklamasyon dwe fèt atravè WhatsApp oswa Imèl ofisyèl.</p>
-        </div>
-        <div class="row" style="margin-top:10px">
-          <button id="acceptTerms" class="btn-primary">Mwen dakò</button>
-          <button id="cancelTerms" class="btn-accent">Retounen</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAIN APP (hidden until auth) -->
-    <div class="card hidden" id="mainApp" style="width:100%;max-width:1000px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div style="font-weight:900;font-size:18px">ECHANJ PLUS</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div id="userEmail" class="small muted"></div>
-          <button id="btnLogout" class="btn-danger">Dekonekte</button>
-        </div>
-      </div>
-
-      <div class="grid2">
-        <!-- left column: views -->
-        <div>
-          <div id="view-dashboard">
-            <h2 id="welcomeText">Byenveni — fè premye tranzaksyon ou</h2>
-            <div class="muted small">Ok pou kite mesaj sa a</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
-              <button id="gotoSend" class="btn-primary">📤 Voye Minit</button>
-              <button id="gotoPayment" class="btn-primary">💳 Peman</button>
-              <button id="gotoProfile" class="btn-accent">👤 Pwofil</button>
-              <button id="gotoAbout" class="btn-accent">ℹ️ About</button>
-            </div>
-          </div>
-
-          <div id="view-send" class="hidden" style="margin-top:12px">
-            <h2>Voye Minit</h2>
-            <label>Operatè</label>
-            <select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
-            <label>Kantite Minit</label><input id="sendMinutes" type="number" min="1" placeholder="eg. 50">
-            <div class="row">
-              <button id="btnCompose" class="btn-primary">Konpoze USSD</button>
-              <button id="btnSell" class="btn-accent">Sove kòm Vann</button>
-            </div>
-            <div class="muted small" style="margin-top:8px">Nimewo Sistèm: Digicel <b>+50947111123</b> · Natcom <b>+50932160708</b></div>
-            <button id="backFromSend" class="btn-accent" style="margin-top:10px">Tounen</button>
-          </div>
-
-          <div id="view-payment" class="hidden" style="margin-top:12px">
-            <h2>Peman & Wallet</h2>
-            <div class="muted small">Sale Balance (minit): <span id="saleBalance">0</span> • Withdraw Balance (Gdes): <b id="withdrawBal">0.00</b></div>
-            <label>Metòd</label>
-            <select id="payMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
-            <label>Non Kont</label><input id="payName">
-            <label>Nimewo Kont</label><input id="payNumber">
-            <label>Montan (Gdes)</label><input id="payAmount" type="number" min="1">
-            <div class="row">
-              <button id="btnPay" class="btn-primary">Sove / Peye</button>
-              <button id="backFromPay" class="btn-accent">Tounen</button>
-            </div>
-          </div>
-
-          <div id="view-profile" class="hidden" style="margin-top:12px">
-            <h2>Pwofil</h2>
-            <label>Non</label><input id="profName">
-            <label>Telefòn</label><input id="profPhone">
-            <label>Imèl (readonly)</label><input id="profEmail" readonly>
-            <div class="muted small">Balans Retire (Gdes): <span id="profWithdraw">0.00</span></div>
-            <div class="row">
-              <button id="btnSaveProfile" class="btn-primary">Sove</button>
-              <button id="backFromProfile" class="btn-accent">Tounen</button>
-            </div>
-          </div>
-
-          <div id="view-about" class="hidden" style="margin-top:12px">
-            <h2>About</h2>
-            <p class="small muted">Digicel: +50947111123 · Natcom: +50932160708</p>
-            <p class="small muted">Kontak: echanjplus@gmail.com</p>
-            <div class="row" style="margin-top:10px">
-              <button id="openTerms" class="btn-accent">Kondisyon Itilizasyon</button>
-              <button id="backFromAbout" class="btn-accent">Tounen</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- right column: transactions list -->
-        <div>
-          <div id="view-tx" class="hidden">
-            <h2>Transaksyon</h2>
-            <div id="txList" style="max-height:360px;overflow:auto"></div>
-            <div class="row">
-              <button id="btnExportCSV" class="btn-accent">Telechaje CSV</button>
-              <button id="backFromTx" class="btn-accent">Tounen</button>
-            </div>
-          </div>
-
-          <!-- quick info -->
-          <div id="quickInfo" class="card" style="margin-top:12px;background:transparent;border:0;padding:0">
-            <div class="muted small">Byenveni: <span id="displayName">—</span></div>
-            <div class="muted small">UID: <span id="displayUID">—</span></div>
-            <div style="margin-top:8px" class="muted small">Sistèm WhatsApp: +50947111123</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- loader & toast placeholders -->
-  <div id="loader" class="overlay hidden"><div class="loaderBox">Ap tann...</div></div>
-  <div id="toastEl" class="toast hidden">Message</div>
-
-  <!-- Firebase v8 SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<script>
-/* ================= Firebase config (user provided) ================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.firebasestorage.app",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-  measurementId: "G-J1BQRF32ZW"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-const fs = firebase.firestore();
-
-/* ================= UI HELPERS ================= */
+/* ================== UI helpers ================== */
 const $ = id => document.getElementById(id);
 function show(el){ if(el) el.classList.remove('hidden'); }
 function hide(el){ if(el) el.classList.add('hidden'); }
 function toast(msg, t=3000){ const e=$('toastEl'); e.textContent = msg; e.classList.remove('hidden'); setTimeout(()=>e.classList.add('hidden'), t); }
 function loader(on=true){ const e=$('loader'); if(on) e.classList.remove('hidden'); else e.classList.add('hidden'); }
 
-/* ================= SPLASH CONTROL ================= */
-/* Animation runs continuously (4.4s back-forth). We forcibly remove splash after 12s */
+/* ================== Splash finish ================== */
 function endSplash(){
-  const s = $('splash');
-  if(!s) return;
-  s.style.display = 'none';
-  $('appRoot').style.display = 'flex';
-  // if no auth yet, show auth card
-  if(!auth.currentUser){
-    $('authCard').classList.remove('hidden');
-  }
+  const s = $('splash'); if(!s) return;
+  s.style.display='none';
+  $('appRoot').style.display='flex';
+  // show auth card immediately (don't wait for auth state)
+  $('authCard').classList.remove('hidden');
 }
-// Ensure appRoot hidden initially
-$('appRoot').style.display = 'none';
+// ensure appRoot hidden until splash ends
+$('appRoot').style.display='none';
 setTimeout(endSplash, 12000); // 12s
 
-/* Render recaptcha (invisible) on load for phone auth */
-window.addEventListener('load', ()=>{
+/* render reCAPTCHA for phone auth */
+window.addEventListener('load', () => {
   try{
     if(!window.recaptchaVerifier){
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible'});
-      window.recaptchaVerifier.render().catch(()=>{/* ignore */});
+      window.recaptchaVerifier.render().catch(()=>{});
     }
-  }catch(e){ console.warn('recaptcha init error', e); }
+  }catch(e){ console.warn(e); }
 });
 
-/* ================= NAV / EVENTS ================= */
+/* ================== Nav wiring ================== */
 $('showSignup').addEventListener('click', ()=>{ hide($('loginView')); show($('signupView')); });
 $('backToLogin').addEventListener('click', ()=>{ show($('loginView')); hide($('signupView')); });
 $('showTerms').addEventListener('click', ()=>{ hide($('loginView')); hide($('signupView')); show($('termsView')); });
@@ -531,19 +336,16 @@ $('backFromAbout').addEventListener('click', ()=>{ showView('dashboard'); hide($
 $('openTerms').addEventListener('click', ()=>{ hide($('mainApp')); hide($('view-about')); show($('termsView')); });
 $('btnExportCSV').addEventListener('click', exportCSV);
 
-/* ------------------ view helper ------------------ */
+/* view helper */
 function showView(name){
   const list = ['dashboard','send','payment','profile','about','tx'];
-  for(const v of list){
-    const el = $('view-'+v);
-    if(el) el.classList.add('hidden');
-  }
+  for(const v of list){ const el = $('view-'+v); if(el) el.classList.add('hidden'); }
   const map = {send:'send', payment:'payment', profile:'profile', about:'about', tx:'tx', dashboard:'dashboard'};
   const el = $('view-'+(map[name]||'dashboard'));
   if(el) el.classList.remove('hidden');
 }
 
-/* ================= AUTH (email) ================= */
+/* ================== Auth (email) ================== */
 async function login(){
   const email = $('loginEmail').value.trim();
   const pass = $('loginPassword').value;
@@ -552,9 +354,7 @@ async function login(){
   try{
     await auth.signInWithEmailAndPassword(email, pass);
     loader(false); toast('Konekte!');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè login'); console.error(err);
-  }
+  }catch(err){ loader(false); toast(err.message || 'Erè login'); console.error(err); }
 }
 
 async function signup(){
@@ -567,16 +367,12 @@ async function signup(){
   try{
     const res = await auth.createUserWithEmailAndPassword(email, pass);
     const uid = res.user.uid;
-    await fs.collection('users').doc(uid).set({
-      name, email, phone, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    await fs.collection('users').doc(uid).set({ name, email, phone, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() });
     loader(false); toast('Kont kreye avèk siksè!');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè signup'); console.error(err);
-  }
+  }catch(err){ loader(false); toast(err.message || 'Erè signup'); console.error(err); }
 }
 
-/* ================= PHONE AUTH (SMS) ================= */
+/* ================== Phone auth (SMS) ================== */
 $('btnSendOtp').addEventListener('click', async ()=>{
   const phone = $('phoneInput').value.trim();
   if(!phone){ toast('Antre nimewo telefòn'); return; }
@@ -589,9 +385,7 @@ $('btnSendOtp').addEventListener('click', async ()=>{
     const confirmation = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
     window._confirmationResult = confirmation;
     loader(false); toast('Kòd voye sou telefòn');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè SMS'); console.error(err);
-  }
+  }catch(err){ loader(false); toast(err.message || 'Erè SMS'); console.error(err); }
 });
 $('btnVerifyOtp').addEventListener('click', async ()=>{
   const code = $('otpInput').value.trim();
@@ -599,22 +393,17 @@ $('btnVerifyOtp').addEventListener('click', async ()=>{
   loader(true);
   try{
     const res = await window._confirmationResult.confirm(code);
-    const uid = res.user.uid;
-    const doc = await fs.collection('users').doc(uid).get();
-    if(!doc.exists){
-      await fs.collection('users').doc(uid).set({ name:res.user.phoneNumber, email:res.user.phoneNumber, phone:res.user.phoneNumber, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() });
-    }
+    const uid = res.user.uid; const doc = await fs.collection('users').doc(uid).get();
+    if(!doc.exists){ await fs.collection('users').doc(uid).set({ name:res.user.phoneNumber, email:res.user.phoneNumber, phone:res.user.phoneNumber, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() }); }
     loader(false); toast('Telefòn verifye, konekte!');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè verifye'); console.error(err);
-  }
+  }catch(err){ loader(false); toast(err.message || 'Erè verifye'); console.error(err); }
 });
 
-/* ================= AUTH STATE ================= */
+/* ================== Auth state ================== */
 auth.onAuthStateChanged(async user=>{
   if(user){
-    // ensure splash removed (it will be after 12s); but show UI
-    endSplash(); // safe call to remove splash and show app if still present
+    // remove splash if still visible
+    endSplash();
     $('authCard').classList.add('hidden');
     $('mainApp').classList.remove('hidden');
     showView('dashboard');
@@ -624,24 +413,444 @@ auth.onAuthStateChanged(async user=>{
     await loadUserProfile();
     await loadTransactionsList();
   } else {
-    // not logged
+    // logged out
     $('mainApp').classList.add('hidden');
-    // show auth card if splash done
+    // if splash already done, show auth
+    if(document.getElementById('splash').style.display === 'none'){
+      $('authCard').classList.remove('hidden');
+    }
+  }
+});
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ECHANJ PLUS</title>
+<style>
+  :root{
+    --bg:#0b2540; --card:rgba(15,51,85,0.56); --glass-border:rgba(255,255,255,0.12);
+    --muted:#a8c4e6; --primary:#22c55e; --accent:#60a5fa; --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:var(--bg);color:#fff}
+  /* ---------------- SPLASH ---------------- */
+  #splash{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:#fff;z-index:9999;overflow:hidden;
+  }
+  /* graffiti paint effect: simple dripping paint using radial-gradients layered */
+  #splash::before{
+    content:"";position:absolute;inset:0;background:
+      radial-gradient(circle at 10% 20%, rgba(0,0,0,0.85) 0 8%, transparent 9%),
+      radial-gradient(circle at 25% 32%, rgba(0,0,0,0.78) 0 10%, transparent 11%),
+      radial-gradient(circle at 70% 22%, rgba(0,0,0,0.7) 0 10%, transparent 12%),
+      linear-gradient(180deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.02) 100%);
+    opacity:1; transform-origin:center;
+    animation: drip 3s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes drip{
+    0%{ transform: translateY(-2px); opacity:0.95 }
+    50%{ transform: translateY(6px); opacity:1 }
+    100%{ transform: translateY(-2px); opacity:0.95 }
+  }
+
+  /* glass card */
+  .glass{
+    width:220px;height:220px;border-radius:18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(6px) saturate(120%);
+    -webkit-backdrop-filter: blur(6px) saturate(120%);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    box-shadow: 0 20px 60px rgba(2,6,23,0.12);
+    transform-origin:center;
+  }
+  .glass h1{margin:0;font-size:20px;font-weight:900;line-height:1;text-align:center}
+  .glass .reflection{
+    position:absolute; width:80%; height:35%; top:12%; left:10%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.00));
+    transform: rotate(-12deg); border-radius:10px; filter: blur(4px); opacity:0.55;
+  }
+
+  /* rotation keyframes: back & forth 5 cycles within 12s */
+  @keyframes swing5 {
+    0%   { transform: rotate(-20deg); }
+    10%  { transform: rotate(20deg); }
+    20%  { transform: rotate(-20deg); }
+    30%  { transform: rotate(20deg); }
+    40%  { transform: rotate(-20deg); }
+    50%  { transform: rotate(20deg); }
+    60%  { transform: rotate(-20deg); }
+    70%  { transform: rotate(20deg); }
+    80%  { transform: rotate(-20deg); }
+    90%  { transform: rotate(20deg); }
+    100% { transform: rotate(-20deg); }
+  }
+  .anim-glass{ animation: swing5 12s ease-in-out forwards; }
+
+  /* subtle inner shadow content */
+  .splash-note{ margin-top:14px; color:#374151; font-size:13px; letter-spacing:0.2px }
+
+  /* ---------------- APP LAYOUT ---------------- */
+  .app-root{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px; }
+  .card{ width:100%; max-width:980px; border-radius:16px; padding:16px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04)); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 14px 40px rgba(2,6,23,0.45); }
+  h2{ margin:0 0 8px 0; color:var(--muted) }
+  label{ display:block; font-size:13px; color:var(--muted); margin-top:10px }
+  input,select,textarea{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:#fff; margin-top:6px; }
+  button{ cursor:pointer; border:0; border-radius:10px; padding:10px 12px; margin-top:10px; font-weight:700 }
+  .btn-primary{ background:var(--primary); color:#072018 }
+  .btn-accent{ background:var(--accent); color:#05233a }
+  .btn-danger{ background:var(--danger); color:#fff }
+  .muted{ color:var(--muted); font-size:13px }
+  .link{ color:#ffd54a; text-decoration:underline; cursor:pointer }
+  .row{ display:flex; gap:8px }
+  .row > *{ flex:1 }
+  .hidden{ display:none }
+  .small{ font-size:12px; color:var(--muted) }
+
+  /* overlay loader & toast */
+  .overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(2,6,23,0.6); z-index:120 }
+  .loaderBox{ background:#fff; padding:14px 18px; border-radius:12px; color:#000; font-weight:700 }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:var(--primary); color:#052018; padding:10px 16px; border-radius:10px; z-index:130; font-weight:700 }
+
+  /* responsive */
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  @media (max-width:900px){ .grid2{ grid-template-columns:1fr } }
+</style>
+</head>
+<body>
+  <!-- SPLASH -->
+  <div id="splash" aria-hidden="true">
+    <div class="glass anim-glass" id="glassCard" role="img" aria-label="ECHANJ PLUS">
+      <div class="reflection" aria-hidden="true"></div>
+      <h1>ECHANJ<br>PLUS</h1>
+    </div>
+    <div class="splash-note">Ap prepare aplikasyon an...</div>
+  </div>
+
+  <!-- APP ROOT: hidden until splash end -->
+  <div class="app-root" id="appRoot" style="display:none;">
+    <!-- AUTH CARD -->
+    <div class="card" id="authCard" style="max-width:480px;">
+      <h1 style="text-align:center;font-weight:900">ECHANJ PLUS</h1>
+
+      <!-- LOGIN -->
+      <div id="loginView">
+        <h2>Login</h2>
+        <label>Imèl</label><input id="loginEmail" type="email" placeholder="ou@domen.com" autocomplete="username">
+        <label>Modpas</label><input id="loginPassword" type="password" placeholder="••••••" autocomplete="current-password">
+        <button id="btnLogin" class="btn-primary">Konekte</button>
+        <div class="muted" style="margin-top:8px">Pa gen kont? <span id="showSignup" class="link">Kreye kont</span></div>
+        <div class="muted"><span id="showTerms" class="link">Kondisyon Itilizasyon</span></div>
+
+        <hr style="margin:12px 0;border-color:rgba(255,255,255,0.04)">
+        <div class="small muted">Oswa konekte ak telefòn (SMS)</div>
+        <label>Telefòn (+509...)</label><input id="phoneInput" placeholder="+50937xxxxxx" type="tel">
+        <div class="row" style="margin-top:8px">
+          <button id="btnSendOtp" class="btn-accent">Voye kòd</button>
+          <input id="otpInput" placeholder="Kòd 6 chif">
+          <button id="btnVerifyOtp" class="btn-primary">Verifye</button>
+        </div>
+        <div id="recaptcha-container"></div>
+      </div>
+
+      <!-- SIGNUP -->
+      <div id="signupView" class="hidden">
+        <h2>Kreye kont</h2>
+        <label>Non</label><input id="signupName" placeholder="Non konplè">
+        <label>Telefòn (+509...)</label><input id="signupPhone" placeholder="+50937xxxxxx">
+        <label>Imèl</label><input id="signupEmail" type="email" placeholder="ou@domen.com">
+        <label>Modpas</label><input id="signupPassword" type="password" placeholder="••••••">
+        <button id="btnSignup" class="btn-primary">Kreye kont</button>
+        <div class="muted" style="margin-top:8px">Gen kont? <span id="backToLogin" class="link">Konekte</span></div>
+        <div class="muted"><span id="showTermsFromSignup" class="link">Kondisyon Itilizasyon</span></div>
+      </div>
+
+      <!-- TERMS -->
+      <div id="termsView" class="hidden">
+        <h2>Kondisyon Itilizasyon</h2>
+        <div style="max-height:260px;overflow:auto;text-align:left;color:var(--muted);font-size:13px">
+          <p>1. Sèvis disponib sèlman pou moun ki rete an Ayiti.</p>
+          <p>2. Laj minimòm: 18 ane oswa plis.</p>
+          <p>3. Chak itilizatè gen yon sèl kont.</p>
+          <p>4. Enfòmasyon bay la dwe veritab.</p>
+          <p>5. Tranzaksyon final, pa gen ranvèsman.</p>
+          <p>6. Aktivite ilegal oswa fwod entèdi.</p>
+          <p>7. Sistèm ka mete limit sou tranzaksyon.</p>
+          <p>8. Kont ka bloke si gen vyolasyon.</p>
+          <p>9. Done itilizatè yo pwoteje epi itilize sèlman pou sèvis la.</p>
+          <p>10. Nenpòt reklamasyon dwe fèt atravè WhatsApp oswa Imèl ofisyèl.</p>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button id="acceptTerms" class="btn-primary">Mwen dakò</button>
+          <button id="cancelTerms" class="btn-accent">Retounen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP (hidden until auth) -->
+    <div class="card hidden" id="mainApp" style="width:100%;max-width:1000px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-weight:900;font-size:18px">ECHANJ PLUS</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div id="userEmail" class="small muted"></div>
+          <button id="btnLogout" class="btn-danger">Dekonekte</button>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div>
+          <div id="view-dashboard">
+            <h2 id="welcomeText">Byenveni — fè premye tranzaksyon ou</h2>
+            <div class="muted small">Ok pou kite mesaj sa a</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+              <button id="gotoSend" class="btn-primary">📤 Voye Minit</button>
+              <button id="gotoPayment" class="btn-primary">💳 Peman</button>
+              <button id="gotoProfile" class="btn-accent">👤 Pwofil</button>
+              <button id="gotoAbout" class="btn-accent">ℹ️ About</button>
+            </div>
+          </div>
+
+          <div id="view-send" class="hidden" style="margin-top:12px">
+            <h2>Voye Minit</h2>
+            <label>Operatè</label><select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
+            <label>Kantite Minit</label><input id="sendMinutes" type="number" min="1" placeholder="eg. 50">
+            <div class="row">
+              <button id="btnCompose" class="btn-primary">Konpoze USSD</button>
+              <button id="btnSell" class="btn-accent">Sove kòm Vann</button>
+            </div>
+            <div class="muted small" style="margin-top:8px">Nimewo Sistèm: Digicel <b>+50947111123</b> · Natcom <b>+50932160708</b></div>
+            <button id="backFromSend" class="btn-accent" style="margin-top:10px">Tounen</button>
+          </div>
+
+          <div id="view-payment" class="hidden" style="margin-top:12px">
+            <h2>Peman & Wallet</h2>
+            <div class="muted small">Sale Balance (minit): <span id="saleBalance">0</span> • Withdraw Balance (Gdes): <b id="withdrawBal">0.00</b></div>
+            <label>Metòd</label><select id="payMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
+            <label>Non Kont</label><input id="payName">
+            <label>Nimewo Kont</label><input id="payNumber">
+            <label>Montan (Gdes)</label><input id="payAmount" type="number" min="1">
+            <div class="row">
+              <button id="btnPay" class="btn-primary">Sove / Peye</button>
+              <button id="backFromPay" class="btn-accent">Tounen</button>
+            </div>
+          </div>
+
+          <div id="view-profile" class="hidden" style="margin-top:12px">
+            <h2>Pwofil</h2>
+            <label>Non</label><input id="profName">
+            <label>Telefòn</label><input id="profPhone">
+            <label>Imèl (readonly)</label><input id="profEmail" readonly>
+            <div class="muted small">Balans Retire (Gdes): <span id="profWithdraw">0.00</span></div>
+            <div class="row">
+              <button id="btnSaveProfile" class="btn-primary">Sove</button>
+              <button id="backFromProfile" class="btn-accent">Tounen</button>
+            </div>
+          </div>
+
+          <div id="view-about" class="hidden" style="margin-top:12px">
+            <h2>About</h2>
+            <p class="small muted">Digicel: +50947111123 · Natcom: +50932160708</p>
+            <p class="small muted">Kontak: echanjplus@gmail.com</p>
+            <div class="row" style="margin-top:10px">
+              <button id="openTerms" class="btn-accent">Kondisyon Itilizasyon</button>
+              <button id="backFromAbout" class="btn-accent">Tounen</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div id="view-tx" class="hidden">
+            <h2>Transaksyon</h2>
+            <div id="txList" style="max-height:360px;overflow:auto"></div>
+            <div class="row">
+              <button id="btnExportCSV" class="btn-accent">Telechaje CSV</button>
+              <button id="backFromTx" class="btn-accent">Tounen</button>
+            </div>
+          </div>
+
+          <div id="quickInfo" style="margin-top:12px;padding:12px;border-radius:12px;background:transparent;border:0">
+            <div class="muted small">Byenveni: <span id="displayName">—</span></div>
+            <div class="muted small">UID: <span id="displayUID">—</span></div>
+            <div style="margin-top:8px" class="muted small">Sistèm WhatsApp: +50947111123</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- loader & toast -->
+  <div id="loader" class="overlay hidden"><div class="loaderBox">Ap tann...</div></div>
+  <div id="toastEl" class="toast hidden">Message</div>
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+/* ================== Firebase config ================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  authDomain: "echanj-plus-778cd.firebaseapp.com",
+  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+  projectId: "echanj-plus-778cd",
+  storageBucket: "echanj-plus-778cd.firebasestorage.app",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+  measurementId: "G-J1BQRF32ZW"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+const fs = firebase.firestore();
+
+/* ================== UI helpers ================== */
+const $ = id => document.getElementById(id);
+function show(el){ if(el) el.classList.remove('hidden'); }
+function hide(el){ if(el) el.classList.add('hidden'); }
+function toast(msg, t=3000){ const e=$('toastEl'); e.textContent = msg; e.classList.remove('hidden'); setTimeout(()=>e.classList.add('hidden'), t); }
+function loader(on=true){ const e=$('loader'); if(on) e.classList.remove('hidden'); else e.classList.add('hidden'); }
+
+/* ================== Splash finish ================== */
+function endSplash(){
+  const s = $('splash'); if(!s) return;
+  s.style.display='none';
+  $('appRoot').style.display='flex';
+  // show auth card immediately (don't wait for auth state)
+  $('authCard').classList.remove('hidden');
+}
+// ensure appRoot hidden until splash ends
+$('appRoot').style.display='none';
+setTimeout(endSplash, 12000); // 12s
+
+/* render reCAPTCHA for phone auth */
+window.addEventListener('load', () => {
+  try{
+    if(!window.recaptchaVerifier){
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible'});
+      window.recaptchaVerifier.render().catch(()=>{});
+    }
+  }catch(e){ console.warn(e); }
+});
+
+/* ================== Nav wiring ================== */
+$('showSignup').addEventListener('click', ()=>{ hide($('loginView')); show($('signupView')); });
+$('backToLogin').addEventListener('click', ()=>{ show($('loginView')); hide($('signupView')); });
+$('showTerms').addEventListener('click', ()=>{ hide($('loginView')); hide($('signupView')); show($('termsView')); });
+$('showTermsFromSignup').addEventListener('click', ()=>{ hide($('loginView')); hide($('signupView')); show($('termsView')); });
+$('cancelTerms').addEventListener('click', ()=>{ hide($('termsView')); show($('loginView')); });
+$('acceptTerms').addEventListener('click', ()=>{ hide($('termsView')); show($('signupView')); });
+
+$('btnLogin').addEventListener('click', login);
+$('btnSignup').addEventListener('click', signup);
+$('btnLogout').addEventListener('click', ()=>auth.signOut());
+$('gotoSend').addEventListener('click', ()=>showView('send'));
+$('gotoPayment').addEventListener('click', ()=>showView('payment'));
+$('gotoProfile').addEventListener('click', ()=>showView('profile'));
+$('gotoAbout').addEventListener('click', ()=>showView('about'));
+$('backFromSend').addEventListener('click', ()=>showView('dashboard'));
+$('backFromPay').addEventListener('click', ()=>showView('dashboard'));
+$('backFromProfile').addEventListener('click', ()=>showView('dashboard'));
+$('backFromAbout').addEventListener('click', ()=>{ showView('dashboard'); hide($('termsView')); });
+$('openTerms').addEventListener('click', ()=>{ hide($('mainApp')); hide($('view-about')); show($('termsView')); });
+$('btnExportCSV').addEventListener('click', exportCSV);
+
+/* view helper */
+function showView(name){
+  const list = ['dashboard','send','payment','profile','about','tx'];
+  for(const v of list){ const el = $('view-'+v); if(el) el.classList.add('hidden'); }
+  const map = {send:'send', payment:'payment', profile:'profile', about:'about', tx:'tx', dashboard:'dashboard'};
+  const el = $('view-'+(map[name]||'dashboard'));
+  if(el) el.classList.remove('hidden');
+}
+
+/* ================== Auth (email) ================== */
+async function login(){
+  const email = $('loginEmail').value.trim();
+  const pass = $('loginPassword').value;
+  if(!email || !pass){ toast('Antre imèl ak modpas'); return; }
+  loader(true);
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+    loader(false); toast('Konekte!');
+  }catch(err){ loader(false); toast(err.message || 'Erè login'); console.error(err); }
+}
+
+async function signup(){
+  const name = $('signupName').value.trim();
+  const phone = $('signupPhone').value.trim();
+  const email = $('signupEmail').value.trim();
+  const pass = $('signupPassword').value;
+  if(!name || !phone || !email || !pass){ toast('Ranpli tout chan yo'); return; }
+  loader(true);
+  try{
+    const res = await auth.createUserWithEmailAndPassword(email, pass);
+    const uid = res.user.uid;
+    await fs.collection('users').doc(uid).set({ name, email, phone, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() });
+    loader(false); toast('Kont kreye avèk siksè!');
+  }catch(err){ loader(false); toast(err.message || 'Erè signup'); console.error(err); }
+}
+
+/* ================== Phone auth (SMS) ================== */
+$('btnSendOtp').addEventListener('click', async ()=>{
+  const phone = $('phoneInput').value.trim();
+  if(!phone){ toast('Antre nimewo telefòn'); return; }
+  loader(true);
+  try{
+    if(!window.recaptchaVerifier){
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible'});
+      await window.recaptchaVerifier.render();
+    }
+    const confirmation = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
+    window._confirmationResult = confirmation;
+    loader(false); toast('Kòd voye sou telefòn');
+  }catch(err){ loader(false); toast(err.message || 'Erè SMS'); console.error(err); }
+});
+$('btnVerifyOtp').addEventListener('click', async ()=>{
+  const code = $('otpInput').value.trim();
+  if(!code || !window._confirmationResult){ toast('Antre kòd la oswa voye kòd la anvan'); return; }
+  loader(true);
+  try{
+    const res = await window._confirmationResult.confirm(code);
+    const uid = res.user.uid; const doc = await fs.collection('users').doc(uid).get();
+    if(!doc.exists){ await fs.collection('users').doc(uid).set({ name:res.user.phoneNumber, email:res.user.phoneNumber, phone:res.user.phoneNumber, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() }); }
+    loader(false); toast('Telefòn verifye, konekte!');
+  }catch(err){ loader(false); toast(err.message || 'Erè verifye'); console.error(err); }
+});
+
+/* ================== Auth state ================== */
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    // remove splash if still visible
+    endSplash();
+    $('authCard').classList.add('hidden');
+    $('mainApp').classList.remove('hidden');
+    showView('dashboard');
+    $('userEmail').textContent = user.email || user.phoneNumber || '';
+    $('displayName').textContent = (user.displayName || user.email || user.phoneNumber || 'Itilizatè');
+    $('displayUID').textContent = user.uid;
+    await loadUserProfile();
+    await loadTransactionsList();
+  } else {
+    // logged out
+    $('mainApp').classList.add('hidden');
+    // if splash already done, show auth
     if(document.getElementById('splash').style.display === 'none'){
       $('authCard').classList.remove('hidden');
     }
   }
 });
 
-/* ================= USER PROFILE & BALANCES ================= */
+/* ================== Profile & balances ================== */
 async function loadUserProfile(){
   const u = auth.currentUser; if(!u) return;
   const docRef = fs.collection('users').doc(u.uid);
   const doc = await docRef.get();
-  if(!doc.exists){
-    await docRef.set({ name: u.email || u.phoneNumber || 'Itilizatè', email: u.email || '', phone: u.phoneNumber || '', saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() });
-    return loadUserProfile();
-  }
+  if(!doc.exists){ await docRef.set({ name: u.email || u.phoneNumber || 'Itilizatè', email: u.email || '', phone: u.phoneNumber || '', saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() }); return loadUserProfile(); }
   const data = doc.data();
   $('profName').value = data.name || '';
   $('profPhone').value = data.phone || '';
@@ -653,18 +862,14 @@ async function loadUserProfile(){
   $('welcomeText').textContent = `Byenveni ${data.name || 'Itilizatè'}, sèvis la se pou ou fè 1e tranzaksyon ou an.`;
 }
 
-/* compute conversion: 1 min = 0.82 Gdes, then system takes 17.5% => user gets *0.825 of that */
-function computeGdesFromMinutes(mins){
-  const x = Number(mins) * 0.82 * 0.825;
-  return Number(isFinite(x) ? x : 0);
-}
+/* conversion */
+function computeGdesFromMinutes(mins){ const x = Number(mins) * 0.82 * 0.825; return Number(isFinite(x) ? x : 0); }
 
-/* ================= TRANSACTIONS & UPDATES ================= */
+/* ================== Transactions & updates ================== */
 async function logTransaction(payload){
   const txId = 'tx_' + Date.now();
   const u = auth.currentUser; if(!u) throw new Error('Pa konekte');
-  payload.userId = u.uid;
-  payload.createdAt = Date.now();
+  payload.userId = u.uid; payload.createdAt = Date.now();
   await db.ref('transactions/' + txId).set(payload);
   return txId;
 }
@@ -675,313 +880,69 @@ async function sellMinutesRecord(operator, minutes, ussd){
   try{
     const gdes = computeGdesFromMinutes(minutes);
     const ref = fs.collection('users').doc(u.uid);
-    await ref.update({
-      saleBalance: firebase.firestore.FieldValue.increment(Number(minutes)),
-      withdrawBalance: firebase.firestore.FieldValue.increment(Number(gdes))
-    });
+    await ref.update({ saleBalance: firebase.firestore.FieldValue.increment(Number(minutes)), withdrawBalance: firebase.firestore.FieldValue.increment(Number(gdes)) });
     await logTransaction({ type:'sale', operator, minutes:Number(minutes), ussd, gdes, status:'pending' });
-    loader(false); toast('Vann an sove; balans ajou.');
-    await loadUserProfile();
-  } catch(err){ loader(false); toast(err.message || 'Erè sove vann'); console.error(err); }
+    loader(false); toast('Vann an sove; balans ajou.'); await loadUserProfile();
+  }catch(err){ loader(false); toast(err.message || 'Erè sove vann'); console.error(err); }
 }
 
-/* ================= SEND / USSD ================= */
+/* ================== Send / USSD ================== */
 $('btnCompose').addEventListener('click', ()=>{
-  const op = $('sendOperator').value;
-  const mins = Number($('sendMinutes').value);
-  if(!mins || mins <= 0){ toast('Antre kantite minit valab'); return; }
-  const ussd = (op === 'digicel') ? `*128*50947111123*${mins}#` : `*123*88888888*32160708*${mins}#`;
+  const op = $('sendOperator').value; const mins = Number($('sendMinutes').value);
+  if(!mins || mins<=0){ toast('Antre kantite minit valab'); return; }
+  const ussd = (op==='digicel')?`*128*50947111123*${mins}#`:`*123*88888888*32160708*${mins}#`;
   toast('Dialer ap louvri ak kòd USSD...');
-  (async ()=>{
-    try{ await logTransaction({type:'ussd', operator:op, minutes:mins, ussd, status:'pending'}); }catch(e){ console.error(e); }
-    window.location.href = `tel:${encodeURIComponent(ussd)}`;
-  })();
+  (async ()=>{ try{ await logTransaction({type:'ussd', operator:op, minutes:mins, ussd, status:'pending'}); }catch(e){console.error(e);} window.location.href = `tel:${encodeURIComponent(ussd)}`; })();
 });
-
 $('btnSell').addEventListener('click', async ()=>{
-  const op = $('sendOperator').value;
-  const mins = Number($('sendMinutes').value);
-  if(!mins || mins <= 0){ toast('Antre kantite minit valab'); return; }
-  const ussd = (op === 'digicel') ? `*128*50947111123*${mins}#` : `*123*88888888*32160708*${mins}#`;
+  const op = $('sendOperator').value; const mins = Number($('sendMinutes').value);
+  if(!mins || mins<=0){ toast('Antre kantite minit valab'); return; }
+  const ussd = (op==='digicel')?`*128*50947111123*${mins}#`:`*123*88888888*32160708*${mins}#`;
   try{ await sellMinutesRecord(op, mins, ussd); }catch(e){ toast('Erè vann'); console.error(e); }
 });
 
-/* ================= PAYMENT / WITHDRAW ================= */
+/* ================== Payment / Withdraw ================== */
 $('btnPay').addEventListener('click', async ()=>{
-  const method = $('payMethod').value;
-  const name = $('payName').value.trim();
-  const number = $('payNumber').value.trim();
-  const amount = Number($('payAmount').value);
-  if(!amount || amount <= 0){ toast('Antre montan valid'); return; }
+  const method = $('payMethod').value; const name = $('payName').value.trim(); const number = $('payNumber').value.trim(); const amount = Number($('payAmount').value);
+  if(!amount || amount<=0){ toast('Antre montan valid'); return; }
   const u = auth.currentUser; if(!u) return toast('Pa konekte');
   loader(true);
   try{
-    const doc = await fs.collection('users').doc(u.uid).get();
-    const data = doc.data() || {};
+    const doc = await fs.collection('users').doc(u.uid).get(); const data = doc.data() || {};
     const currentWithdraw = Number(data.withdrawBalance || 0);
     if(currentWithdraw < amount){ loader(false); return toast('Balans retire pa ase.'); }
     await fs.collection('users').doc(u.uid).update({ withdrawBalance: firebase.firestore.FieldValue.increment(-Number(amount)) });
     const txId = await logTransaction({ type:'withdraw', method, name, number, amount, status:'pending' });
-    loader(false);
-    toast('Demann retrè anrejistre. WhatsApp ap louvri pou konfime.');
+    loader(false); toast('Demann retrè anrejistre. WhatsApp ap louvri pou konfime.');
     const msg = `Demann retrè:\nItilizatè: ${u.uid}\nMontan: ${amount} Gdes\nMetòd: ${method}\nKont: ${name} ${number}\nTxID: ${txId}`;
     window.open(`https://wa.me/50947111123?text=${encodeURIComponent(msg)}`, '_blank');
     await loadUserProfile();
-  } catch(err){ loader(false); toast(err.message || 'Erè peman'); console.error(err); }
+  }catch(err){ loader(false); toast(err.message || 'Erè peman'); console.error(err); }
 });
 
-/* ================= PROFILE SAVE ================= */
-$('btnSaveProfile').addEventListener('click', async ()=>{
-  const u = auth.currentUser; if(!u) return toast('Pa konekte');
-  const name = $('profName').value.trim();
-  const phone = $('profPhone').value.trim();
-  if(!name){ toast('Antre non'); return; }
-  loader(true);
-  try{
-    await fs.collection('users').doc(u.uid).update({ name, phone });
-    loader(false); toast('Profil mete ajou');
-    await loadUserProfile();
-  }catch(err){ loader(false); toast(err.message || 'Erè'); console.error(err); }
-});
+/* ================== Profile save ================== */
+$('btnSaveProfile').addEventListener('click', async ()=>{ const u=auth.currentUser; if(!u) return toast('Pa konekte'); const name=$('profName').value.trim(); const phone=$('profPhone').value.trim(); if(!name){ toast('Antre non'); return; } loader(true); try{ await fs.collection('users').doc(u.uid).update({ name, phone }); loader(false); toast('Profil mete ajou'); await loadUserProfile(); }catch(err){ loader(false); toast(err.message || 'Erè'); console.error(err); } });
 
-/* ================= TRANSACTIONS LIST & CSV ================= */
+/* ================== Transactions list & CSV ================== */
 async function loadTransactionsList(){
   const u = auth.currentUser; if(!u) return;
   const snap = await db.ref('transactions').orderByChild('userId').equalTo(u.uid).once('value');
-  const container = $('txList'); container.innerHTML = '';
-  const rows = [];
+  const container = $('txList'); container.innerHTML=''; const rows=[];
   snap.forEach(ch=> rows.push(ch.val()));
   rows.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
-  rows.forEach(r=>{
-    const el = document.createElement('div'); el.style.padding='8px'; el.style.borderBottom='1px solid rgba(255,255,255,0.03)';
-    el.innerHTML = `<div style="font-weight:700">${r.type || r.method || 'Tx'}</div>
-      <div class="small muted">ID: ${r.userId? (new Date(r.createdAt).toLocaleString()): ''}</div>
-      <div class="small muted">Detay: ${JSON.stringify(r).slice(0,120)}</div>`;
-    container.appendChild(el);
-  });
+  rows.forEach(r=>{ const el=document.createElement('div'); el.style.padding='8px'; el.style.borderBottom='1px solid rgba(255,255,255,0.03)'; el.innerHTML=`<div style="font-weight:700">${r.type||r.method||'Tx'}</div><div class="small muted">Dat: ${r.createdAt? new Date(r.createdAt).toLocaleString():''}</div><div class="small muted">Detay: ${JSON.stringify(r).slice(0,120)}</div>`; container.appendChild(el); });
   window.__txRows = rows;
 }
 function exportCSV(){
-  const rows = window.__txRows || [];
-  if(!rows.length) return toast('Pa gen tranzaksyon pou telechaje');
-  const header = ['userId','type','minutes','gdes','amount','method','operator','status','createdAt','ussd'];
-  const csv = [header.join(',')].concat(rows.map(r=> header.map(k=>{
-    let v = r[k] === undefined ? '' : r[k];
-    if(typeof v === 'object') v = JSON.stringify(v);
-    return `"${String(v).replace(/"/g,'""')}"`;
-  }).join(','))).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'transactions.csv'; a.click(); URL.revokeObjectURL(url);
+  const rows = window.__txRows || []; if(!rows.length) return toast('Pa gen tranzaksyon pou telechaje');
+  const header=['userId','type','minutes','gdes','amount','method','operator','status','createdAt','ussd'];
+  const csv=[header.join(',')].concat(rows.map(r=> header.map(k=>{ let v = r[k]===undefined? '' : r[k]; if(typeof v==='object') v = JSON.stringify(v); return `"${String(v).replace(/"/g,'""')}"`; }).join(','))).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='transactions.csv'; a.click(); URL.revokeObjectURL(url);
 }
 
-/* ================= INITIAL STATE ================= */
-$('loader').classList.add('hidden'); $('toastEl').classList.add('hidden');
-$('authCard').classList.remove('hidden'); $('mainApp').classList.add('hidden');
-
-/* Safety: if splash not hidden after 13s, force end */
-setTimeout(()=>{ if(document.getElementById('splash') && document.getElementById('splash').style.display !== 'none') endSplash(); }, 13000);
+/* ================== Initial state & safety ================== */
+$('loader').classList.add('hidden'); $('toastEl').classList.add('hidden'); $('authCard').classList.remove('hidden'); $('mainApp').classList.add('hidden');
+setTimeout(()=>{ if(document.getElementById('splash') && document.getElementById('splash').style.display !== 'none') endSplash(); },13000);
 </script>
 </body>
-</html>￼Enterfunction toast(msg, t=3000){ const e=$('toastEl'); e.textContent = msg; e.classList.remove('hidden'); setTimeout(()=>e.classList.add('hidden'), t); }
-function loader(on=true){ const e=$('loader'); if(on) e.classList.remove('hidden'); else e.classList.add('hidden'); }
-
-/* ================= SPLASH CONTROL ================= */
-/* Animation runs continuously (4.4s back-forth). We forcibly remove splash after 12s */
-function endSplash(){
-  const s = $('splash');
-  if(!s) return;
-  s.style.display = 'none';
-  $('appRoot').style.display = 'flex';
-  // if no auth yet, show auth card
-  if(!auth.currentUser){
-    $('authCard').classList.remove('hidden');
-  }
-}
-// Ensure appRoot hidden initially
-$('appRoot').style.display = 'none';
-setTimeout(endSplash, 12000); // 12s
-
-/* Render recaptcha (invisible) on load for phone auth */
-window.addEventListener('load', ()=>{
-  try{
-    if(!window.recaptchaVerifier){
-      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible'});
-      window.recaptchaVerifier.render().catch(()=>{/* ignore */});
-    }
-  }catch(e){ console.warn('recaptcha init error', e); }
-});
-
-/* ================= NAV / EVENTS ================= */
-$('showSignup').addEventListener('click', ()=>{ hide($('loginView')); show($('signupView')); });
-$('backToLogin').addEventListener('click', ()=>{ show($('loginView')); hide($('signupView')); });
-$('showTerms').addEventListener('click', ()=>{ hide($('loginView')); hide($('signupView')); show($('termsView')); });
-$('showTermsFromSignup').addEventListener('click', ()=>{ hide($('loginView')); hide($('signupView')); show($('termsView')); });
-$('cancelTerms').addEventListener('click', ()=>{ hide($('termsView')); show($('loginView')); });
-$('acceptTerms').addEventListener('click', ()=>{ hide($('termsView')); show($('signupView')); });
-
-$('btnLogin').addEventListener('click', login);
-$('btnSignup').addEventListener('click', signup);
-$('btnLogout').addEventListener('click', ()=>auth.signOut());
-$('gotoSend').addEventListener('click', ()=>showView('send'));
-$('gotoPayment').addEventListener('click', ()=>showView('payment'));
-$('gotoProfile').addEventListener('click', ()=>showView('profile'));
-$('gotoAbout').addEventListener('click', ()=>showView('about'));
-$('backFromSend').addEventListener('click', ()=>showView('dashboard'));
-$('backFromPay').addEventListener('click', ()=>showView('dashboard'));
-$('backFromProfile').addEventListener('click', ()=>showView('dashboard'));
-$('backFromAbout').addEventListener('click', ()=>{ showView('dashboard'); hide($('termsView')); });
-$('openTerms').addEventListener('click', ()=>{ hide($('mainApp')); hide($('view-about')); show($('termsView')); });
-$('btnExportCSV').addEventListener('click', exportCSV);
-
-/* ------------------ view helper ------------------ */
-function showView(name){
-  const list = ['dashboard','send','payment','profile','about','tx'];
-  for(const v of list){
-    const el = $('view-'+v);
-    if(el) el.classList.add('hidden');
-  }
-  const map = {send:'send', payment:'payment', profile:'profile', about:'about', tx:'tx', dashboard:'dashboard'};
-  const el = $('view-'+(map[name]||'dashboard'));
-  if(el) el.classList.remove('hidden');
-}
-
-/* ================= AUTH (email) ================= */
-async function login(){
-  const email = $('loginEmail').value.trim();
-  const pass = $('loginPassword').value;
-  if(!email || !pass){ toast('Antre imèl ak modpas'); return; }
-  loader(true);
-  try{
-    await auth.signInWithEmailAndPassword(email, pass);
-    loader(false); toast('Konekte!');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè login'); console.error(err);
-  }
-}
-
-async function signup(){
-  const name = $('signupName').value.trim();
-  const phone = $('signupPhone').value.trim();
-  const email = $('signupEmail').value.trim();
-  const pass = $('signupPassword').value;
-  if(!name || !phone || !email || !pass){ toast('Ranpli tout chan yo'); return; }
-  loader(true);
-  try{
-    const res = await auth.createUserWithEmailAndPassword(email, pass);
-    const uid = res.user.uid;
-    await fs.collection('users').doc(uid).set({
-      name, email, phone, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    loader(false); toast('Kont kreye avèk siksè!');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè signup'); console.error(err);
-  }
-}
-
-/* ================= PHONE AUTH (SMS) ================= */
-$('btnSendOtp').addEventListener('click', async ()=>{
-  const phone = $('phoneInput').value.trim();
-  if(!phone){ toast('Antre nimewo telefòn'); return; }
-  loader(true);
-
-    if(!window.recaptchaVerifier){
-      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible'});
-      await window.recaptchaVerifier.render();
-    }
-    const confirmation = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
-    window._confirmationResult = confirmation;
-    loader(false); toast('Kòd voye sou telefòn');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè SMS'); console.error(err);
-  }
-});
-$('btnVerifyOtp').addEventListener('click', async ()=>{
-  const code = $('otpInput').value.trim();
-  if(!code || !window._confirmationResult){ toast('Antre kòd la oswa voye kòd la anvan'); return; }
-  loader(true);
-  try{
-    const res = await window._confirmationResult.confirm(code);
-    const uid = res.user.uid;
-    const doc = await fs.collection('users').doc(uid).get();
-    if(!doc.exists){
-      await fs.collection('users').doc(uid).set({ name:res.user.phoneNumber, email:res.user.phoneNumber, phone:res.user.phoneNumber, saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() });
-    }
-    loader(false); toast('Telefòn verifye, konekte!');
-  } catch(err){
-    loader(false); toast(err.message || 'Erè verifye'); console.error(err);
-  }
-});
-
-/* ================= AUTH STATE ================= */
-auth.onAuthStateChanged(async user=>{
-  if(user){
-    // ensure splash removed (it will be after 12s); but show UI
-    endSplash(); // safe call to remove splash and show app if still present
-    $('authCard').classList.add('hidden');
-    $('mainApp').classList.remove('hidden');
-    showView('dashboard');
-    $('userEmail').textContent = user.email || user.phoneNumber || '';
-    $('displayName').textContent = (user.displayName || user.email || user.phoneNumber || 'Itilizatè');
-    $('displayUID').textContent = user.uid;
-    await loadUserProfile();
-    await loadTransactionsList();
-  } else {
-    // not logged
-    $('mainApp').classList.add('hidden');
-    // show auth card if splash done
-    if(document.getElementById('splash').style.display === 'none'){
-      $('authCard').classList.remove('hidden');
-    }
-  }
-});
-
-/* ================= USER PROFILE & BALANCES ================= */
-async function loadUserProfile(){
-  const u = auth.currentUser; if(!u) return;
-  const docRef = fs.collection('users').doc(u.uid);
-  const doc = await docRef.get();
-  if(!doc.exists){
-    await docRef.set({ name: u.email || u.phoneNumber || 'Itilizatè', email: u.email || '', phone: u.phoneNumber || '', saleBalance:0, withdrawBalance:0, dateCreated: firebase.firestore.FieldValue.serverTimestamp() });
-    return loadUserProfile();
-  }
-  const data = doc.data();
-  $('profName').value = data.name || '';
-  $('profPhone').value = data.phone || '';
-  $('profEmail').value = data.email || u.email || '';
-  $('saleBalance').textContent = (data.saleBalance || 0);
-  const wb = Number((data.withdrawBalance || 0).toFixed(2));
-  $('withdrawBal').textContent = wb.toFixed(2);
-  $('profWithdraw').textContent = wb.toFixed(2);
-  $('welcomeText').textContent = `Byenveni ${data.name || 'Itilizatè'}, sèvis la se pou ou fè 1e tranzaksyon ou an.`;
-}
-
-/* compute conversion: 1 min = 0.82 Gdes, then system takes 17.5% => user gets *0.825 of that */
-function computeGdesFromMinutes(mins){
-  const x = Number(mins) * 0.82 * 0.825;
-  return Number(isFinite(x) ? x : 0);
-}
-
-/* ================= TRANSACTIONS & UPDATES ================= */
-async function logTransaction(payload){
-  const txId = 'tx_' + Date.now();
-  const u = auth.currentUser; if(!u) throw new Error('Pa konekte');
-  payload.userId = u.uid;
-  payload.createdAt = Date.now();
-  await db.ref('transactions/' + txId).set(payload);
-  return txId;
-}
-
-async function sellMinutesRecord(operator, minutes, ussd){
-  const u = auth.currentUser; if(!u) throw new Error('Pa konekte');
-  loader(true);
-  try{
-    const gdes = computeGdesFromMinutes(minutes);
-    const ref = fs.collection('users').doc(u.uid);
-    await ref.update({
-      saleBalance: firebase.firestore.FieldValue.increment(Number(minutes)),
-      withdrawBalance: firebase.firestore.FieldValue.increment(Number(gdes))
-    });
-    await logTransaction({ type:'sale', operator, minutes:Number(minutes), ussd, gdes, status:'pending' });
-    loader(false); toast('Vann an sove; balans ajou.');
-    await loadUserProfile();
+</html>￼Enter
