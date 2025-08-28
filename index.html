@@ -6,44 +6,42 @@
 <title>ECHANJ PLUS</title>
 <style>
   :root{
-    --bg:#06243a; /* ble fonse */
+    --bg:#061e33; /* ble fonse */
     --card: rgba(255,255,255,0.04);
-    --muted: #9fb8d9;
+    --muted: #a9c2df;
     --accent: #FFD700; /* jòn */
     --accent-dark: #e6c200;
     --danger: #ef4444;
+    --ok:#10b981;
     --glass-border: rgba(255,255,255,0.08);
-    --text-dark: #041219;
+    --ink:#000000;
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:#fff}
   /* ===== Splash ===== */
   #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;background:var(--bg);overflow:hidden}
-  /* graffiti / paint drips (subtle black paint) */
   #splash::before{
     content:"";position:absolute;inset:0;
     background:
-      radial-gradient(circle at 12% 15%, rgba(0,0,0,0.26) 0 5%, transparent 6%),
-      radial-gradient(circle at 30% 30%, rgba(0,0,0,0.20) 0 7%, transparent 8%),
-      radial-gradient(circle at 75% 18%, rgba(0,0,0,0.22) 0 6%, transparent 7%),
-      linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02));
-    mix-blend-mode:multiply; pointer-events:none;
+      radial-gradient(circle at 12% 15%, rgba(0,0,0,0.28) 0 5%, transparent 6%),
+      radial-gradient(circle at 30% 30%, rgba(0,0,0,0.22) 0 7%, transparent 8%),
+      radial-gradient(circle at 75% 18%, rgba(0,0,0,0.24) 0 6%, transparent 7%),
+      radial-gradient(ellipse at 80% 70%, rgba(0,0,0,0.15) 0 8%, transparent 9%),
+      linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.03));
+    mix-blend-mode:multiply; pointer-events:none; opacity:0.95;
     animation: drip 3.6s ease-in-out infinite;
-    opacity:0.95;
   }
   @keyframes drip{0%{transform:translateY(0)}50%{transform:translateY(6px)}100%{transform:translateY(0)}}
-
-  /* glass square (rotating) */
   .glass {
-    width:240px; height:240px; border-radius:20px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    width:260px; height:260px; border-radius:22px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
     border:1px solid var(--glass-border);
     backdrop-filter: blur(8px) saturate(120%);
     -webkit-backdrop-filter: blur(8px) saturate(120%);
     box-shadow: 0 18px 50px rgba(2,6,23,0.55);
     display:flex;align-items:center;justify-content:center;position:relative;
     transform-origin:center;
-    animation: rotateBackForth 4.4s ease-in-out infinite; /* smooth rotation */
+    animation: rotateBackForth 4.4s ease-in-out infinite;
   }
   @keyframes rotateBackForth{
     0%{transform: rotate(-18deg)}
@@ -52,465 +50,362 @@
     75%{transform: rotate(18deg)}
     100%{transform: rotate(-18deg)}
   }
-
-  /* ECHANJ PLUS text stays fixed over rotating square */
   .brand {
     position:absolute; z-index:5; text-align:center; pointer-events:none;
     font-weight:900; font-family: Arial, Helvetica, sans-serif;
-    font-size:36px; line-height:0.95;
-    background: linear-gradient(90deg, var(--accent) 0%, #000 60%);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    color:transparent;
+    font-size:56px; line-height:0.95; letter-spacing:1px;
+    color:#fff;
+    text-shadow:
+      0 0 6px rgba(255,215,0,0.6),
+      0 0 22px rgba(255,215,0,0.28),
+      0 2px 0 rgba(0,0,0,0.35);
   }
-  /* slight reflection element (purely decorative) */
+  .brand em{ color:var(--accent); font-style:normal; text-shadow:
+      0 0 10px rgba(255,215,0,0.9),
+      0 0 28px rgba(255,215,0,0.4); }
   .glass::after{
     content:""; position:absolute; top:10px; left:6%; width:78%; height:28%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.0));
-    transform: rotate(-12deg); border-radius:12px; filter: blur(4px); opacity:0.6;
+    background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.0));
+    transform: rotate(-12deg); border-radius:12px; filter: blur(4px); opacity:0.7;
   }
-
   .splash-note { margin-top:18px; color:var(--muted); font-size:13px }
 
-  /* ===== App container (hidden until splash ends) ===== */
-  #app { display:none; min-height:100vh; padding-bottom:86px; } /* leave space for bottom nav */
-  .container { max-width:980px; margin:26px auto; padding:16px; }
+  /* ===== App ===== */
+  #app{display:none;min-height:100vh;padding-bottom:86px}
+  .container{max-width:1100px;margin:0 auto;padding:20px}
 
-  /* AUTH CARD (centered) */
-  .auth-card { max-width:420px; margin:40px auto; background: rgba(255,255,255,0.03); padding:22px; border-radius:14px; border:1px solid rgba(255,255,255,0.04); box-shadow: 0 8px 30px rgba(0,0,0,0.45); }
-  .auth-card h2 { text-align:center; margin-bottom:14px; font-size:20px; color: #fff; font-weight:900; }
+  /* Cards & inputs */
+  .card{ background: rgba(255,255,255,0.03); border-radius:14px; padding:18px; border:1px solid rgba(255,255,255,0.05); box-shadow:0 10px 30px rgba(0,0,0,0.45) }
   label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
-  input,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;margin-top:6px}
-  .btn { display:inline-block;padding:12px 14px;border-radius:10px;border:0;font-weight:800;cursor:pointer }
-  .btn-primary { background:var(--accent); color:#000 }
-  .btn-accent { background:transparent;border:1px solid rgba(255,255,255,0.06); color:#fff }
+  input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;margin-top:6px}
+  textarea{min-height:80px;resize:vertical}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{ display:inline-block; padding:12px 14px; border-radius:10px; border:0; font-weight:800; cursor:pointer }
+  .btn-primary{ background:var(--accent); color:#000 }
+  .btn-alt{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.08) }
+  .btn-danger{ background:var(--danger); color:#fff }
+  .btn-ghost{ background:transparent; color:#ffd54a; text-decoration:underline; font-weight:700 }
 
-  .row { display:flex; gap:8px }
-  .link { color:#ffd54a; cursor:pointer; text-decoration:underline; font-size:13px }
+  .muted{ color:var(--muted) }
+  .small{ font-size:13px }
+  .center{text-align:center}
+  .hidden{ display:none }
 
-  /* loader overlay */
-  #loader { display:none; position:fixed; inset:0; background:rgba(2,6,23,0.6); align-items:center; justify-content:center; z-index:120; }
-  #loader .box { background:#fff;padding:14px 18px;border-radius:12px;color:#000;font-weight:800 }
+  /* Auth block */
+  .auth-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px }
+  .auth{ max-width:480px; width:100% }
 
-  /* bottom horizontal nav (app options) */
-  nav.bottom-nav {
-    position:fixed; left:0; right:0; bottom:12px; height:62px; display:flex;align-items:center;justify-content:center; z-index:115;
-  }
-  .nav-inner { width:100%; max-width:980px; display:flex; gap:12px; padding:8px; justify-content:space-around; background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:14px; border:1px solid rgba(255,255,255,0.04); box-shadow:0 10px 30px rgba(0,0,0,0.45)}
-  .nav-btn { flex:1; text-align:center; padding:10px 8px; cursor:pointer; color:#001; font-weight:800; border-radius:10px; background:var(--accent); }
-  .nav-btn.inactive { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.06) }
+  /* Loader */
+  #loader{ display:none; position:fixed; inset:0; background:rgba(2,6,23,0.6); align-items:center; justify-content:center; z-index:120 }
+  #loader .box{ background:#fff;color:#000;padding:14px 18px;border-radius:12px;font-weight:800 }
 
-  /* content cards */
-  .card { background: rgba(255,255,255,0.03); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.04); box-shadow:0 8px 30px rgba(0,0,0,0.45); color:#fff }
-  .hidden { display:none }
+  /* Wallet */
+  .wallet{ background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px }
+  .wallet-header{ display:flex; align-items:center; gap:10px; font-weight:900 }
+  .logo-mini{ width:36px; height:36px; border-radius:10px; background: radial-gradient(circle at 30% 30%, #FFD700, #000); box-shadow:0 6px 20px rgba(0,0,0,0.45) }
+  .balances{ display:flex; gap:14px; margin-top:10px; flex-wrap:wrap }
+  .pill{ flex:1; min-width:180px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06) }
+  .pill h4{ margin:0; font-size:13px; color:var(--muted) }
+  .pill .val{ margin-top:6px; font-size:20px; font-weight:900 }
 
-  /* small utilities */
-  .muted { color:var(--muted); font-size:13px }
-  .small { font-size:13px }
-  .center { text-align:center }
+  /* Top bar brand fixed in app */
+  .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px }
+  .brand-top{ font-size:26px; font-weight:900; letter-spacing:0.5px }
+  .brand-top em{ color:var(--accent); font-style:normal }
+  .maskEmail{ color:#fff; font-weight:700 }
 
-  /* responsiveness */
-  @media (max-width:700px){
-    .brand{ font-size:30px }
-    .glass{ width:180px; height:180px }
-    .auth-card { margin:20px; }
+  /* Bottom nav (with Akey center) */
+  nav.bottom{ position:fixed; left:0; right:0; bottom:10px; height:66px; display:flex; align-items:center; justify-content:center; z-index:115 }
+  .nav-inner{ width:100%; max-width:1100px; display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; padding:8px; background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:14px; border:1px solid rgba(255,255,255,0.05); box-shadow:0 10px 30px rgba(0,0,0,0.45) }
+  .nav-btn{ text-align:center; padding:10px 8px; border-radius:10px; font-weight:800; cursor:pointer; user-select:none }
+  .nav-btn.active{ background:var(--accent); color:#000 }
+  .nav-btn.inactive{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.06) }
+
+  /* Pages + swipe */
+  #pages{ position:relative; overflow:hidden }
+  .page{ transition:transform .25s ease; }
+  .swipe-area{ touch-action:pan-y; }
+
+  /* Accordion */
+  .acc-item{ border:1px solid rgba(255,255,255,0.08); border-radius:12px; margin-bottom:10px; overflow:hidden }
+  .acc-head{ padding:12px 14px; background:rgba(255,255,255,0.04); cursor:pointer; font-weight:900 }
+  .acc-body{ display:none; padding:12px 14px; background:rgba(255,255,255,0.02) }
+
+  @media (max-width:720px){
+    .brand{ font-size:44px }
+    .glass{ width:210px; height:210px }
+    .container{ padding:14px }
+    .pill .val{ font-size:18px }
+    .brand-top{ font-size:22px }
   }
 </style>
 </head>
 <body>
 
 <!-- SPLASH -->
-<div id="splash" aria-hidden="false">
+<div id="splash">
   <div class="glass" aria-hidden="true"></div>
-  <div class="brand" aria-hidden="true">ECHANJ<br>PLUS</div>
+  <div class="brand" aria-hidden="true"><em>ECHANJ</em> PLUS</div>
   <div class="splash-note">Ap prepare aplikasyon an…</div>
 </div>
 
 <!-- LOADER -->
-<div id="loader"><div class="box">Ap tann... </div></div>
+<div id="loader"><div class="box">Ap tann…</div></div>
 
 <!-- APP -->
-<div id="app" aria-hidden="true">
+<div id="app">
   <div class="container">
-    <!-- AUTH CARD -->
-    <div id="authCard" class="auth-card card">
-      <h2 id="authTitle">Konekte</h2>
 
-      <div id="authForms">
-        <div id="loginForm">
-          <label>Imèl</label>
-          <input id="loginEmail" type="email" placeholder="ou@exemple.com" autocomplete="username">
-          <label>Modpas</label>
-          <input id="loginPassword" type="password" placeholder="••••••" autocomplete="current-password">
-          <div style="margin-top:12px" class="row">
-            <button id="btnLogin" class="btn btn-primary">Konekte</button>
-            <button id="showSignup" class="btn btn-accent">Kreye Kont</button>
-          </div>
-          <div style="margin-top:8px" class="muted">Pa gen kont? <span id="openSignup" class="link">Kreye kont</span></div>
-          <div style="margin-top:6px" class="muted"><span id="openTermsLink" class="link">Kondisyon Itilizasyon</span></div>
+    <!-- ===== AUTH ===== -->
+    <div id="authWrap" class="auth-wrap">
+      <div class="auth card">
+        <div class="brand-top center" style="margin-bottom:10px"><em>ECHANJ</em> PLUS</div>
+
+        <!-- Tabs -->
+        <div class="row" style="margin-bottom:10px">
+          <button id="tabLogin" class="btn btn-primary" style="flex:1">Konekte</button>
+          <button id="tabSignup" class="btn btn-alt" style="flex:1">Kreye Kont</button>
         </div>
 
-        <div id="signupForm" class="hidden">
-          <label>Non konplè</label><input id="signupName" placeholder="Jean Paul">
-          <label>Telefòn (+509...)</label><input id="signupPhone" placeholder="+50937xxxxxx">
-          <label>Imèl</label><input id="signupEmail" type="email" placeholder="ou@exemple.com">
-          <label>Modpas</label><input id="signupPassword" type="password" placeholder="••••••">
+        <!-- LOGIN -->
+        <div id="loginPane">
+          <label>Imèl</label><input id="loginEmail" type="email" placeholder="ou@exemple.com" autocomplete="username">
+          <label>Modpas</label><input id="loginPassword" type="password" placeholder="••••••" autocomplete="current-password">
+          <div class="row" style="margin-top:10px">
+            <button id="btnLogin" class="btn btn-primary" style="flex:1">Konekte</button>
+            <button id="btnShowPhone" class="btn btn-alt" style="flex:1">Konekte ak Telefòn</button>
+          </div>
+          <div class="small muted" style="margin-top:8px">
+            <span id="openTermsFromLogin" class="btn-ghost">Kondisyon Itilizasyon</span>
+          </div>
+
+          <!-- PHONE AUTH -->
+          <div id="phoneAuth" class="hidden" style="margin-top:12px">
+            <label>Nimewo Telefòn (+509...)</label><input id="phoneNumber" placeholder="+50937xxxxxx">
+            <div id="recaptcha-container"></div>
+            <div class="row" style="margin-top:8px">
+              <button id="btnSendCode" class="btn btn-primary">Voye Kòd</button>
+              <button id="btnHidePhone" class="btn btn-alt">Anile</button>
+            </div>
+            <div id="codeBlock" class="hidden" style="margin-top:8px">
+              <label>Kòd Verifye</label><input id="phoneCode" placeholder="123456">
+              <button id="btnVerifyCode" class="btn btn-primary" style="margin-top:8px">Verifye & Antre</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIGNUP -->
+        <div id="signupPane" class="hidden">
+          <label>Non konplè</label><input id="suName" placeholder="Jean Paul">
           <div class="row">
-            <button id="btnSignup" class="btn btn-primary">Kreye Kont</button>
-            <button id="backToLogin" class="btn btn-accent">Tounen</button>
+            <div style="flex:1">
+              <label>Jou</label><input id="suDay" type="number" min="1" max="31" placeholder="JJ">
+            </div>
+            <div style="flex:1">
+              <label>Mwa</label><input id="suMonth" type="number" min="1" max="12" placeholder="MM">
+            </div>
+            <div style="flex:1">
+              <label>Ane</label><input id="suYear" type="number" min="1900" max="2100" placeholder="AAAA">
+            </div>
           </div>
-          <div style="margin-top:8px" class="muted"><span id="openTermsFromSignup" class="link">Kondisyon Itilizasyon</span></div>
+          <label>Telefòn</label><input id="suPhone" placeholder="+50937xxxxxx">
+          <label>Imèl</label><input id="suEmail" type="email" placeholder="ou@exemple.com">
+          <label>Modpas</label><input id="suPass" type="password" placeholder="••••••">
+          <div class="small" style="margin-top:8px">
+            <input id="suAgree" type="checkbox"> Mwen li epi mwen aksepte <span id="openTermsFromSignup" class="btn-ghost">Kondisyon yo</span>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button id="btnSignup" class="btn btn-primary" style="flex:1">Kreye Kont</button>
+          </div>
         </div>
-      </div>
 
-      <div id="termsBox" class="hidden" style="margin-top:12px;">
-        <h3>Kondisyon Itilizasyon</h3>
-        <div style="max-height:240px;overflow:auto;color:var(--muted);font-size:13px">
-          <p>1. Sèvis disponib sèlman pou moun ki rete an Ayiti.</p>
-          <p>2. Laj minimòm: 18 ane oswa plis.</p>
-          <p>3. Chak itilizatè gen yon sèl kont.</p>
-          <p>4. Enfòmasyon bay la dwe veritab.</p>
-          <p>5. Tranzaksyon final, pa gen ranvèsman.</p>
-          <p>6. Aktivite ilegal oswa fwod entèdi.</p>
-          <p>7. Sistèm ka mete limit sou tranzaksyon.</p>
-          <p>8. Kont ka bloke si gen vyolasyon.</p>
-          <p>9. Done itilizatè yo pwoteje epi itilize sèlman pou sèvis la.</p>
-          <p>10. Nenpòt reklamasyon dwe fèt atravè WhatsApp oswa Imèl ofisyèl.</p>
-        </div>
-        <div style="margin-top:8px" class="row">
-          <button id="acceptTerms" class="btn btn-primary">Mwen dakò</button>
-          <button id="cancelTerms" class="btn btn-accent">Retounen</button>
+        <!-- TERMS (long) -->
+        <div id="termsPane" class="hidden" style="margin-top:12px">
+          <h3 style="margin:6px 0">Kondisyon Itilizasyon</h3>
+          <div style="max-height:260px; overflow:auto" class="small muted">
+            <p><b>Disponiblite:</b> Sèvis la disponib sèlman pou moun ki rete an Ayiti, laj minimòm 18 ane.</p>
+            <p><b>Kont:</b> Yon sèl kont pa itilizatè. Enfòmasyon dwe veritab. Aktivite ilegal entèdi.</p>
+            <p><b>Tranzaksyon:</b> Tout tranzaksyon final; pa gen ranvèsman. Sistèm ka mete limit oswa bloke kont si gen vyolasyon.</p>
+            <p><b>Frè:</b> Frè sistèm lan se <b>15%</b>. Konvèsyon estanda: <b>1 minit = 0.82 Gdes</b>. Sòm resevwa: minit × 0.82 × 0.85.</p>
+            <p><b>Retre:</b> Retre posib atravè MonCash, Natcash, Paryaj Lakay, Paryaj Pam. Retre depann de balans disponib.</p>
+            <p><b>Done:</b> Done pwoteje pa Firebase; nou itilize yo sèlman pou fonksyonman sèvis la.</p>
+            <p><b>Kontakt:</b> WhatsApp: +509 4711 1123 · Imèl: echanjplus@gmail.com · Adrès: Anse d’Hainault, Grandans, Ayiti.</p>
+            <p><b>Chanjman:</b> Kondisyon yo ka chanje nenpòt ki lè; yo antre an aplikasyon imedyatman.</p>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="btnTermsBack" class="btn btn-alt">Retounen</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- DASHBOARD + PAGES -->
-    <div id="mainPages" class="hidden">
-      <div class="card" style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:900;font-size:20px">ECHANJ PLUS</div>
-          <div>
-            <div id="userEmail" class="muted small"></div>
-            <button id="btnLogout" class="btn btn-accent" style="margin-top:6px">Dekonekte</button>
+    <!-- ===== MAIN (APRE LOGIN) ===== -->
+    <div id="main" class="hidden swipe-area">
+      <div class="topbar">
+        <div class="brand-top"><em>ECHANJ</em> PLUS</div>
+        <div class="small">
+          <div id="userMask" class="maskEmail"></div>
+          <div class="muted"><button id="btnLogout" class="btn btn-alt" style="margin-top:6px">Dekonekte</button></div>
+        </div>
+      </div>
+
+      <!-- Wallet on top -->
+      <div class="wallet">
+        <div class="wallet-header">
+          <div class="logo-mini"></div>
+          <div>ECHANJ PLUS Wallet</div>
+        </div>
+        <div class="balances">
+          <div class="pill">
+            <h4>Sale Balance (minit)</h4>
+            <div class="val" id="saleBalance">0</div>
+          </div>
+          <div class="pill">
+            <h4>Withdraw Balance (Gdes)</h4>
+            <div class="val" id="withdrawBalance">0.00</div>
           </div>
         </div>
       </div>
 
-      <!-- Welcome -->
-      <div id="welcomeCard" class="card" style="margin-bottom:12px">
-        <div id="welcomeText" class="center" style="font-size:18px;font-weight:700">Byenveni — fè premye tranzaksyon ou</div>
-        <div class="muted center small" style="margin-top:8px">Ou ka fè Voye Minit, Peman, Modifye Profil, gade About.</div>
-        <div style="display:flex;justify-content:center;margin-top:10px"><button id="dismissWelcome" class="btn btn-accent">OK</button></div>
-      </div>
+      <!-- Pages -->
+      <div id="pages" style="margin-top:12px">
 
-      <!-- Pages container -->
-      <div id="pages">
-        <!-- Send minutes -->
-        <div id="page-send" class="card hidden">
+        <!-- PAGE: SEND -->
+        <div id="page-send" class="page card">
           <h3>Voye Minit</h3>
           <label>Operatè</label>
-          <select id="sendOperator"><option value="digicel">Digicel</option><option value="natcom">Natcom</option></select>
-          <label>Kantite Minit</label><input id="sendMinutes" type="number" placeholder="eg. 50">
-          <div class="row">
-            <button id="btnComposeUSSD" class="btn btn-primary">Konpoze USSD</button>
-            <button id="btnSaveSell" class="btn btn-accent">Sove kòm Vann</button>
-          </div>
-          <div class="muted small" style="margin-top:8px">Nimewo sistèm: Digicel <b>+50947111123</b> · Natcom <b>+50932160708</b></div>
-        </div>
-
-        <!-- Payment -->
-        <div id="page-pay" class="card hidden">
-          <h3>Peman & Wallet</h3>
-          <div class="muted small">Sale Balance (minit): <span id="saleBalance">0</span> • Withdraw Balance (Gdes): <b id="withdrawBalance">0.00</b></div>
-          <label>Metòd Peman</label>
-          <select id="payMethod">
-            <option value="moncash">MonCash</option>
-            <option value="natcash">NatCash</option>
-            <option value="paryajLakay">Paryaj Lakay</option>
-            <option value="paryajPam">Paryaj Pam</option>
+          <select id="sendOperator">
+            <option value="digicel">Digicel</option>
+            <option value="natcom">Natcom</option>
           </select>
-          <label>Non Kont / Nimewo</label><input id="payAccount" placeholder="Non oswa Nimewo kont">
-          <label>Montan (Gdes)</label><input id="payAmount" type="number" min="1" placeholder="eg. 500">
-          <div class="row">
-            <button id="btnSavePay" class="btn btn-primary">Sove / Peye</button>
-            <button id="backFromPay" class="btn btn-accent">Tounen</button>
+          <label>Kantite Minit</label><input id="sendMinutes" type="number" min="1" placeholder="eg. 50">
+          <div class="row" style="margin-top:10px">
+            <button id="btnComposeUSSD" class="btn btn-primary">Konpoze USSD</button>
+          </div>
+          <div class="small muted" style="margin-top:8px">
+            Nimewo sistèm: Digicel <b>+50947111123</b> · Natcom <b>+50932160708</b>
+          </div>
+          <div id="confirmDigicel" class="hidden" style="margin-top:10px">
+            <div class="small muted">Pou konfime Digicel: peze bouton anba a.</div>
+            <button id="btnConfirmDigicel" class="btn btn-alt" style="margin-top:6px">Konfime *128*1#</button>
           </div>
         </div>
 
-        <!-- Profile -->
-        <div id="page-profile" class="card hidden">
+        <!-- PAGE: PAY (WALLET + RETRE) -->
+        <div id="page-pay" class="page card hidden">
+          <h3>Peman & Retre</h3>
+          <div class="small muted">W ap wè bous la ak balans yo. Klike “Retre” pou chwazi metòd.</div>
+          <div class="wallet" style="margin-top:10px">
+            <div class="wallet-header">
+              <div class="logo-mini"></div>
+              <div>ECHANJ PLUS Wallet</div>
+            </div>
+            <div class="balances">
+              <div class="pill">
+                <h4>Sale Balance (minit)</h4><div class="val" id="saleBalance2">0</div>
+              </div>
+              <div class="pill">
+                <h4>Withdraw Balance (Gdes)</h4><div class="val" id="withdrawBalance2">0.00</div>
+              </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button id="btnShowWithdraw" class="btn btn-primary">Retre</button>
+              <button id="btnWithdrawAll" class="btn btn-alt">Retre tout</button>
+            </div>
+          </div>
+
+          <!-- Withdraw methods -->
+          <div id="withdrawMethods" class="hidden" style="margin-top:12px">
+            <label>Metòd</label>
+            <select id="payMethod">
+              <option value="moncash">MonCash</option>
+              <option value="natcash">NatCash</option>
+              <option value="paryajLakay">Paryaj Lakay</option>
+              <option value="paryajPam">Paryaj Pam</option>
+            </select>
+
+            <div id="formMonNat" style="margin-top:6px">
+              <label>Non Kont</label><input id="payName" placeholder="Non kont lan">
+              <label>Nimewo Kont</label><input id="payAccount" placeholder="Nimewo kont">
+            </div>
+            <div id="formParyaj" class="hidden" style="margin-top:6px">
+              <label>Nimewo Kont</label><input id="betAccount" placeholder="Nimewo kont Paryaj">
+            </div>
+            <label style="margin-top:6px">Montan (Gdes)</label><input id="payAmount" type="number" min="1" placeholder="eg. 400">
+
+            <div class="row" style="margin-top:10px">
+              <button id="btnSavePay" class="btn btn-primary">Sove / Peye</button>
+              <button id="btnHideWithdraw" class="btn btn-alt">Anile</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGE: HOME (AKEY) -->
+        <div id="page-home" class="page card hidden">
+          <div class="row" style="align-items:center">
+            <div class="logo-mini" style="width:48px;height:48px;border-radius:14px"></div>
+            <div style="font-weight:900;font-size:22px">Byenveni nan <span style="color:var(--accent)">ECHANJ PLUS</span></div>
+          </div>
+          <div class="muted small" style="margin-top:6px">
+            Sèvis echanj minit & retrè an goud. Fè premye tranzaksyon ou kounye a!
+          </div>
+          <div class="card" style="margin-top:10px">
+            <div class="row">
+              <div style="flex:1">
+                <div class="muted small">Sale Balance</div>
+                <div class="val" id="saleBalanceHome" style="font-weight:900;font-size:22px">0</div>
+              </div>
+              <div style="flex:1">
+                <div class="muted small">Withdraw Balance</div>
+                <div class="val" id="withdrawBalanceHome" style="font-weight:900;font-size:22px">0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGE: PROFILE -->
+        <div id="page-profile" class="page card hidden">
           <h3>Pwofil</h3>
-          <label>Non</label><input id="profileName">
-          <label>Telefòn</label><input id="profilePhone">
-          <label>Imèl (readonly)</label><input id="profileEmail" readonly>
-          <div class="row">
-            <button id="btnSaveProfile" class="btn btn-primary">Sove</button>
-            <button id="backFromProfile" class="btn btn-accent">Tounen</button>
+          <div id="profileEdit">
+            <label>Non</label><input id="pfName">
+            <label>Telefòn</label><input id="pfPhone">
+            <label>Laj</label><input id="pfAge" type="number" min="18" placeholder="18+">
+            <label>Vil</label><input id="pfCity">
+            <label>Sèks</label>
+            <select id="pfSex"><option value="">Chwazi</option><option>Gason</option><option>Fi</option><option>Lòt</option></select>
+            <label>Foto (URL)</label><input id="pfPhoto" placeholder="https://...">
+            <label>Imèl (readonly)</label><input id="pfEmail" readonly>
+            <div class="row" style="margin-top:10px">
+              <button id="btnSaveProfile" class="btn btn-primary">Sove</button>
+            </div>
+          </div>
+          <div id="profileView" class="hidden">
+            <div class="center">
+              <img id="pfPhotoView" src="" alt="foto" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1)">
+              <div style="font-weight:900;margin-top:8px" id="pfNameView"></div>
+              <div class="small muted" id="pfCityView"></div>
+            </div>
+            <div class="card" style="margin-top:10px">
+              <div class="small"><b>Telefòn:</b> <span id="pfPhoneView"></span></div>
+              <div class="small"><b>Laj:</b> <span id="pfAgeView"></span></div>
+              <div class="small"><b>Sèks:</b> <span id="pfSexView"></span></div>
+              <div class="small"><b>Imèl:</b> <span id="pfEmailView"></span></div>
+            </div>
           </div>
         </div>
 
-        <!-- About -->
-        <div id="page-about" class="card hidden">
+        <!-- PAGE: ABOUT -->
+        <div id="page-about" class="page card hidden">
           <h3>About</h3>
-          <p class="muted small">Digicel: +50947111123 · Natcom: +50932160708</p>
-          <p class="muted small">Kontak: echanjplus@gmail.com</p>
-          <p class="muted small">Sèvis sa a fèt pou Ayiti. Lè gen kesyon kontakte nou sou WhatsApp.</p>
-          <div class="row">
-            <button id="openTermsFromAbout" class="btn btn-accent">Kondisyon</button>
-            <button id="backFromAbout" class="btn btn-accent">Tounen</button>
+          <div class="acc-item">
+            <div class="acc-head">🔼 Kontak & Èd</div>
+            <div class="acc-body">
+              <div class="small">WhatsApp: <b>+509 4711 1123</b></div>
+              <div class="small">Imèl: <b>echanjplus@gmail.com</b></div>
+              <div class="small">Adrès: <b>Anse d’Hainault, Grandans, Ayiti</b></div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- bottom nav -->
-  <nav class="bottom-nav" role="navigation" aria-label="Opsyon">
-    <div class="nav-inner">
-      <div id="nav-send" class="nav-btn inactive">📤 Voye Minit</div>
-      <div id="nav-pay" class="nav-btn inactive">💳 Peman</div>
-      <div id="nav-profile" class="nav-btn inactive">👤 Profil</div>
-      <div id="nav-about" class="nav-btn inactive">ℹ️ About</div>
-    </div>
-  </nav>
-</div>
-
-<!-- Firebase v10 modular -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-  /*************** Firebase config (youn ou te bay) ***************/
-  const firebaseConfig = {
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus-778cd",
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-    messagingSenderId: "111144762929",
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-    measurementId: "G-J1BQRF32ZW"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const fs = getFirestore(app);
-  const rdb = getDatabase(app);
-
-  /* --------- UI helpers --------- */
-  const $ = id => document.getElementById(id);
-  function show(el){ if(el) el.classList.remove('hidden'); el && (el.style.display='block'); }
-  function hide(el){ if(el) el.classList.add('hidden'); el && (el.style.display='none'); }
-  function toast(msg, t=3000){ const box = document.createElement('div'); box.textContent = msg; box.style.position='fixed'; box.style.left='50%'; box.style.transform='translateX(-50%)'; box.style.bottom='24px'; box.style.background='#FFD700'; box.style.color='#000'; box.style.padding='10px 14px'; box.style.borderRadius='10px'; box.style.fontWeight='800'; box.style.zIndex=99999; document.body.appendChild(box); setTimeout(()=>box.remove(), t); }
-  function loader(on=true){ const l=$('loader'); if(on) l.style.display='flex'; else l.style.display='none'; }
-
-  /* --------- Splash control: short (3.5s) --------- */
-  setTimeout(()=> {
-    $('splash').style.display='none';
-    $('app').style.display='block';
-    // show auth by default
-    $('authCard').style.display='block';
-  }, 3500); // 3.5 seconds
-
-  /* --------- Auth UI wiring --------- */
-  $('showSignup').addEventListener('click', ()=>{ $('loginForm').style.display='none'; $('signupForm').style.display='block'; });
-  $('openSignup').addEventListener('click', ()=>{ $('loginForm').style.display='none'; $('signupForm').style.display='block'; });
-  $('backToLogin').addEventListener('click', ()=>{ $('signupForm').style.display='none'; $('loginForm').style.display='block'; });
-  $('openTermsLink').addEventListener('click', ()=>{ $('termsBox').style.display='block'; $('authForms').style.display='none'; });
-  $('openTermsFromSignup').addEventListener('click', ()=>{ $('termsBox').style.display='block'; $('authForms').style.display='none'; });
-  $('cancelTerms').addEventListener('click', ()=>{ $('termsBox').style.display='none'; $('authForms').style.display='block'; });
-  $('acceptTerms').addEventListener('click', ()=>{ $('termsBox').style.display='none'; $('signupForm').style.display='block'; });
-
-  /* --------- Signup & Login (Email/Password) --------- */
-  $('btnSignup').addEventListener('click', async ()=>{
-    const name = $('signupName').value.trim();
-    const phone = $('signupPhone').value.trim();
-    const email = $('signupEmail').value.trim();
-    const pass = $('signupPassword').value;
-    if(!name||!phone||!email||!pass){ toast('Ranpli tout chan yo'); return; }
-    loader(true);
-    try{
-      const res = await createUserWithEmailAndPassword(auth, email, pass);
-      const uid = res.user.uid;
-      // create user doc in Firestore
-      await setDoc(doc(fs, 'users', uid), { name, email, phone, saleBalance:0, withdrawBalance:0, dateCreated: new Date().toISOString() });
-      loader(false);
-      toast('Kont kreye avèk siksè');
-    }catch(err){
-      loader(false); toast(err.message || 'Erè signup');
-      console.error(err);
-    }
-  });
-
-  $('btnLogin').addEventListener('click', async ()=>{
-    const email = $('loginEmail').value.trim();
-    const pass = $('loginPassword').value;
-    if(!email||!pass){ toast('Antre imèl ak modpas'); return; }
-    loader(true);
-    try{
-      await signInWithEmailAndPassword(auth, email, pass);
-      loader(false);
-      toast('Konekte!');
-    }catch(err){ loader(false); toast(err.message || 'Erè login'); console.error(err); }
-  });
-
-  /* --------- Auth state --------- */
-  onAuthStateChanged(auth, async user=>{
-    if(user){
-      // show main pages
-      $('authCard').style.display='none';
-      $('mainPages').classList.remove('hidden');
-      // populate header
-      $('userEmail').textContent = user.email || user.uid;
-      // show welcome
-      $('welcomeText').textContent = `Byenveni ${user.email || 'Itilizatè'} — se pou fè premye tranzaksyon ou an.`;
-      // load profile & balances
-      try{
-        const docRef = doc(fs, 'users', user.uid);
-        const snap = await getDoc(docRef);
-        if(snap.exists()){
-          const d = snap.data();
-          $('profileName').value = d.name || '';
-          $('profilePhone').value = d.phone || '';
-          $('profileEmail').value = d.email || user.email || '';
-          $('saleBalance').textContent = d.saleBalance || 0;
-          $('withdrawBalance').textContent = (Number(d.withdrawBalance || 0)).toFixed(2);
-        } else {
-          // create default doc
-          await setDoc(docRef, { name: user.email || 'Itilizatè', email: user.email || '', phone:'', saleBalance:0, withdrawBalance:0, dateCreated: new Date().toISOString() });
-          $('profileEmail').value = user.email || '';
-        }
-      }catch(e){ console.error('load profile', e) }
-    } else {
-      // logged out
-      $('mainPages').classList.add('hidden');
-      $('authCard').style.display='block';
-      $('authForms').style.display='block';
-      $('termsBox').style.display='none';
-      $('signupForm').style.display='none';
-      $('loginForm').style.display='block';
-    }
-  });
-
-  /* --------- Nav (bottom) & page switching --------- */
-  function clearSections(){ ['page-send','page-pay','page-profile','page-about'].forEach(id=>$(id).classList.add('hidden')) }
-  function setNavActive(key){
-    ['nav-send','nav-pay','nav-profile','nav-about'].forEach(n=>$(n).classList.add('inactive'));
-    if(key==='send') $('nav-send').classList.remove('inactive'); else $('nav-send').classList.add('inactive');
-    if(key==='pay') $('nav-pay').classList.remove('inactive'); else $('nav-pay').classList.add('inactive');
-    if(key==='profile') $('nav-profile').classList.remove('inactive'); else $('nav-profile').classList.add('inactive');
-    if(key==='about') $('nav-about').classList.remove('inactive'); else $('nav-about').classList.add('inactive');
-  }
-  $('nav-send').addEventListener('click', ()=>{ clearSections(); $('page-send').classList.remove('hidden'); setNavActive('send'); });
-  $('nav-pay').addEventListener('click', ()=>{ clearSections(); $('page-pay').classList.remove('hidden'); setNavActive('pay'); });
-  $('nav-profile').addEventListener('click', ()=>{ clearSections(); $('page-profile').classList.remove('hidden'); setNavActive('profile'); });
-  $('nav-about').addEventListener('click', ()=>{ clearSections(); $('page-about').classList.remove('hidden'); setNavActive('about'); });
-
-  // dismiss welcome
-  $('dismissWelcome').addEventListener('click', ()=>{ $('welcomeCard').style.display='none' });
-
-  // quick back buttons
-  $('backFromPay').addEventListener('click', ()=>{ clearSections(); setNavActive(null) });
-  $('backFromProfile').addEventListener('click', ()=>{ clearSections(); setNavActive(null) });
-  $('backFromAbout').addEventListener('click', ()=>{ clearSections(); setNavActive(null) });
-
-  /* --------- Send minutes logic (sell) --------- */
-  function computeGdesFromMinutes(mins){
-    // 1 minute = 0.82 Gdes, system fee 17.5% -> user gets 82.5% of that
-    const x = Number(mins) * 0.82 * 0.825;
-    return Number(isFinite(x) ? x : 0);
-  }
-
-  $('btnComposeUSSD').addEventListener('click', ()=>{
-    const op = $('sendOperator').value;
-    const mins = Number($('sendMinutes').value);
-    if(!mins || mins<=0){ toast('Antre kantite minit valab'); return; }
-    const ussd = op==='digicel' ? `*128*50947111123*${mins}#` : `*123*88888888*32160708*${mins}#`;
-    // open dialer (mobile), here we just attempt to open tel:
-    window.location.href = `tel:${encodeURIComponent(ussd)}`;
-  });
-
-  $('btnSaveSell').addEventListener('click', async ()=>{
-    const op = $('sendOperator').value;
-    const mins = Number($('sendMinutes').value);
-    if(!mins || mins<=0){ toast('Antre kantite minit valab'); return; }
-    const us = auth.currentUser; if(!us){ toast('Pa konekte'); return; }
-    loader(true);
-    try{
-      const gdes = computeGdesFromMinutes(mins);
-      const userRef = doc(fs, 'users', us.uid);
-      // increment saleBalance and withdrawBalance atomically (updateDoc)
-      await updateDoc(userRef, { saleBalance: increment(mins), withdrawBalance: increment(gdes) });
-      // log transaction in Realtime DB
-      const txRef = push(ref(rdb, 'transactions')).key;
-      await set(ref(rdb, `transactions/${txRef}`), { userId: us.uid, type:'sale', operator:op, minutes:mins, gdes, status:'pending', createdAt: Date.now() });
-      loader(false);
-      toast('Vann anrejistre; balans ajou.');
-      // refresh profile values
-      const snap = await getDoc(userRef);
-      if(snap.exists()){
-        const d = snap.data();
-        $('saleBalance').textContent = d.saleBalance || 0;
-        $('withdrawBalance').textContent = (Number(d.withdrawBalance || 0)).toFixed(2);
-      }
-    }catch(err){ loader(false); toast(err.message || 'Erè sove'); console.error(err); }
-  });
-
-  /* --------- Payment / withdraw --------- */
-  $('btnSavePay').addEventListener('click', async ()=>{
-    const method = $('payMethod').value;
-    const acc = $('payAccount').value.trim();
-    const amount = Number($('payAmount').value);
-    if(!amount || amount <= 0){ toast('Antre montan valid'); return; }
-    const us = auth.currentUser; if(!us){ toast('Pa konekte'); return; }
-    loader(true);
-    try{
-      const userRef = doc(fs, 'users', us.uid);
-      const snap = await getDoc(userRef);
-      const data = snap.exists() ? snap.data() : { withdrawBalance:0 };
-      const current = Number(data.withdrawBalance || 0);
-      if(current < amount){ loader(false); toast('Balans retire pa ase'); return; }
-      // decrement withdrawBalance
-      await updateDoc(userRef, { withdrawBalance: increment(-amount) });
-      // write transaction in Realtime DB
-      const txKey = push(ref(rdb, 'transactions')).key;
-      await set(ref(rdb, `transactions/${txKey}`), { userId: us.uid, type:'withdraw', method, account:acc, amount, status:'pending', createdAt: Date.now() });
-      loader(false);
-      toast('Demann retrè anrejistre. WhatsApp ap louvri.');
-      // open WhatsApp for admin confirmation
-      const msg = `Demann retrè:\nUser: ${us.uid}\nMontan: ${amount} Gdes\nMetòd: ${method}\nKont: ${acc}\nTxID: ${txKey}`;
-      window.open(`https://wa.me/50947111123?text=${encodeURIComponent(msg)}`, '_blank');
-      // update UI
-      const newSnap = await getDoc(userRef);
-      const newData = newSnap.exists() ? newSnap.data() : {};
-      $('withdrawBalance').textContent = (Number(newData.withdrawBalance || 0)).toFixed(2);
-    }catch(err){ loader(false); toast(err.message || 'Erè peman'); console.error(err); }
-  });
-
-  /* --------- Profile save --------- */
-  $('btnSaveProfile').addEventListener('click', async ()=>{
-    const name = $('profileName').value.trim();
-    const phone = $('profilePhone').value.trim();
-    const us = auth.currentUser; if(!us){ toast('Pa konekte'); return; }
-    if(!name){ toast('Antre non'); return; }
-    loader(true);
-    try{
-      const userRef = doc(fs, 'users', us.uid);
-      await updateDoc(userRef, { name, phone });
-      loader(false); toast('Profil mete ajou');
-    }catch(err){ loader(false); toast(err.message || 'Erè'); console.error(err); }
-  });
-
-  /* --------- Logout --------- */
-  $('btnLogout').addEventListener('click', async ()=>{ try{ await auth.signOut(); toast('Ou dekonkte'); }catch(e){ console.error(e) } });
-
-  /* --------- small UI helpers on load --------- */
-  // show auth initially (app shown after splash)
-  document.addEventListener('DOMContentLoaded', ()=> {
-    // set initial nav inactive style
-    ['nav-send','nav-pay','nav-profile','nav-about'].forEach(n=>$(n).classList.add('inactive'));
-  });
-</script>
-</body>
-  </html>
+          <div class="acc-item">
+            <div class="acc-head">🔼 Kondisyon Sistèm lan</div>
+            <div class="acc-body small muted">
+       
