@@ -6,25 +6,13 @@
 <title>Echanj Plus</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;background:#fff;}
+html,body{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;background:#fff;}
 
 /* SPLASH SCREEN */
 #splash{
   position:fixed;top:0;left:0;width:100%;height:100%;
-  background:#fff;display:flex;justify-content:center;align-items:center;z-index:9999;overflow:hidden;
-}
-
-#splash::after{
-  content:"";
-  position:absolute;top:0;left:0;width:100%;height:100%;
-  background: radial-gradient(circle at 20% 30%,rgba(0,0,0,0.03) 0%,transparent 60%),
-              radial-gradient(circle at 70% 40%,rgba(0,0,0,0.05) 0%,transparent 70%),
-              radial-gradient(circle at 40% 80%,rgba(0,0,0,0.04) 0%,transparent 65%);
-  animation: drip 6s infinite alternate;
-}
-@keyframes drip{
-  0%{transform:translateY(0px);}
-  100%{transform:translateY(10px);}
+  background:#fff;display:flex;justify-content:center;align-items:center;flex-direction:column;
+  z-index:9999;overflow:hidden;
 }
 
 /* kare glass ki vire */
@@ -36,10 +24,11 @@ body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;ba
   border:2px solid rgba(255,255,255,0.4);
   box-shadow:0 8px 32px rgba(0,0,0,0.2);
   display:flex;justify-content:center;align-items:center;
-  animation: spin 2.2s linear infinite;
+  animation: spin 4s linear infinite;
   position:relative;
 }
 
+/* kare vire */
 @keyframes spin{
   0%{transform: rotate(0deg);}
   50%{transform: rotate(180deg);}
@@ -48,12 +37,26 @@ body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;ba
 
 .glass-box h1{
   position:absolute; /* rete fiks */
-  font-size:40px;font-weight:bold;
+  font-size:48px;font-weight:bold;
   background: linear-gradient(45deg,#FFD700,#000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-align:center;
   user-select:none;
+}
+
+/* Tach nwa efè gout dlo */
+#splash::after{
+  content:"";
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background: radial-gradient(circle at 20% 30%,rgba(0,0,0,0.03) 0%,transparent 60%),
+              radial-gradient(circle at 70% 40%,rgba(0,0,0,0.05) 0%,transparent 70%),
+              radial-gradient(circle at 40% 80%,rgba(0,0,0,0.04) 0%,transparent 65%);
+  animation: drip 6s infinite alternate;
+}
+@keyframes drip{
+  0%{transform:translateY(0px);}
+  100%{transform:translateY(10px);}
 }
 
 /* AUTH */
@@ -83,7 +86,7 @@ body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;ba
 <!-- SPLASH -->
 <div id="splash">
   <div class="glass-box">
-    <h1>ECHANJ<br>PLUS</h1>
+    <h1>ECHANJ PLUS</h1>
   </div>
 </div>
 
@@ -232,4 +235,19 @@ document.getElementById("compose-ussd").addEventListener("click",()=>{
   const min = document.getElementById("minutes").value;
   let code="";
   if(operator==="digicel") code=`*128*50947111123*${min}#`;
-  if(operator==="natcom") code=`*123*888
+  if(operator==="natcom") code=`*123*88888888*32160708*${min}#`;
+  alert(`Kòd USSD: ${code}`);
+});
+
+// Save profile demo
+document.getElementById("save-profile").addEventListener("click",()=>{
+  alert("Profil sove nan Firebase (simulation)");
+});
+
+// Save/Paye demo
+document.getElementById("save-pay").addEventListener("click",()=>{
+  alert("Tranzaksyon sove nan Firebase (simulation)");
+});
+</script>
+</body>
+    </html>
