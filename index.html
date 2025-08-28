@@ -7,13 +7,55 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;background:#fff;}
+
 /* SPLASH SCREEN */
-#splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;overflow:hidden;}
-#splash::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background: radial-gradient(circle at 20% 30%,rgba(0,0,0,0.03) 0%,transparent 60%), radial-gradient(circle at 70% 40%,rgba(0,0,0,0.05) 0%,transparent 70%), radial-gradient(circle at 40% 80%,rgba(0,0,0,0.04) 0%,transparent 65%);animation: drip 6s infinite alternate;}
-@keyframes drip{0%{transform:translateY(0px);}100%{transform:translateY(10px);}}
-.glass-box{width:220px;height:220px;background:rgba(255,255,255,0.2);border-radius:20px;backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,0.4);box-shadow:0 8px 32px rgba(0,0,0,0.2);display:flex;justify-content:center;align-items:center;animation: spin 2.2s linear infinite;}
-@keyframes spin{0%{transform: rotate(0deg);}50%{transform: rotate(180deg);}100%{transform: rotate(360deg);}}
-.glass-box h1{font-size:40px;font-weight:bold;background: linear-gradient(45deg,#FFD700,#000);-webkit-background-clip: text;-webkit-text-fill-color: transparent;text-align:center;}
+#splash{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#fff;display:flex;justify-content:center;align-items:center;z-index:9999;overflow:hidden;
+}
+
+#splash::after{
+  content:"";
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background: radial-gradient(circle at 20% 30%,rgba(0,0,0,0.03) 0%,transparent 60%),
+              radial-gradient(circle at 70% 40%,rgba(0,0,0,0.05) 0%,transparent 70%),
+              radial-gradient(circle at 40% 80%,rgba(0,0,0,0.04) 0%,transparent 65%);
+  animation: drip 6s infinite alternate;
+}
+@keyframes drip{
+  0%{transform:translateY(0px);}
+  100%{transform:translateY(10px);}
+}
+
+/* kare glass ki vire */
+.glass-box{
+  width:220px;height:220px;
+  background:rgba(255,255,255,0.2);
+  border-radius:20px;
+  backdrop-filter:blur(10px);
+  border:2px solid rgba(255,255,255,0.4);
+  box-shadow:0 8px 32px rgba(0,0,0,0.2);
+  display:flex;justify-content:center;align-items:center;
+  animation: spin 2.2s linear infinite;
+  position:relative;
+}
+
+@keyframes spin{
+  0%{transform: rotate(0deg);}
+  50%{transform: rotate(180deg);}
+  100%{transform: rotate(360deg);}
+}
+
+.glass-box h1{
+  position:absolute; /* rete fiks */
+  font-size:40px;font-weight:bold;
+  background: linear-gradient(45deg,#FFD700,#000);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align:center;
+  user-select:none;
+}
+
 /* AUTH */
 #auth-container{display:none;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#f5f5f5;}
 .auth-box{width:90%;max-width:400px;background:#fff;padding:25px;border-radius:12px;box-shadow:0 6px 25px rgba(0,0,0,0.15);}
@@ -31,14 +73,14 @@ body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;ba
 .dashboard-btn:hover{background:#e6c200;}
 .section{display:none;margin-top:20px;}
 .section h3{text-align:center;margin-bottom:10px;}
-.section input{width:90%;padding:10px;margin:5px auto;display:block;border-radius:8px;border:1px solid #ccc;}
+.section input, .section select{width:90%;padding:10px;margin:5px auto;display:block;border-radius:8px;border:1px solid #ccc;}
 .section button{width:90%;padding:10px;margin:10px auto;display:block;background:#FFD700;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
 .section button:hover{background:#e6c200;}
 </style>
 </head>
 <body>
 
-<!-- SPLASH SCREEN -->
+<!-- SPLASH -->
 <div id="splash">
   <div class="glass-box">
     <h1>ECHANJ<br>PLUS</h1>
@@ -66,7 +108,6 @@ body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;ba
     <button class="dashboard-btn" data-section="about">ℹ️ About</button>
   </div>
 
-  <!-- SECTIONS -->
   <div id="send-minutes" class="section">
     <h3>Voye Minit</h3>
     <select id="operator">
@@ -110,114 +151,85 @@ body,html{width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden;ba
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus-778cd",
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-    messagingSenderId: "111144762929",
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-    measurementId: "G-J1BQRF32ZW"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  authDomain: "echanj-plus-778cd.firebaseapp.com",
+  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+  projectId: "echanj-plus-778cd",
+  storageBucket: "echanj-plus-778cd.firebasestorage.app",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+  measurementId: "G-J1BQRF32ZW"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-  // Toggle Login/Signup
-  let isLogin = true;
-  const toggleForm = document.getElementById("toggleForm");
-  toggleForm.addEventListener("click", ()=>{
-    isLogin = !isLogin;
-    document.getElementById("form-title").innerText = isLogin ? "Login":"Enskri";
-    document.getElementById("authBtn").innerText = isLogin ? "Login":"Enskri";
-    toggleForm.innerText = isLogin ? "Pa gen kont? Enskri":"Ou deja gen kont? Login";
-  });
+// Toggle Login/Signup
+let isLogin = true;
+const toggleForm = document.getElementById("toggleForm");
+toggleForm.addEventListener("click", ()=>{
+  isLogin = !isLogin;
+  document.getElementById("form-title").innerText = isLogin ? "Login":"Enskri";
+  document.getElementById("authBtn").innerText = isLogin ? "Login":"Enskri";
+  toggleForm.innerText = isLogin ? "Pa gen kont? Enskri":"Ou deja gen kont? Login";
+});
 
-  // Auth button
-  document.getElementById("authBtn").addEventListener("click", async ()=>{
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    try{
-      if(isLogin){
-        await signInWithEmailAndPassword(auth,email,password);
-        alert("Login reussi ✅");
-      } else {
-        await createUserWithEmailAndPassword(auth,email,password);
-        alert("Kont kreye ✅");
-      }
-    }catch(e){
-      alert("Error: "+e.message);
+// Auth button
+document.getElementById("authBtn").addEventListener("click", async ()=>{
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try{
+    if(isLogin){
+      await signInWithEmailAndPassword(auth,email,password);
+      alert("Login reussi ✅");
+    } else {
+      await createUserWithEmailAndPassword(auth,email,password);
+      alert("Kont kreye ✅");
     }
-  });
+  }catch(e){alert("Error: "+e.message);}
+});
 
-  // Remove splash & show auth after 12s
-  setTimeout(()=>{
-    document.getElementById("splash").style.display="none";
-    document.getElementById("auth-container").style.display="flex";
-  },12000);
+// Remove splash & show auth after 12s
+setTimeout(()=>{
+  document.getElementById("splash").style.display="none";
+  document.getElementById("auth-container").style.display="flex";
+},12000);
 
-  // Show dashboard after login
-  onAuthStateChanged(auth,user=>{
-    if(user){
-      document.getElementById("auth-container").style.display="none";
-      document.getElementById("dashboard").style.display="block";
-      document.getElementById("welcome-msg").innerText = `Byenveni ${user.email} ! Sevis la se pou fè premye tranzaksyon ou an.`;
-      // load wallet etc
-      document.getElementById("wallet-balance").value = "0 Gdes"; // initial demo
-      document.getElementById("profile-email").value = user.email;
-    }
-  });
+// Show dashboard after login
+onAuthStateChanged(auth,user=>{
+  if(user){
+    document.getElementById("auth-container").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    document.getElementById("welcome-msg").innerText = `Byenveni ${user.email} ! Sevis la se pou fè premye tranzaksyon ou an.`;
+    document.getElementById("wallet-balance").value = "0 Gdes"; 
+    document.getElementById("profile-email").value = user.email;
+  }
+});
 
-  // Dashboard buttons
-  document.querySelectorAll(".dashboard-btn").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      document.querySelectorAll(".section").forEach(s=>s.style.display="none");
-      const sec = btn.getAttribute("data-section");
-      document.getElementById(sec).style.display="block";
-    });
-  });
-
-  // About back button
-  document.getElementById("back-dashboard").addEventListener("click",()=>{
+// Dashboard buttons
+document.querySelectorAll(".dashboard-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
     document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+    const sec = btn.getAttribute("data-section");
+    document.getElementById(sec).style.display="block";
   });
+});
 
-  // Compose USSD (demo)
-  document.getElementById("compose-ussd").addEventListener("click",()=>{
-    const operator = document.getElementById("operator").value;
-    const min = document.getElementById("minutes").value;
-    let code="";
-    if(operator==="digicel") code=`*128*50947111123*${min}#`;
-    if(operator==="natcom") code=`*123*88888888*32160708*${min}#`;
-    alert("Konpoze USSD: "+code);
-  });
+// About back
+document.getElementById("back-dashboard").addEventListener("click",()=>{
+  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+});
 
-  // Save/pay demo
-  document.getElementById("save-pay").addEventListener("click",()=>{
-    const method=document.getElementById("payment-method").value;
-    const info=document.getElementById("pay-info").value;
-    const amount=document.getElementById("amount").value;
-    const txRef = push(ref(db,"transactions")).key;
-    set(ref(db,"transactions/"+txRef),{method,info,amount,status:"pending",createdAt:Date.now()});
-    alert("Tranzaksyon sove ✅");
-  });
-
-  // Save profile demo
-  document.getElementById("save-profile").addEventListener("click",()=>{
-    const name=document.getElementById("profile-name").value;
-    const phone=document.getElementById("profile-phone").value;
-    const user = auth.currentUser;
-    if(user){
-      set(ref(db,"users/"+user.uid),{name,phone,email:user.email});
-      alert("Profil sove ✅");
-    }
-  });
-</script>
-</body>
-        </html>
+// Compose USSD demo
+document.getElementById("compose-ussd").addEventListener("click",()=>{
+  const operator = document.getElementById("operator").value;
+  const min = document.getElementById("minutes").value;
+  let code="";
+  if(operator==="digicel") code=`*128*50947111123*${min}#`;
+  if(operator==="natcom") code=`*123*888
