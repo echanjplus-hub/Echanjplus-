@@ -1,75 +1,237 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-  <meta charset="UTF-8">
-  <title>ECHANJ PLUS - Mizajou</title>
-  <style>
-    /* Full ekran ak reset style */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      width: 100%;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298); /* pwofesyonèl koulè ble */
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 5rem; /* Grand tit */
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin-bottom: 20px;
-      animation: pulse 2s infinite;
-    }
-
-    p {
-      font-size: 1.8rem;
-      margin-bottom: 40px;
-      color: #ffd700; /* Yon ti manyen pwofesyonèl ak koulè lò */
-    }
-
-    /* Loader senp ak animation */
-    .loader {
-      width: 80px;
-      height: 80px;
-      border: 10px solid rgba(255, 255, 255, 0.2);
-      border-top: 10px solid #ffffff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    /* Animasyon */
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.9; }
-    }
-
-    /* Responsive pou ti ekran */
-    @media (max-width: 768px) {
-      h1 { font-size: 3rem; }
-      p { font-size: 1.2rem; }
-      .loader { width: 60px; height: 60px; border-width: 8px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echanj Plus</title>
+<style>
+/* GLOBAL */
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+body,html{width:100%;height:100%;background:#0d3b66;color:#fff;display:flex;justify-content:center;align-items:center;}
+button{cursor:pointer;border:none;border-radius:8px;padding:10px 15px;font-size:16px;}
+.hidden{display:none;}
+/* CARD LAYOUT */
+.card{background:#1d4e89;padding:20px;border-radius:18px;box-shadow:0 4px 10px rgba(0,0,0,0.3);width:90%;max-width:400px;text-align:center;}
+h1,h2{margin-bottom:20px;}
+input,select{width:90%;padding:10px;margin:10px 0;border-radius:8px;border:none;font-size:16px;}
+.btn-green{background:#21d07a;color:#000;}
+.btn-red{background:#e63946;color:#fff;}
+.btn-blue{background:#00a8cc;color:#fff;}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:999;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#21d07a;color:#000;padding:10px 20px;border-radius:8px;}
+a{color:#ffd60a;text-decoration:underline;}
+small{font-size:12px;color:#ffd60a;}
+</style>
 </head>
 <body>
-  <h1>ECHANJ PLUS</h1>
-  <p>Sistèm lan ap fè mizajou, tanpri rete tann...</p>
-  <div class="loader"></div>
-</body>
-</html>
+
+<!-- LOADING OVERLAY -->
+<div id="loading" class="overlay hidden"><h2>Ap chaje...</h2></div>
+
+<!-- TOAST -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- LOGIN/SIGNUP -->
+<div id="authScreen" class="card">
+    <h1>ECHANJ PLUS</h1>
+    <div id="authForms">
+        <div id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Imèl">
+            <input type="password" id="loginPassword" placeholder="Modpas">
+            <button class="btn-green" onclick="login()">Konekte</button>
+            <p>Pa gen kont? <a href="#" onclick="showSignup()">Kreye kont</a></p>
+            <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
+        </div>
+        <div id="signupForm" class="hidden">
+            <input type="text" id="signupName" placeholder="Non">
+            <input type="email" id="signupEmail" placeholder="Imèl">
+            <input type="text" id="signupPhone" placeholder="Telefòn">
+            <input type="password" id="signupPassword" placeholder="Modpas">
+            <button class="btn-green" onclick="signup()">Kreye kont</button>
+            <p>Gen kont? <a href="#" onclick="showLogin()">Konekte</a></p>
+            <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- TERMS -->
+<div id="termsScreen" class="card hidden">
+    <h2>Kondisyon Itilizasyon</h2>
+    <p>1. Sèvis disponib sèlman pou moun ki rete an Ayiti.</p>
+    <p>2. Laj minimòm: 18 ane oswa plis.</p>
+    <p>3. Chak itilizatè gen yon sèl kont.</p>
+    <p>4. Enfòmasyon bay la dwe veritab.</p>
+    <p>5. Tranzaksyon final, pa gen ranvèsman.</p>
+    <p>6. Aktivite ilegal oswa fwod entèdi.</p>
+    <p>7. Sistèm ka mete limit sou tranzaksyon.</p>
+    <p>8. Kont ka bloke si gen vyolasyon.</p>
+    <p>9. Done itilizatè yo pwoteje epi itilize sèlman pou sèvis la.</p>
+    <p>10. Nenpòt reklamasyon dwe fèt atravè WhatsApp oswa Imèl ofisyèl.</p>
+    <button class="btn-blue" onclick="showScreen('authScreen')">Tounen</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="card hidden">
+    <h1>ECHANJ PLUS</h1>
+    <p id="welcomeMsg">Byenveni, sèvis la se pou ou fè 1e tranzaksyon ou an.</p>
+    <div id="flowMsg"><small>OK pou kite mesaj sa a</small></div>
+    <button class="btn-blue" onclick="showScreen('sendMinutes')">📤 Voye Minit</button><br>
+    <button class="btn-blue" onclick="showScreen('payment')">💳 Peman</button><br>
+    <button class="btn-blue" onclick="showScreen('profile')">👤 Pwofil</button><br>
+    <button class="btn-blue" onclick="showScreen('about')">ℹ️ About</button><br>
+    <button class="btn-red" onclick="logout()">Dekonekte</button>
+</div>
+
+<!-- SEND MINUTES -->
+<div id="sendMinutes" class="card hidden">
+    <h2>Voye Minit</h2>
+    <select id="operatorSelect">
+        <option value="digicel">Digicel</option>
+        <option value="natcom">Natcom</option>
+    </select>
+    <input type="number" id="minutesInput" placeholder="Antre kantite minit">
+    <button class="btn-green" onclick="composeUSSD()">Konpoze USSD</button>
+    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
+</div>
+
+<!-- PAYMENT -->
+<div id="payment" class="card hidden">
+    <h2>Peman</h2>
+    <p>Wallet: <span id="walletBalance">0</span> minit / <span id="walletGdes">0</span> Gdes</p>
+    <select id="paymentMethod">
+        <option value="moncash">MonCash</option>
+        <option value="natcash">NatCash</option>
+        <option value="paryajLakay">Paryaj Lakay</option>
+        <option value="paryajPam">Paryaj Pam</option>
+    </select>
+    <input type="text" id="payName" placeholder="Non kont">
+    <input type="text" id="payNumber" placeholder="Nimewo kont">
+    <input type="number" id="payAmount" placeholder="Montan">
+    <button class="btn-green" onclick="savePayment()">Sove / Peye</button>
+    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="card hidden">
+    <h2>Pwofil</h2>
+    <input type="text" id="profileName" placeholder="Non">
+    <input type="text" id="profilePhone" placeholder="Telefòn">
+    <input type="email" id="profileEmail" placeholder="Imèl" readonly>
+    <p>Balans: <span id="profileBalance">0</span> Gdes</p>
+    <button class="btn-green" onclick="saveProfile()">Sove</button>
+    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
+</div>
+
+<!-- ABOUT -->
+<div id="about" class="card hidden">
+    <h2>About</h2>
+    <p>Nimewo sistèm Digicel: +50947111123</p>
+    <p>Nimewo sistèm Natcom: +50932160708</p>
+    <p>Imèl: echanjplus@gmail.com</p>
+    <p><a href="https://www.facebook.com/share/19pCBnyujR/" target="_blank">Facebook</a> | <a href="https://youtube.com/@echanjplus?si=KtZiO5TmpXDbjynG" target="_blank">YouTube</a></p>
+    <p><a href="#" onclick="showTerms()">Kondisyon Itilizasyon</a></p>
+    <button class="btn-blue" onclick="showScreen('dashboard')">Tounen</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+  // FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    projectId: "echanj-plus-778cd",
+    storageBucket: "echanj-plus-778cd.appspot.com",
+    messagingSenderId: "704291021670",
+    appId: "1:704291021670:web:4a04e7bcd7b5e0ff6c9e1a"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+  const fs = firebase.firestore();
+
+  // UTIL FUNCTIONS
+  function showScreen(id){
+      document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+  }
+
+  function showSignup(){document.getElementById('signupForm').classList.remove('hidden'); document.getElementById('loginForm').classList.add('hidden'); showScreen('authScreen');}
+  function showLogin(){document.getElementById('loginForm').classList.remove('hidden'); document.getElementById('signupForm').classList.add('hidden'); showScreen('authScreen');}
+  function showTerms(){showScreen('termsScreen');}
+
+  function showToast(msg){
+      const toast=document.getElementById('toast');
+      toast.innerText=msg;
+      toast.classList.remove('hidden');
+      setTimeout(()=>toast.classList.add('hidden'),3000);
+  }
+  function showLoading(){document.getElementById('loading').classList.remove('hidden');}
+  function hideLoading(){document.getElementById('loading').classList.add('hidden');}
+
+  // AUTH
+  function login(){
+      const email=document.getElementById('loginEmail').value;
+      const pass=document.getElementById('loginPassword').value;
+      showLoading();
+      auth.signInWithEmailAndPassword(email,pass)
+      .then(()=>{hideLoading(); showScreen('dashboard'); loadProfile();})
+      .catch(e=>{hideLoading(); showToast(e.message);});
+  }
+
+  function signup(){
+      const email=document.getElementById('signupEmail').value;
+      const pass=document.getElementById('signupPassword').value;
+      const name=document.getElementById('signupName').value;
+      const phone=document.getElementById('signupPhone').value;
+      showLoading();
+      auth.createUserWithEmailAndPassword(email,pass)
+      .then(res=>{
+          const uid=res.user.uid;
+          fs.collection('users').doc(uid).set({name,email,phone,balance:0,systemBalance:0,dateCreated:new Date()});
+          hideLoading();
+          showToast('Kont kreye avèk siksè!');
+          showScreen('dashboard');
+          loadProfile();
+      })
+      .catch(e=>{hideLoading(); showToast(e.message);});
+  }
+
+  function logout(){auth.signOut().then(()=>{showScreen('authScreen');});}
+
+  // PROFILE
+  function loadProfile(){
+      const uid=auth.currentUser.uid;
+      fs.collection('users').doc(uid).get().then(doc=>{
+          if(doc.exists){
+              const data=doc.data();
+              document.getElementById('profileName').value=data.name;
+              document.getElementById('profilePhone').value=data.phone;
+              document.getElementById('profileEmail').value=data.email;
+              document.getElementById('walletBalance').innerText=data.balance;
+              document.getElementById('walletGdes').innerText=(data.balance*0.82*0.825).toFixed(2);
+              document.getElementById('profileBalance').innerText=(data.balance*0.82*0.825).toFixed(2);
+              document.getElementById('welcomeMsg').innerText=`Byenveni ${data.name}, sèvis la se pou ou fè 1e tranzaksyon ou an.`;
+          }
+      });
+  }
+
+  function saveProfile(){
+      const uid=auth.currentUser.uid;
+      fs.collection('users').doc(uid).update({
+          name:document.getElementById('profileName').value,
+          phone:document.getElementById('profilePhone').value
+      }).then(()=>showToast('Profil mete ajou!'));
+  }
+
+  // SEND MINUTES
+  function composeUSSD(){
+      const operator=document.getElementById('operatorSelect').value;
+      const minutes=document.getElementById('minutesInput').value;
+      let ussd;
+      if(operator==='digicel'){ussd=`*128*50947111123*${minutes}#`;}
+      else{ussd
