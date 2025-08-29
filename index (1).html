@@ -1,176 +1,617 @@
-<!DOCTYPE html><html lang="ht">
+<!doctype html>
+<html lang="ht">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Echanj Plus</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ECHANJ PLUS</title>
 <style>
-  /* --- FON BLU, SPLASH SCREEN, GLASS CARD --- */
-  body, html {margin:0;padding:0;width:100%;height:100%;font-family: Arial, sans-serif;background:#0a1e4a;color:#fff;overflow-x:hidden;}
-  #splashScreen {position:fixed;top:0;left:0;width:100%;height:100%;background:#0a1e4a;display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:1000;}
-  #logoCard {width:200px;height:200px;background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border-radius:20px;display:flex;justify-content:center;align-items:center;animation: rotateCard 2.2s infinite alternate;}
-  #logoCard h1 {color:yellow;text-shadow:1px 1px 2px #000;font-size:28px;}
-  @keyframes rotateCard {0%{transform:rotateY(0deg);}100%{transform:rotateY(360deg);}}/* --- GOUT NWA ANIMASYON --- */ .drop {position:absolute;width:10px;height:10px;background:black;border-radius:50%;animation:fall linear infinite;opacity:0.7;}
+  :root{
+    --bg:#071633; --card: rgba(255,255,255,0.04);
+    --glass: rgba(255,255,255,0.08); --accent:#FFD700;
+  }
+  *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+  html,body{height:100%;margin:0;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased}
+  /* Splash */
+  #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50}
+  .logo-fixed{position:relative;z-index:52;text-align:center;pointer-events:none}
+  .logo-fixed h1{font-size:44px;margin:0;font-weight:900;color:var(--accent);text-shadow:0 2px 12px rgba(0,0,0,0.6);font-family:Arial}
+  .square{width:180px;height:180px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center; margin-top:18px; transform-origin:center; animation:rotateSeq 4.4s linear infinite}
+  @keyframes rotateSeq{0%{transform:rotate(-18deg)}25%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}75%{transform:rotate(18deg)}100%{transform:rotate(-18deg)}}
+  /* subtle graffiti drops (black paint drips) */
+  .drip{position:absolute;width:6px;height:12px;background:#000;border-radius:3px;opacity:0.85;animation:drip 1.6s linear infinite}
+  @keyframes drip{0%{transform:translateY(-40vh) scaleY(0.6);opacity:0.7}70%{transform:translateY(60vh) scaleY(1.2);opacity:0.9}100%{transform:translateY(100vh) scaleY(1.4);opacity:0}}
 
-@keyframes fall {0%{top:-10px;}100%{top:100%;}}
+  /* App layout */
+  #app{display:none;min-height:100vh;padding:28px;position:relative;z-index:10}
+  .center-col{max-width:920px;margin:0 auto}
 
-/* --- LOGIN / SIGNUP --- */ #authContainer{display:none;justify-content:center;align-items:center;height:100%;flex-direction:column;} .authBox{background:rgba(255,255,255,0.05);padding:20px;border-radius:20px;backdrop-filter:blur(5px);width:90%;max-width:400px;display:flex;flex-direction:column;} .authBox h2{margin:0 0 10px 0;text-align:center;} .authBox input{margin:5px 0;padding:10px;border:none;border-radius:10px;} .authBox button{margin-top:10px;padding:10px;border:none;border-radius:10px;background:yellow;color:#000;font-weight:bold;cursor:pointer;} .authBox label{font-size:12px;} .switchLink{margin-top:5px;color:cyan;cursor:pointer;text-align:center;}
+  /* Auth box */
+  .auth-wrap{display:flex;gap:20px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+  .card{background:var(--card);border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+  .auth-card{width:380px}
+  .auth-card h2{text-align:center;color:var(--accent);margin:0 0 12px 0}
+  input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:#fff}
+  button.btn{width:100%;padding:10px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+  button.primary{background:var(--accent);color:#000}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
 
-/* --- DASHBOARD --- */ #dashboard{display:none;flex-direction:column;height:100%;} #dashHeader{padding:20px;text-align:center;position:relative;} #dashHeader h2{margin:0;color:yellow;text-shadow:1px 1px 2px #000;font-size:32px;} #welcomeMsg{margin-top:5px;font-size:14px;color:#fff;} #dashOptions{display:flex;justify-content:space-around;align-items:center;padding:10px;position:absolute;bottom:10px;width:100%;} .dashBtn{flex:1;margin:0 5px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.1);text-align:center;cursor:pointer;}
+  .muted{color:#9fb8d9;font-size:13px}
+  .link{color:var(--accent);cursor:pointer;text-decoration:underline}
 
-/* --- WALLET / RETRE --- */ #wallet{display:none;flex-direction:column;align-items:center;padding:20px;} .balanceBox{display:flex;justify-content:space-between;width:100%;margin:10px 0;} .balanceBox div{flex:1;text-align:center;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;} .retreForm{display:flex;flex-direction:column;width:100%;max-width:400px;} .retreForm input, .retreForm select, .retreForm button{margin:5px 0;padding:10px;border-radius:10px;border:none;}
+  /* Dashboard */
+  #dashboard{display:none;margin-top:18px}
+  .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .brand{font-size:28px;font-weight:900;color:var(--accent);text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+  .user-mini{font-size:13px;color:#fff;opacity:0.9}
+  .welcome{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;margin-bottom:12px}
+  .ok-btn{padding:8px 12px;border-radius:8px;border:none;background:#28a745;color:#fff;cursor:pointer}
 
-/* --- VOYE MINIT --- */ #sendMinit{display:none;flex-direction:column;align-items:center;padding:20px;} #sendMinit input, #sendMinit select, #sendMinit button{margin:5px 0;padding:10px;border-radius:10px;border:none;}
+  /* Options horizontal */
+  .options{display:flex;gap:12px;justify-content:center;margin-bottom:12px}
+  .opt{flex:1;padding:12px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.03);cursor:pointer;font-weight:800}
+  .opt.active{background:var(--accent);color:#000}
 
-/* --- PROFIL --- */ #profil{display:none;flex-direction:column;align-items:center;padding:20px;} #profil input, #profil select, #profil button{margin:5px 0;padding:10px;border-radius:10px;border:none;}
+  /* content panels */
+  .panel{display:none}
+  .panel.active{display:block}
+  .wallet{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .wallet .mini{flex:1;min-width:160px;padding:12px;border-radius:12px;background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));text-align:center}
+  .wallet .mini .title{font-size:13px;color:#bcd6f2}
+  .wallet .mini .value{font-weight:900;font-size:20px;margin-top:6px}
 
-/* --- ABOUT --- */ #about{display:none;flex-direction:column;align-items:center;padding:20px;} .aboutSection{width:100%;max-width:400px;margin:10px 0;background:rgba(255,255,255,0.1);border-radius:10px;} .aboutHeader{padding:10px;background:rgba(255,255,255,0.2);cursor:pointer;border-radius:10px;} .aboutContent{padding:10px;display:none;} </style>
+  /* send min / withdraw forms */
+  form{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .inline{display:flex;gap:8px}
+  .inline input{flex:1}
 
+  /* profile */
+  .profile-read{padding:10px}
+  .profile-read .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+
+  /* about accordion */
+  .acc{margin-top:8px}
+  .acc .head{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;cursor:pointer;font-weight:800}
+  .acc .body{display:none;padding:10px;color:#cfe6ff;background:rgba(255,255,255,0.01);border-radius:8px;margin-top:6px}
+
+  /* loader overlay */
+  #loader{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:100}
+  #loader .box{background:#fff;padding:14px;border-radius:10px;color:#000;font-weight:800}
+  @media (max-width:820px){ .auth-card{width:100%} .square{width:140px;height:140px} .logo-fixed h1{font-size:34px} }
+</style>
 </head>
-<body><!-- SPLASH SCREEN --><div id="splashScreen">
-  <div id="logoCard"><h1>ECHANJ PLUS</h1></div>
-</div><!-- LOGIN / SIGNUP --><div id="authContainer">
-  <div class="authBox" id="signupBox">
-    <h2>Enskri</h2>
-    <input type="text" id="signupName" placeholder="Non">
-    <input type="email" id="signupEmail" placeholder="Imèl">
-    <input type="password" id="signupPassword" placeholder="Modpas">
-    <input type="date" id="signupDOB" placeholder="Dat nesans">
-    <label><input type="checkbox" id="acceptTerms"> Mwen aksepte kondisyon sistèm lan</label>
-    <button id="signupBtn">Kreye Kont</button>
-    <div class="switchLink" id="toLogin">Mwen deja gen kont</div>
-  </div>  <div class="authBox" id="loginBox" style="display:none;">
-    <h2>Konekte</h2>
-    <input type="email" id="loginEmail" placeholder="Imèl">
-    <input type="password" id="loginPassword" placeholder="Modpas">
-    <button id="loginBtn">Konekte</button>
-    <div class="switchLink" id="toSignup">Pa gen kont? Enskri</div>
+<body>
+
+<!-- Splash with rotating square (logo fixed) -->
+<div id="splash">
+  <div class="logo-fixed"><h1>ECHANJ PLUS</h1></div>
+  <div class="square card" aria-hidden="true"></div>
+  <!-- black paint drips -->
+  <div class="drip" style="left:10%;animation-duration:1.6s;animation-delay:0s"></div>
+  <div class="drip" style="left:35%;animation-duration:1.8s;animation-delay:0.3s"></div>
+  <div class="drip" style="left:62%;animation-duration:1.4s;animation-delay:0.6s"></div>
+  <div class="drip" style="left:80%;animation-duration:1.9s;animation-delay:0.2s"></div>
+</div>
+
+<!-- loader -->
+<div id="loader"><div class="box">Ap travay...</div></div>
+
+<!-- App -->
+<div id="app" class="center-col">
+  <!-- AUTH -->
+  <div id="auth" class="auth-wrap">
+    <div class="card auth-card" id="signupCard" role="region" aria-label="signup">
+      <h2>Kreye Kont</h2>
+      <input id="su_name" placeholder="Non konplè" />
+      <input id="su_email" placeholder="Imèl" />
+      <input id="su_phone" placeholder="Telefòn (+509...)" />
+      <label class="muted">Dat nesans</label>
+      <div class="inline"><input id="su_day" placeholder="JJ" /><input id="su_month" placeholder="MM" /><input id="su_year" placeholder="AAAA" /></div>
+      <input id="su_pass" type="password" placeholder="Modpas" />
+      <label><input id="su_terms" type="checkbox" /> Mwen li epi mwen aksepte <span class="link" id="openTerms">kondisyon yo</span></label>
+      <button class="btn primary" id="btnSignup" disabled>Kreye kont</button>
+      <div class="muted" style="text-align:center;margin-top:8px">Ou deja gen kont? <span class="link" id="goLogin">Konekte</span></div>
+    </div>
+
+    <div class="card auth-card" id="loginCard" style="display:none" role="region" aria-label="login">
+      <h2>Konekte</h2>
+      <input id="li_email" placeholder="Imèl" />
+      <input id="li_pass" type="password" placeholder="Modpas" />
+      <button class="btn primary" id="btnLogin">Konekte</button>
+      <div class="muted" style="text-align:center;margin-top:8px">Pa gen kont? <span class="link" id="goSignup">Enskri</span></div>
+    </div>
   </div>
-</div><!-- DASHBOARD --><div id="dashboard">
-  <div id="dashHeader">
-    <h2>ECHANJ PLUS</h2>
-    <div id="welcomeMsg">Byenveni! Se pou ou fè 1e tranzaksyon ou an.</div>
+
+  <!-- TERMS modal (simple) -->
+  <div id="termsModal" class="card" style="display:none;max-width:720px;margin-top:18px">
+    <h3>Kondisyon Itilizasyon</h3>
+    <div class="muted" style="line-height:1.4">
+      <p>1) Sèvis disponib sèlman pou Ayiti. 2) Laj minimòm: 18 ane. 3) Yon sèl kont pa itilizatè. 4) Frè sistèm: 15%. 5) Konvèsyon: 1 minit = 0.82 Gdes. 6) Retre verifye pa admin sou WhatsApp. 7) Done sere sou Firebase. 8) Pa gen ranvèsman.</p>
+    </div>
+    <div style="text-align:right;margin-top:8px"><button class="btn ghost" id="closeTerms">Mwen konprann</button></div>
   </div>
-  <div id="dashOptions">
-    <div class="dashBtn" id="homeBtn">Akèy</div>
-    <div class="dashBtn" id="walletBtn">Peman</div>
-    <div class="dashBtn" id="profilBtn">Profil</div>
+
+  <!-- DASHBOARD area -->
+  <div id="dashboard" style="margin-top:18px">
+    <div class="header">
+      <div class="brand">ECHANJ <span style="color:var(--accent)">PLUS</span></div>
+      <div class="user-mini" id="userMini"></div>
+    </div>
+
+    <div class="welcome" id="welcomeBox">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>Byenveni! Sèvis la se pou ou fè premye tranzaksyon ou an.</div>
+        <div><button class="ok-btn" id="dismissWelcome">Ok</button></div>
+      </div>
+    </div>
+
+    <div class="options" role="tablist" aria-label="main options">
+      <div class="opt active" id="optHome" role="tab" tabindex="0">🏠 Akey</div>
+      <div class="opt" id="optSend" role="tab" tabindex="0">📤 Voye Minit</div>
+      <div class="opt" id="optPay" role="tab" tabindex="0">💳 Peman</div>
+      <div class="opt" id="optProfile" role="tab" tabindex="0">👤 Profil</div>
+      <div class="opt" id="optAbout" role="tab" tabindex="0">ℹ️ About</div>
+    </div>
+
+    <!-- Panels -->
+    <div id="panelHome" class="panel active">
+      <div class="wallet">
+        <div class="mini card"><div class="title">Sale Balance (minit)</div><div class="value" id="saleVal">0</div></div>
+        <div class="mini card"><div class="title">Withdraw Balance (Gdes)</div><div class="value" id="withdrawVal">0.00</div></div>
+        <div class="mini card"><div class="title">Nimewo Kont</div><div class="value" id="acctNum">-</div></div>
+      </div>
+      <div class="card">
+        <h3>Aktivite Dènye</h3>
+        <div id="activityList" class="muted" style="min-height:40px">Pa gen aktivite ankò.</div>
+      </div>
+    </div>
+
+    <div id="panelSend" class="panel">
+      <div class="card">
+        <h3>Voye Minit</h3>
+        <label class="muted">Operatè</label>
+        <select id="operator">
+          <option value="digicel">Digicel</option>
+          <option value="natcom">Natcom</option>
+        </select>
+        <label class="muted">Kantite minit</label>
+        <input id="mins" type="number" min="1" placeholder="Eg. 50" />
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn primary" id="composeBtn">Konpoze USSD (Genyen)</button>
+          <button class="btn ghost" id="sendBtn">Voye epi Mete nan Wallet</button>
+        </div>
+        <div id="digicelConfirm" class="muted" style="margin-top:8px;display:none">Pou konfime Digicel, peze *128*1# epi retounen.</div>
+      </div>
+    </div>
+
+    <div id="panelPay" class="panel">
+      <div class="card">
+        <h3>Peman / Retre</h3>
+        <div class="muted">Wallet</div>
+        <div class="wallet" style="margin-top:10px">
+          <div class="mini card"><div class="title">Sale</div><div class="value" id="saleVal2">0</div></div>
+          <div class="mini card"><div class="title">Withdraw</div><div class="value" id="withdrawVal2">0.00</div></div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label class="muted">Metòd</label>
+          <select id="payMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
+          <input id="payName" placeholder="Non kont (oswa diferan selon metòd)" />
+          <input id="payNumber" placeholder="Nimewo kont / telefòn" />
+          <input id="payAmount" type="number" placeholder="Montan (Gdes)" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn primary" id="paySave">Sove / Peye</button>
+            <button class="btn ghost" id="payWithdrawAll">Retre Tout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panelProfile" class="panel">
+      <div class="card" id="profileCard">
+        <h3>Profil</h3>
+        <div id="profileModeEdit">
+          <input id="pf_name" placeholder="Non" />
+          <input id="pf_phone" placeholder="Telefòn" />
+          <label class="muted">Dat nesans</label>
+          <input id="pf_dob" type="date" />
+          <select id="pf_sex"><option value="">Chwazi</option><option value="Gason">Gason</option><option value="Fi">Fi</option></select>
+          <input id="pf_city" placeholder="Vil" />
+          <input id="pf_photo" placeholder="URL Foto (opsyonèl)" />
+          <button class="btn primary" id="pf_save">Sove Profil ( fèmen aprè )</button>
+        </div>
+        <div id="profileView" style="display:none" class="profile-read">
+          <div class="row"><div>Non</div><div id="pv_name"></div></div>
+          <div class="row"><div>Telefòn</div><div id="pv_phone"></div></div>
+          <div class="row"><div>Dat nesans</div><div id="pv_dob"></div></div>
+          <div class="row"><div>Laj</div><div id="pv_age"></div></div>
+          <div class="row"><div>Vil</div><div id="pv_city"></div></div>
+          <div class="row"><div>Sèks</div><div id="pv_sex"></div></div>
+          <div style="margin-top:8px"><button class="btn ghost" id="pf_edit">Modifier</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panelAbout" class="panel">
+      <div class="card">
+        <h3>About</h3>
+        <div class="acc">
+          <div class="head">🔼 Kontak & Èd</div>
+          <div class="body">WhatsApp: +50947111123<br>Email: echanjplus@gmail.com<br>Adrès: Boulva Gaya, Rue #72</div>
+        </div>
+        <div class="acc">
+          <div class="head">🔼 Kondisyon Sistèm lan</div>
+          <div class="body">Sèvis disponib sèlman pou Ayiti. Laj ≥ 18. Frè sistèm 15%. Pa gen ranvèsman.</div>
+        </div>
+        <div class="acc">
+          <div class="head">🔼 Kondisyon Jeneral</div>
+          <div class="body">Voye minit, Retre, Konfimasyon admin via WhatsApp, elatriye.</div>
+        </div>
+        <div class="acc">
+          <div class="head">🔼 SEO & Rezo</div>
+          <div class="body">SEO: ARS<br><a href='https://www.facebook.com/share/19pCBnyujR/' target='_blank'>Facebook</a> · <a href='https://youtube.com/@echanjplus?si=KtZiO5TmpXDbjynG' target='_blank'>YouTube</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;text-align:center"><button class="btn ghost" id="btnLogout">Dekonekte</button></div>
   </div>
-</div><!-- WALLET / RETRE --><div id="wallet">
-  <h2>Wallet 💳</h2>
-  <div class="balanceBox">
-    <div>Sale Balance: <span id="saleBalance">0</span> minit</div>
-    <div>Withdraw Balance: <span id="withdrawBalance">0</span> Gdes</div>
-  </div>
-  <div class="retreForm">
-    <select id="retreMethod">
-      <option value="MonCash">MonCash</option>
-      <option value="NatCash">NatCash</option>
-      <option value="ParyajLakay">Paryaj Lakay</option>
-      <option value="ParyajPam">Paryaj Pam</option>
-    </select>
-    <input type="text" id="accountName" placeholder="Non Kont">
-    <input type="text" id="accountNumber" placeholder="Nimewo Kont">
-    <input type="number" id="amount" placeholder="Montan">
-    <button id="savePayBtn">Sove / Peye</button>
-  </div>
-</div><!-- VOYE MINIT --><div id="sendMinit">
-  <h2>Voye Minit</h2>
-  <select id="operator">
-    <option value="Digicel">Digicel</option>
-    <option value="Natcom">Natcom</option>
-  </select>
-  <input type="number" id="minutes" placeholder="Kantite Minit">
-  <button id="composeUSSD">Konpoze USSD</button>
-</div><!-- PROFIL --><div id="profil">
-  <h2>Profil</h2>
-  <input type="text" id="profileName" placeholder="Non">
-  <input type="text" id="profilePhone" placeholder="Nimewo">
-  <input type="date" id="profileDOB" placeholder="Dat Nesans">
-  <select id="profileGender"><option value="M">Gason</option><option value="F">Fi</option></select>
-  <button id="saveProfileBtn">Sove Profil</button>
-</div><!-- ABOUT --><div id="about">
-  <h2>About</h2>
-  <div class="aboutSection">
-    <div class="aboutHeader">Kontak & Èd</div>
-    <div class="aboutContent">WhatsApp: +50947111123<br>Email: echanjplus@gmail.com<br>Adrès: Boulva Gaya, Anse d’Hainault</div>
-  </div>
-  <div class="aboutSection">
-    <div class="aboutHeader">Kondisyon Sistèm</div>
-    <div class="aboutContent">Tout kondisyon sistèm lan...</div>
-  </div>
-  <div class="aboutSection">
-    <div class="aboutHeader">Kondisyon Jeneral</div>
-    <div class="aboutContent">Tout kondisyon jeneral...</div>
-  </div>
-  <div class="aboutSection">
-    <div class="aboutHeader">SEO & Rezo Sosyal</div>
-    <div class="aboutContent">Facebook / YouTube / ARS</div>
-  </div>
-</div><script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script><script>
-// --- Firebase Config ---
+</div>
+
+<!-- Firebase modular SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, get, runTransaction, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ---------- Firebase config (you provided earlier) ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
   authDomain: "echanj-plus-778cd.firebaseapp.com",
   databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
   projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.appspot.com",
+  storageBucket: "echanj-plus-778cd.firebasestorage.app",
   messagingSenderId: "111144762929",
   appId: "1:111144762929:web:e64ce9a6da65781c289f10",
   measurementId: "G-J1BQRF32ZW"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-const fs = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const rdb = getDatabase(app);
+const fs = getFirestore(app);
 
-// --- Splash Screen ---
+/* ---------- Helpers UI ---------- */
+const $ = id => document.getElementById(id);
+function show(el){ if(!el) return; el.classList.add('active'); el.style.display='block'; }
+function hide(el){ if(!el) return; el.classList.remove('active'); el.style.display='none'; }
+function loader(on=true){ $('loader').style.display = on ? 'flex' : 'none'; }
+function toast(msg){ alert(msg); }
+
+/* ---------- Splash logic ---------- */
 setTimeout(()=>{
-  document.getElementById('splashScreen').style.display='none';
-  document.getElementById('authContainer').style.display='flex';
-},3000);
+  document.getElementById('splash').style.display='none';
+  document.getElementById('auth').style.display='flex';
+}, 3000); // 3s splash to reduce wait
 
-// --- Switch Login/Signup ---
-const signupBox = document.getElementById('signupBox');
-const loginBox = document.getElementById('loginBox');
-document.getElementById('toLogin').onclick = ()=>{signupBox.style.display='none'; loginBox.style.display='flex';};
-document.getElementById('toSignup').onclick = ()=>{loginBox.style.display='none'; signupBox.style.display='flex';};
+/* ---------- Enable signup when terms checked ---------- */
+$('su_terms').addEventListener('change', ()=> $('btnSignup').disabled = !$('su_terms').checked);
 
-// --- Signup ---
-document.getElementById('signupBtn').onclick = ()=>{
-  const name = document.getElementById('signupName').value;
-  const email = document.getElementById('signupEmail').value;
-  const pass = document.getElementById('signupPassword').value;
-  const dob = document.getElementById('signupDOB').value;
-  const accept = document.getElementById('acceptTerms').checked;
-  if(!accept){alert('Ou dwe aksepte kondisyon yo'); return;}
-  const age = new Date().getFullYear() - new Date(dob).getFullYear();
-  if(age<18){alert('Ou dwe gen ≥18 ane'); return;}
-  auth.createUserWithEmailAndPassword(email,pass).then(res=>{
-    const uid = res.user.uid;
-    const systemNumber = Math.floor(Math.random()*1000000);
-    db.ref('users/'+uid).set({name,email,dob,uid,systemNumber,wallet:{saleBalance:0,withdrawBalance:0},dateCreated:Date.now()});
-    alert('Kont kreye avèk siksè');
-    signupBox.style.display='none';
-    loginBox.style.display='flex';
-  }).catch(err=>alert(err.message));
-};
+/* ---------- Terms modal open/close ---------- */
+$('openTerms').addEventListener('click', ()=> { document.getElementById('termsModal').style.display='block' });
+$('closeTerms').addEventListener('click', ()=> { document.getElementById('termsModal').style.display='none' });
 
-// --- Login ---
-document.getElementById('loginBtn').onclick = ()=>{
-  const email = document.getElementById('loginEmail').value;
-  const pass = document.getElementById('loginPassword').value;
-  auth.signInWithEmailAndPassword(email,pass).then(res=>{
-    document.getElementById('authContainer').style.display='none';
-    document.getElementById('dashboard').style.display='flex';
-    // Load wallet + profil ...
-  }).catch(err=>alert(err.message));
-};
+/* ---------- Switch login/signup ---------- */
+$('goLogin').addEventListener('click', ()=>{ $('signupCard').style.display='none'; $('loginCard').style.display='block';});
+$('goSignup').addEventListener('click', ()=>{ $('loginCard').style.display='none'; $('signupCard').style.display='block';});
 
-// --- About Toggle ---
-document.querySelectorAll('.aboutHeader').forEach(h=>{
-  h.onclick=()=>{const content=h.nextElementSibling; content.style.display=(content.style.display==='none')?'block':'none';};
+/* ---------- Utility functions ---------- */
+function computeAgeFromDMY(day, month, year){
+  const d = new Date(year, month-1, day);
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if(m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+  return age;
+}
+function maskEmail(e){
+  if(!e) return '';
+  const [u,domain]=e.split('@'); return (u? (u.slice(0,3)+'******@'+domain): e);
+}
+
+/* ---------- Auth state listener ---------- */
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    // show dashboard
+    $('auth').style.display='none';
+    $('dashboard').style.display='block';
+    $('userMini').textContent = maskEmail(user.email || user.phoneNumber || user.uid);
+
+    // load profile from RTDB
+    try{
+      const pRef = ref(rdb, `users/${user.uid}/profile`);
+      const snap = await get(pRef);
+      if(!snap.exists()){
+        // create empty profile using info from auth
+        await set(pRef, {
+          name: user.displayName || '(non)',
+          email: user.email || '',
+          phone: user.phoneNumber || '',
+          dob: '',
+          profileLocked: false,
+          accountNumber: await nextAccountNumber(), // atomic
+          wallet:{ saleBalance:0, withdrawBalance:0 }
+        });
+        loadProfile(user.uid);
+      } else {
+        loadProfile(user.uid);
+      }
+      loadRecentActivity(user.uid);
+    } catch(e){ console.error('load profile err', e) }
+  } else {
+    // show auth
+    $('dashboard').style.display='none';
+    $('auth').style.display='flex';
+  }
 });
-</script></body>
-    </html>
 
-                                                                                         
+/* ---------- Generate account number atomically (meta/lastAccount) ---------- */
+async function nextAccountNumber(){
+  const metaRef = ref(rdb, 'meta/lastAccount');
+  try{
+    const res = await runTransaction(metaRef, (curr)=>{
+      if(curr === null) return 1000001;
+      return curr + 1;
+    });
+    return res.snapshot.val();
+  }catch(e){
+    console.error('acct num err', e);
+    return Date.now();
+  }
+}
+
+/* ---------- SIGNUP ---------- */
+$('btnSignup').addEventListener('click', async ()=>{
+  const name = $('su_name').value.trim();
+  const email = $('su_email').value.trim();
+  const phone = $('su_phone').value.trim();
+  const day = parseInt($('su_day').value,10);
+  const month = parseInt($('su_month').value,10);
+  const year = parseInt($('su_year').value,10);
+  const pass = $('su_pass').value;
+
+  if(!name || !email || !phone || !day || !month || !year || !pass){ toast('Ranpli tout chan yo'); return; }
+  const age = computeAgeFromDMY(day, month, year);
+  if(isNaN(age) || age < 18){ toast('Ou dwe gen 18 ane oswa plis'); return; }
+  if(!$('su_terms').checked){ toast('Dakò ak kondisyon obligatwa'); return; }
+
+  loader(true);
+  try{
+    const uc = await createUserWithEmailAndPassword(auth, email, pass);
+    const uid = uc.user.uid;
+    const acct = await nextAccountNumber();
+    const profile = {
+      name, email, phone, dob:`${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`,
+      profileLocked:false, accountNumber: acct,
+      wallet: { saleBalance:0, withdrawBalance:0 },
+      dateCreated: Date.now()
+    };
+    await set(ref(rdb, `users/${uid}/profile`), profile);
+    loader(false); toast('Kont kreye! Kounyea konekte.');
+    // switch to login view
+    $('signupCard').style.display='none'; $('loginCard').style.display='block';
+  }catch(e){ loader(false); toast(e.message || 'Erè'); console.error(e) }
+});
+
+/* ---------- LOGIN ---------- */
+$('btnLogin').addEventListener('click', async ()=>{
+  const email = $('li_email').value.trim();
+  const pass = $('li_pass').value;
+  if(!email || !pass){ toast('Antre imèl ak modpas'); return; }
+  loader(true);
+  try{
+    await signInWithEmailAndPassword(auth, email, pass);
+    loader(false);
+  }catch(e){ loader(false); toast(e.message || 'Erè login'); console.error(e) }
+});
+
+/* ---------- LOGOUT ---------- */
+$('btnLogout').addEventListener('click', async ()=>{
+  try{ await signOut(auth); toast('Ou dekonkte'); }catch(e){ console.error(e) }
+});
+
+/* ---------- loadProfile ---------- */
+async function loadProfile(uid){
+  try{
+    const pRef = ref(rdb, `users/${uid}/profile`);
+    const snap = await get(pRef);
+    if(!snap.exists()) return;
+    const p = snap.val();
+    // fill UI
+    $('saleVal').textContent = (p.wallet?.saleBalance || 0);
+    $('saleVal2').textContent = (p.wallet?.saleBalance || 0);
+    $('withdrawVal').textContent = Number(p.wallet?.withdrawBalance || 0).toFixed(2);
+    $('withdrawVal2').textContent = Number(p.wallet?.withdrawBalance || 0).toFixed(2);
+    $('acctNum').textContent = p.accountNumber || '-';
+    $('pv_name').textContent = p.name || '';
+    $('pv_phone').textContent = p.phone || '';
+    $('pv_dob').textContent = p.dob || '';
+    $('pv_city').textContent = p.city || '';
+    $('pv_sex').textContent = p.sex || '';
+    // profile edit fields
+    $('pf_name').value = p.name || '';
+    $('pf_phone').value = p.phone || '';
+    if(p.dob){
+      // dob stored as dd/mm/yyyy
+      const parts = p.dob.split('/');
+      if(parts.length===3) $('pf_dob').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+    }
+    $('pf_city').value = p.city || '';
+    $('pf_sex').value = p.sex || '';
+    // profile locked?
+    if(p.profileLocked){
+      $('profileModeEdit').style.display='none'; $('profileView').style.display='block';
+    } else {
+      $('profileModeEdit').style.display='block'; $('profileView').style.display='none';
+    }
+  }catch(e){ console.error('loadProfile', e) }
+}
+
+/* ---------- Save Profile (locks after save) ---------- */
+$('pf_save').addEventListener('click', async ()=>{
+  const user = auth.currentUser; if(!user){ toast('Pa konekte'); return; }
+  const name = $('pf_name').value.trim(); const phone = $('pf_phone').value.trim();
+  const dobVal = $('pf_dob').value; const city = $('pf_city').value.trim(); const sex = $('pf_sex').value;
+  if(!name || !phone || !dobVal){ toast('Ranpli non, telefòn ak dat nesans'); return; }
+  // convert yyyy-mm-dd to dd/mm/yyyy
+  const parts = dobVal.split('-'); const dob = `${parts[2]}/${parts[1]}/${parts[0]}`;
+  loader(true);
+  try{
+    const pRef = ref(rdb, `users/${user.uid}/profile`);
+    const snap = await get(pRef);
+    const prev = snap.exists() ? snap.val() : {};
+    await set(pRef, {...prev, name, phone, dob, city, sex, profileLocked:true});
+    loader(false); toast('Profil sove; li fèmen pou modifye.');
+    loadProfile(user.uid);
+  }catch(e){ loader(false); toast('Erè sove profil'); console.error(e) }
+});
+
+/* allow edit again (only if admin wants) - here we permit toggle for testing */
+$('pf_edit').addEventListener('click', async ()=>{ $('profileModeEdit').style.display='block'; $('profileView').style.display='none'; // unlock locally
+  const user = auth.currentUser; if(!user) return; await update(ref(rdb, `users/${user.uid}/profile`), {profileLocked:false}); });
+
+/* ---------- Options nav ---------- */
+const opts = ['Home','Send','Pay','Profile','About'];
+$('optHome').addEventListener('click', ()=> switchPanel('Home'));
+$('optSend').addEventListener('click', ()=> switchPanel('Send'));
+$('optPay').addEventListener('click', ()=> switchPanel('Pay'));
+$('optProfile').addEventListener('click', ()=> switchPanel('Profile'));
+$('optAbout').addEventListener('click', ()=> switchPanel('About'));
+
+function switchPanel(k){
+  // active class
+  document.querySelectorAll('.opt').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(el=>el.style.display='none');
+  if(k==='Home'){ $('optHome').classList.add('active'); $('panelHome').style.display='block'; }
+  if(k==='Send'){ $('optSend').classList.add('active'); $('panelSend').style.display='block'; }
+  if(k==='Pay'){ $('optPay').classList.add('active'); $('panelPay').style.display='block'; }
+  if(k==='Profile'){ $('optProfile').classList.add('active'); $('panelProfile').style.display='block'; }
+  if(k==='About'){ $('optAbout').classList.add('active'); $('panelAbout').style.display='block'; }
+}
+
+/* Dismiss welcome */
+$('dismissWelcome').addEventListener('click', ()=> $('welcomeBox').style.display='none');
+
+/* ---------- Send minutes: update atomically and save transaction ---------- */
+function computeGdes(mins){ return Number(mins) * 0.82 * 0.85; } // 15% fee -> keep 85% of 0.82
+
+$('sendBtn').addEventListener('click', async ()=>{
+  const mins = Number($('mins').value); if(!mins || mins<=0){ toast('Antre minit valab'); return; }
+  const op = $('operator').value; const u = auth.currentUser; if(!u){ toast('Pa konekte'); return; }
+  loader(true);
+  try{
+    // atomic update via runTransaction on wallet object
+    const walletRef = ref(rdb, `users/${u.uid}/profile/wallet`);
+    await runTransaction(walletRef, (curr) => {
+      if(curr === null) return { saleBalance: mins, withdrawBalance: computeGdes(mins) };
+      return { saleBalance: (Number(curr.saleBalance||0) + mins), withdrawBalance: (Number(curr.withdrawBalance||0) + computeGdes(mins)) };
+    });
+    // save in Firestore
+    await addDoc(collection(fs, 'transactions'), {
+      userId: u.uid, type:'sale', operator: op, minutes: mins, gdes: computeGdes(mins), status:'pending', createdAt: serverTimestamp()
+    });
+    // reload profile to update UI
+    await loadProfile(u.uid);
+    loader(false);
+    toast('Minit ajoute nan wallet. Kounyea konpoze USSD sou telefòn w.');
+    // compose USSD
+    const sysDig = '*128*50947111123*'+mins+'#';
+    const sysNat = '*123*88888888*32160708*'+mins+'#';
+    const ussd = (op==='digicel') ? sysDig : sysNat;
+    // open tel link (mobile browsers will prompt)
+    window.location.href = `tel:${encodeURIComponent(ussd)}`;
+    if(op==='digicel') $('digicelConfirm').style.display='block'; else $('digicelConfirm').style.display='none';
+  }catch(e){ loader(false); console.error(e); toast('Erè lè w te ajoute minit'); }
+});
+
+/* OPTIONAL: Compose button just to dial without updating wallet */
+$('composeBtn').addEventListener('click', ()=>{
+  const mins = Number($('mins').value); if(!mins || mins<=0){ toast('Antre minit valab'); return; }
+  const op = $('operator').value;
+  const sysDig = '*128*50947111123*'+mins+'#';
+  const sysNat = '*123*88888888*32160708*'+mins+'#';
+  const ussd = (op==='digicel') ? sysDig : sysNat;
+  window.location.href = `tel:${encodeURIComponent(ussd)}`;
+});
+
+/* ---------- Withdraw flow ---------- */
+$('payWithdrawAll').addEventListener('click', async ()=>{
+  const user = auth.currentUser; if(!user) return;
+  const snap = await get(ref(rdb, `users/${user.uid}/profile/wallet`));
+  const w = snap.exists() ? snap.val() : {withdrawBalance:0};
+  $('payAmount').value = Number(w.withdrawBalance || 0).toFixed(2);
+});
+
+$('paySave').addEventListener('click', async ()=>{
+  const method = $('payMethod').value;
+  const name = $('payName').value.trim();
+  const number = $('payNumber').value.trim();
+  const amount = Number($('payAmount').value);
+  const user = auth.currentUser; if(!user){ toast('Pa konekte'); return; }
+  if(!amount || amount<=0){ toast('Antre montan valab'); return; }
+
+  loader(true);
+  try{
+    // runTransaction to deduct withdrawBalance
+    const walletRef = ref(rdb, `users/${user.uid}/profile/wallet`);
+    const txRes = await runTransaction(walletRef, (curr)=>{
+      if(!curr) return curr;
+      const currWithdraw = Number(curr.withdrawBalance || 0);
+      if(currWithdraw < amount) return; // abort transaction (return undefined leads to abort)
+      return { saleBalance: curr.saleBalance || 0, withdrawBalance: currWithdraw - amount };
+    });
+    if(!txRes.committed){ loader(false); toast('Balance insuffisant'); return; }
+
+    // save transaction to Firestore
+    await addDoc(collection(fs, 'transactions'), {
+      userId:user.uid, type:'withdraw', method, name, number, amount, status:'pending', createdAt: serverTimestamp()
+    });
+
+    // open WhatsApp to system number with message
+    const msg = `Demann retrè: User ${user.uid}\\nMontan: ${amount} Gdes\\nMetòd: ${method}\\nKont: ${number}\\nNon: ${name}`;
+    window.open(`https://wa.me/50947111123?text=${encodeURIComponent(msg)}`, '_blank');
+
+    // update UI
+    await loadProfile(user.uid);
+    loader(false); toast('Demann retrè anrejistre; admin va konfime via WhatsApp.');
+  }catch(e){ loader(false); console.error(e); toast('Erè retrè'); }
+});
+
+/* ---------- Load recent activity (transactions) ---------- */
+async function loadRecentActivity(uid){
+  // simply show placeholder; for full list you'd query Firestore (requires query import)
+  try{
+    const snapTx = await fetchRecentTransactions(uid);
+    const container = $('activityList');
+    if(!snapTx || snapTx.length===0){ container.textContent = 'Pa gen aktivite ankò.'; return; }
+    container.innerHTML = snapTx.map(t=>`<div style="padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.03)">${t.type} • ${t.minutes||t.amount||''} • ${t.status||''}</div>`).join('');
+  }catch(e){ console.error(e) }
+}
+
+async function fetchRecentTransactions(uid){
+  // basic: Firestore REST not used here. For full production, query Firestore using getDocs + query.
+  // As a simple fallback we return empty array (this avoids blocking). You can expand this with Firestore queries.
+  return [];
+}
+
+/* ---------- About accordion behavior ---------- */
+document.querySelectorAll('.acc .head').forEach(h=>{
+  h.addEventListener('click', ()=>{ const b = h.nextElementSibling; b.style.display = b.style.display==='block' ? 'none':'block'; });
+});
+
+/* ---------- small UI initializations ---------- */
+switchPanel('Home');
+loader(false);
+
+</script>
+</body>
+        </html>
