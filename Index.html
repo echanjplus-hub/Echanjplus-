@@ -1,280 +1,332 @@
 <!doctype html>
+
 <html lang="ht">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Echanj Plus</title>
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Echanj Plus</title><!-- Optional: placeholder for ArmWrestler font (provide your own file/URL later) --><style>
+@font-face {
+  font-family: 'ArmWrestler';
+  src: local('ArmWrestler'); /* Add: url('/fonts/armwrestler.woff2') format('woff2'); */
+  font-weight: 900;
+  font-style: normal;
+}
+</style><style>
   :root{
     --bg:#0D1B2A; --card: rgba(255,255,255,0.04);
     --glass: rgba(255,255,255,0.08); --accent:#FFD700; --muted:#9fb8d9;
+    --line: rgba(255,255,255,0.22);
   }
-  *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-  html,body{height:100%;margin:0;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:#fff;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:var(--accent)}
+
   /* SPLASH */
   #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9999}
   .logo-fixed{z-index:20;text-align:center;pointer-events:none}
-  .logo-fixed h1{font-size:44px;margin:0;font-weight:900;color:var(--accent);text-shadow:0 2px 12px rgba(0,0,0,0.6);font-family:Arial}
+  .logo-fixed h1{font-size:44px;margin:0;font-weight:900;color:var(--accent);text-shadow:0 2px 12px rgba(0,0,0,0.6);font-family:ArmWrestler, Impact, system-ui}
   .square-wrap{position:relative;margin-top:18px}
-  .square{width:200px;height:200px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(0,0,0,0.6);animation:rotateSmooth 2.2s ease-in-out infinite alternate;}
-  @keyframes rotateSmooth {0%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}100%{transform:rotate(-18deg)}}
-  .drip{position:absolute;width:8px;height:18px;background:#000;border-radius:6px;opacity:0.9;animation:drip 1.6s linear infinite}
-  @keyframes drip{0%{transform:translateY(-50vh) scaleY(0.6);opacity:0.7}70%{transform:translateY(60vh) scaleY(1.2);opacity:0.9}100%{transform:translateY(100vh) scaleY(1.4);opacity:0}}
+  .square{width:200px;height:200px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid var(--line);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(0,0,0,0.6);animation:rotateSmooth 2.2s ease-in-out infinite alternate; position:relative; overflow:hidden}
+  .square::after{content:""; position:absolute; inset:0; border-radius:18px; outline:1px solid rgba(255,255,255,0.7); outline-offset:-10px; pointer-events:none}
+  @keyframes rotateSmooth {0%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}100%{transform:rotate(-12deg)}}
+  .drip{position:absolute;width:6px;height:28px;background:#fff;border-radius:6px;opacity:0.95;animation:drip 1.8s linear infinite}
+  @keyframes drip{0%{transform:translateY(-60vh) scaleY(0.7);opacity:0.9}70%{transform:translateY(60vh) scaleY(1.1);opacity:1}100%{transform:translateY(110vh) scaleY(1.4);opacity:0}}
+
   /* LOADER (overlay) */
   #loader{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;z-index:1200}
   #loader .box{background:#fff;padding:12px 18px;border-radius:10px;color:#000;font-weight:800;display:flex;gap:10px;align-items:center}
-  /* APP */
-  #app{display:none;min-height:100vh;padding:28px;position:relative;z-index:10}
+
+  /* APP WRAP */
+  #app{display:none;min-height:100vh;padding:16px 16px 86px;position:relative;z-index:10}
   .center{max-width:980px;margin:0 auto}
-  /* AUTH */
-  .auth-wrap{display:flex;gap:20px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
-  .card{background:var(--card);border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px)}
-  .auth-card{width:380px}
-  .auth-card h2{text-align:center;color:var(--accent);margin:0 0 12px 0}
-  input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:#fff}
-  button.btn{width:100%;padding:12px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
-  button.primary{background:var(--accent);color:#000}
-  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
+  .card{background:var(--card);border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(6px)}
   .muted{color:var(--muted);font-size:13px}
-  .link{color:var(--accent);cursor:pointer}
+  input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);color:#fff}
+  button.btn{padding:12px 14px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+  button.primary{background:var(--accent);color:#000}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff}
   .row{display:flex;gap:8px}
   .small{width:33%}
+
+  /* AUTH */
+  .auth-wrap{display:flex;gap:20px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+  .auth-card{width:380px}
+  .auth-card h2{text-align:center;color:var(--accent);margin:0 0 12px 0;font-family:ArmWrestler, Impact, system-ui}
+  .auth-hr{height:1px;background:rgba(255,255,255,0.12);margin:12px 0}
+  .socials{display:flex;gap:8px}
+  .socials .btn{flex:1}
+
   /* DASHBOARD */
   #dashboard{display:none;flex-direction:column}
   .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-  .brand{font-size:28px;font-weight:900;color:var(--accent);text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+  .brand{font-size:28px;font-weight:900;color:var(--accent);text-shadow:0 2px 8px rgba(0,0,0,0.6);font-family:ArmWrestler, Impact, system-ui}
   .user-mini{font-size:13px;color:#fff;opacity:0.9}
   .welcome{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
   .ok-btn{padding:8px 12px;border-radius:8px;border:none;background:#28a745;color:#fff;cursor:pointer}
-  .options{display:flex;gap:12px;justify-content:center;margin-bottom:12px}
-  .opt{flex:1;padding:12px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.03);cursor:pointer;font-weight:800}
-  .opt.active{background:var(--accent);color:#000}
-  .panel{display:none}
-  .panel.active{display:block}
   .wallet{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-  .mini{flex:1;min-width:160px;padding:12px;border-radius:12px;background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));text-align:center}
+  .mini{flex:1;min-width:160px;padding:12px;border-radius:12px;background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));text-align:center; border:1px solid rgba(255,255,255,0.06)}
   .mini .title{font-size:13px;color:#bcd6f2}
   .mini .value{font-weight:900;font-size:20px;margin-top:6px}
   form{display:flex;flex-direction:column;gap:8px;margin-top:8px}
   .inline{display:flex;gap:8px}
   .inline input{flex:1}
-  .profile-read .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+  .profile-read .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
   .acc{margin-top:8px}
-  .acc .head{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;cursor:pointer;font-weight:800}
-  .acc .body{display:none;padding:10px;color:#cfe6ff;background:rgba(255,255,255,0.01);border-radius:8px;margin-top:6px}
-  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 18px;border-radius:10px;display:none;z-index:2000}
-  @media (max-width:820px){ .auth-card{width:100%} .square{width:140px;height:140px} .logo-fixed h1{font-size:34px} }
-</style>
-</head>
-<body>
+  .acc .head{background:rgba(255,255,255,0.04);padding:10px;border-radius:8px;cursor:pointer;font-weight:800}
+  .acc .body{display:none;padding:10px;color:#cfe6ff;background:rgba(255,255,255,0.02);border-radius:8px;margin-top:6px}
 
-<!-- SPLASH -->
-<div id="splash">
+  /* PANELS */
+  .panel{display:none}
+  .panel.active{display:block}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(6,10,20,0.65);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-around;align-items:center;padding:10px 8px;z-index:1000}
+  .bn-item{flex:1;text-align:center;color:#cde1ff;font-size:12px}
+  .bn-item button{background:transparent;border:none;color:inherit;cursor:pointer;font-weight:800}
+  .bn-item.active{color:#000}
+  .bn-pill{background:var(--accent);color:#000;padding:10px 18px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,0.3)}
+
+  /* SIDEBAR (drawer) */
+  #drawer{position:fixed;top:0;left:-320px;width:300px;max-width:85vw;height:100vh;background:rgba(10,16,28,0.94);backdrop-filter:blur(10px);border-right:1px solid rgba(255,255,255,0.08);z-index:1300;padding:16px;transition:left .28s ease}
+  #drawer.open{left:0}
+  #drawer .title{font-family:ArmWrestler, Impact, system-ui;font-size:26px;color:var(--accent);margin:0 0 12px}
+  #drawer .item{padding:10px 8px;border-radius:10px;cursor:pointer}
+  #drawer .item:hover{background:rgba(255,255,255,0.06)}
+  #drawer .ver{color:var(--muted);font-size:12px;margin-top:10px}
+  #drawer .lang select{width:100%}
+  #drawer .sep{height:1px;background:rgba(255,255,255,0.08);margin:8px 0}
+
+  /* FLOAT MENU (3 dots) */
+  #dots{position:fixed;top:14px;right:14px;z-index:1250}
+  #dots button{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:12px;padding:8px 10px;font-weight:900}
+
+  /* TOAST */
+  #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 18px;border-radius:10px;display:none;z-index:2000;max-width:90vw}
+
+  @media (max-width:820px){ .auth-card{width:100%} .square{width:140px;height:140px} .logo-fixed h1{font-size:34px} }
+</style></head>
+<body><!-- SPLASH --><div id="splash" aria-hidden="false">
   <div class="logo-fixed"><h1>ECHANJ PLUS</h1></div>
   <div class="square-wrap">
     <div class="square" aria-hidden="true"></div>
-    <!-- drips -->
+    <!-- white drips over dark bg -->
     <div class="drip" style="left:8%;animation-duration:1.6s;animation-delay:0s"></div>
     <div class="drip" style="left:34%;animation-duration:1.8s;animation-delay:0.3s"></div>
     <div class="drip" style="left:62%;animation-duration:1.4s;animation-delay:0.6s"></div>
     <div class="drip" style="left:80%;animation-duration:1.9s;animation-delay:0.2s"></div>
   </div>
-</div>
-
-<!-- Loader overlay -->
-<div id="loader" style="display:none;align-items:center;justify-content:center">
+</div><!-- Loader overlay --><div id="loader" style="display:none;align-items:center;justify-content:center" aria-hidden="true">
   <div class="box">Ap prepare aplikasyon an...</div>
-</div>
-
-<!-- App -->
-<div id="app" class="center" aria-hidden="true">
-
-  <!-- AUTH -->
-  <div id="auth" class="auth-wrap" style="margin-top:20px;display:flex;justify-content:center">
+</div><!-- Floating 3-dots to open/close drawer --><div id="dots" style="display:none"><button id="btnDots">⋯</button></div><!-- Sidebar Drawer --><aside id="drawer" aria-label="Sidebar">
+  <h3 class="title">ECHANJ PLUS</h3>
+  <div class="item" data-goto="Home">🏠 Akey</div>
+  <div class="item" data-goto="Send">📤 Voye Minit</div>
+  <div class="item" data-goto="Pay">💳 Peman</div>
+  <div class="item" data-goto="Profile">👤 Profil</div>
+  <div class="item" data-goto="About">ℹ️ About</div>
+  <div class="sep"></div>
+  <div class="item lang">
+    <div class="muted">Chanje Lang</div>
+    <select id="langSel">
+      <option value="ht" selected>Kreyòl</option>
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="pt">Português</option>
+    </select>
+  </div>
+  <div class="item" id="resetPwdBtn">🔒 Reset modpas</div>
+  <div class="ver">Vèsyon: <span id="appVer">1.0.0</span></div>
+</aside><!-- App --><div id="app" class="center" aria-hidden="true">  <!-- AUTH -->  <div id="auth" class="auth-wrap" style="margin-top:20px;display:flex;justify-content:center">
     <!-- Signup -->
     <div class="card auth-card" id="signupCard" role="region" aria-label="signup">
       <h2>Kreye Kont</h2>
       <input id="su_name" placeholder="Non konplè" />
       <input id="su_email" placeholder="Imèl" />
-      <input id="su_phone" placeholder="Telefòn (+509...)" />
+      <input id="su_phone" placeholder="Telefòn (+509XXXXXXXX)" />
       <div class="row">
         <input id="su_day" class="small" placeholder="JJ" />
         <input id="su_month" class="small" placeholder="MM" />
         <input id="su_year" class="small" placeholder="AAAA" />
       </div>
       <input id="su_pass" type="password" placeholder="Modpas" />
-      <label class="muted"><input id="su_terms" type="checkbox" /> Mwen li epi mwen aksepte <a id="openTerms" class="link">Kondisyon Sistèm</a></label>
+      <label class="muted"><input id="su_terms" type="checkbox" /> Mwen aksepte <a id="openTerms" class="link" href="javascript:void(0)">Kondisyon Sistèm</a></label>
       <button class="btn primary" id="btnSignup" disabled>Kreye kont</button>
+      <div class="auth-hr"></div>
+      <div class="socials">
+        <button class="btn ghost" id="btnGoogle">Google</button>
+        <button class="btn ghost" id="btnPhone">Phone</button>
+      </div>
+      <div id="recaptcha-container" style="margin-top:8px"></div>
+      <div id="phoneStep2" style="display:none">
+        <input id="ph_code" placeholder="Kod verifikasyon" />
+        <button class="btn primary" id="btnVerifyCode">Verifye</button>
+      </div>
       <div style="text-align:center;margin-top:8px" class="muted">Ou deja gen kont? <span class="link" id="toLogin">Konekte</span></div>
-    </div>
-
-    <!-- Login -->
-    <div class="card auth-card" id="loginCard" role="region" aria-label="login" style="display:none">
-      <h2>Konekte</h2>
-      <input id="li_email" placeholder="Imèl" />
-      <input id="li_pass" type="password" placeholder="Modpas" />
-      <label class="muted"><input id="li_accept" type="checkbox" /> Mwen aksepte Kondisyon Sistèm</label>
-      <button class="btn primary" id="btnLogin">Konekte</button>
-      <div style="text-align:center;margin-top:8px" class="muted">Pa gen kont? <span class="link" id="toSignup">Enskri</span></div>
-    </div>
+    </div><!-- Login -->
+<div class="card auth-card" id="loginCard" role="region" aria-label="login" style="display:none">
+  <h2>Konekte</h2>
+  <input id="li_email" placeholder="Imèl (oswa mete +509XXXXXXXX pou login pa telefòn)" />
+  <input id="li_pass" type="password" placeholder="Modpas" />
+  <label class="muted"><input id="li_accept" type="checkbox" /> Mwen aksepte Kondisyon Sistèm</label>
+  <button class="btn primary" id="btnLogin">Konekte</button>
+  <div class="auth-hr"></div>
+  <div class="socials">
+    <button class="btn ghost" id="btnGoogleIn">Google</button>
+    <button class="btn ghost" id="btnPhoneIn">Phone</button>
   </div>
+  <div id="recaptcha-container-in" style="margin-top:8px"></div>
+  <div id="phoneInStep2" style="display:none">
+    <input id="ph_in_code" placeholder="Kod verifikasyon" />
+    <button class="btn primary" id="btnVerifyCodeIn">Verifye</button>
+  </div>
+  <div style="text-align:center;margin-top:8px" class="muted">Pa gen kont? <span class="link" id="toSignup">Enskri</span></div>
+</div>
 
-  <!-- TERMS modal -->
-  <div id="termsModal" class="card" style="display:none;max-width:820px;margin:20px auto;padding:18px">
-    <h3 style="color:var(--accent)">Kondisyon Sistèm - ECHANJ PLUS</h3>
+  </div>  <!-- TERMS modal -->  <div id="termsModal" class="card" style="display:none;max-width:820px;margin:20px auto;padding:18px">
+    <h3 style="color:var(--accent);font-family:ArmWrestler, Impact, system-ui">Kondisyon Sistèm - ECHANJ PLUS</h3>
     <div style="line-height:1.5;color:#dbe9ff">
       <p><strong>Disponibilite:</strong> Sèvis la disponib sèlman pou itilizatè ki rete an Ayiti.</p>
-      <p><strong>Laj minimòm:</strong> Itilizatè dwe gen 18 ane oswa plis pou enskri ak itilize sèvis la.</p>
-      <p><strong>Enfòmasyon:</strong> Tout enfòmasyon bay la dwe veritab. Yon sèl kont pou chak itilizatè.</p>
-      <p><strong>Konvèsyon Minit:</strong> 1 minit = 0.82 Gdes. Sistèm pran 15% frè; WithdrawBalance kalkile otomatikman.</p>
-      <p><strong>Retre:</strong> Itilizatè ka retire lajan atravè MonCash, NatCash, Paryaj Lakay oswa Paryaj Pam. Montan pa ka depase Withdraw Balance.</p>
-      <p><strong>Tranzaksyon:</strong> Tout tranzaksyon anrejistre sou Firebase (Realtime DB & Firestore) epi verifye pa sistèm admin. Pa gen ranvèsman otomatik.</p>
-      <p><strong>Sekirite:</strong> Cloud Functions + Security Rules an plas pou pwoteje done. Aktivite fwod oswa ilegal ap mennen nan blokaj kont.</p>
+      <p><strong>Laj minimòm:</strong> 18+.</p>
+      <p><strong>Konvèsyon Minit:</strong> 1 minit = 0.82 Gdes. Frè sistèm: <span id="feeRateText">17.5%</span>. WithdrawBalance kalkile otomatikman.</p>
+      <p><strong>Retre:</strong> MonCash, NatCash, Paryaj Lakay, Paryaj Pam. Montan pa ka depase Withdraw Balance.</p>
+      <p><strong>Tranzaksyon:</strong> Tout tranzaksyon anrejistre sou Firebase epi verifye pa Cloud Functions.</p>
+      <p><strong>Sekirite:</strong> Security Rules an plas; aktivite fwod ap mennen nan blokaj kont.</p>
       <p><strong>Kontak:</strong> WhatsApp: +509 4711 1123 | Email: echanjplus@gmail.com</p>
-      <p><em>Pa sèvi ak kont oswa sèvis sa a pou aktivite ilegal. Aksepte kondisyon sa yo obligatwa pou kreye kont ak itilize sèvis Echanj Plus.</em></p>
+      <p><em>Aksepte kondisyon sa yo obligatwa pou itilize Echanj Plus.</em></p>
     </div>
     <div style="text-align:right;margin-top:12px">
-      <button class="btn ghost" id="closeTerms">Fèmen</button>
+      <button class="btn ghost" id="closeTerms">Fèmen / Aksepte</button>
     </div>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard">
+  </div>  <!-- DASHBOARD -->  <div id="dashboard">
     <div class="header">
       <div class="brand">ECHANJ <span style="color:var(--accent)">PLUS</span></div>
       <div class="user-mini" id="userMini"></div>
-    </div>
-
-    <div class="welcome" id="welcomeBox">
-      <div>Byenveni sou Echanj Plus! Sèvis la se pou fè premye tranzaksyon ou an.</div>
-      <div><button class="ok-btn" id="dismissWelcome">Ok</button></div>
-    </div>
-
-    <div class="options" role="tablist" aria-label="main options">
-      <div class="opt active" id="optHome">🏠 Akey</div>
-      <div class="opt" id="optSend">📤 Voye Minit</div>
-      <div class="opt" id="optPay">💳 Peman</div>
-      <div class="opt" id="optProfile">👤 Profil</div>
-      <div class="opt" id="optAbout">ℹ️ About</div>
-    </div>
-
-    <!-- Panels -->
-    <div id="panelHome" class="panel active">
-      <div class="wallet">
-        <div class="mini card"><div class="title">Sale Balance (minit)</div><div class="value" id="saleVal">0</div></div>
-        <div class="mini card"><div class="title">Withdraw Balance (Gdes)</div><div class="value" id="withdrawVal">0.00</div></div>
-        <div class="mini card"><div class="title">Nimewo Kont</div><div class="value" id="acctNum">-</div></div>
-      </div>
-      <div class="card">
-        <h3>Aktivite Dènye</h3>
-        <div id="activityList" class="muted" style="min-height:40px">Pa gen aktivite ankò.</div>
-      </div>
-    </div>
-
-    <div id="panelSend" class="panel">
-      <div class="card">
-        <h3>Voye Minit</h3>
-        <label class="muted">Operatè</label>
-        <select id="operator">
-          <option value="digicel">Digicel</option>
-          <option value="natcom">Natcom</option>
-        </select>
-        <label class="muted">Kantite minit</label>
-        <input id="mins" type="number" min="1" placeholder="Eg. 50" />
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn primary" id="composeBtn">Konpoze USSD</button>
-          <button class="btn ghost" id="sendBtn">Voye epi Mete nan Wallet</button>
-        </div>
-        <div id="digicelConfirm" class="muted" style="margin-top:8px;display:none">Pou konfime Digicel, peze *128*1# epi retounen.</div>
-      </div>
-    </div>
-
-    <div id="panelPay" class="panel">
-      <div class="card">
-        <h3>Peman / Retre</h3>
-        <div class="muted">Wallet</div>
-        <div class="wallet" style="margin-top:10px">
-          <div class="mini card"><div class="title">Sale</div><div class="value" id="saleVal2">0</div></div>
-          <div class="mini card"><div class="title">Withdraw</div><div class="value" id="withdrawVal2">0.00</div></div>
-        </div>
-
-        <div style="margin-top:10px">
-          <label class="muted">Metòd</label>
-          <select id="payMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
-          <input id="payName" placeholder="Non kont (oswa itilizatè)" />
-          <input id="payNumber" placeholder="Nimewo kont / telefòn" />
-          <input id="payAmount" type="number" placeholder="Montan (Gdes)" />
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn primary" id="paySave">Sove / Peye</button>
-            <button class="btn ghost" id="payWithdrawAll">Retre Tout</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="panelProfile" class="panel">
-      <div class="card" id="profileCard">
-        <h3>Profil</h3>
-        <div id="profileModeEdit">
-          <input id="pf_name" placeholder="Non" />
-          <input id="pf_phone" placeholder="Telefòn" />
-          <label class="muted">Dat nesans</label>
-          <input id="pf_dob" type="date" />
-          <select id="pf_sex"><option value="">Chwazi</option><option value="Gason">Gason</option><option value="Fi">Fi</option></select>
-          <input id="pf_city" placeholder="Vil" />
-          <input id="pf_photo" placeholder="URL Foto (opsyonèl)" />
-          <button class="btn primary" id="pf_save">Sove Profil (fèmen pou modifye)</button>
-        </div>
-        <div id="profileView" style="display:none" class="profile-read">
-          <div class="row"><div>Non</div><div id="pv_name"></div></div>
-          <div class="row"><div>Telefòn</div><div id="pv_phone"></div></div>
-          <div class="row"><div>Dat nesans</div><div id="pv_dob"></div></div>
-          <div class="row"><div>Laj</div><div id="pv_age"></div></div>
-          <div class="row"><div>Vil</div><div id="pv_city"></div></div>
-          <div class="row"><div>Sèks</div><div id="pv_sex"></div></div>
-          <div style="margin-top:8px"><button class="btn ghost" id="pf_edit" style="display:none">Modifier</button></div>
-        </div>
-      </div>
-    </div>
-
-    <div id="panelAbout" class="panel">
-      <div class="card">
-        <h3>About</h3>
-        <div class="acc">
-          <div class="head">🔼 Kontak & Èd</div>
-          <div class="body">WhatsApp: +50947111123<br>Email: echanjplus@gmail.com<br>Adrès: Boulva Gaya, Rue #72</div>
-        </div>
-        <div class="acc">
-          <div class="head">🔼 Kondisyon Sistèm lan</div>
-          <div class="body">Sèvis la disponib sèlman pou Ayiti. Laj minimòm 18 ane. Frè sistèm 15%. Pa gen ranvèsman.</div>
-        </div>
-        <div class="acc">
-          <div class="head">🔼 Kondisyon Jeneral</div>
-          <div class="body">Tout fonksyonalite sistèm, pwoteksyon done itilizatè, validasyon tranzaksyon, WhatsApp verification...</div>
-        </div>
-        <div class="acc">
-          <div class="head">🔼 SEO & Rezo</div>
-          <div class="body">SEO: ARS<br><a href='https://www.facebook.com/share/19pCBnyujR/' target='_blank'>Facebook</a> · <a href='https://youtube.com/@echanjplus?si=KtZiO5TmpXDbjynG' target='_blank'>YouTube</a></div>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:18px;text-align:center"><button class="btn ghost" id="btnLogout">Dekonekte</button></div>
-  </div>
-
+    </div><div class="welcome" id="welcomeBox">
+  <div>Byenveni sou Echanj Plus! Fè premye tranzaksyon ou an.</div>
+  <div><button class="ok-btn" id="dismissWelcome">Ok</button></div>
 </div>
 
-<div id="toast"></div>
+<!-- Home Panel -->
+<div id="panelHome" class="panel active">
+  <div class="wallet">
+    <div class="mini card"><div class="title">Sale Balance (minit)</div><div class="value" id="saleVal">0</div></div>
+    <div class="mini card"><div class="title">Withdraw Balance (Gdes)</div><div class="value" id="withdrawVal">0.00</div></div>
+    <div class="mini card"><div class="title">Nimewo Kont</div><div class="value" id="acctNum">-</div></div>
+  </div>
+  <div class="card">
+    <h3>Aktivite Dènye</h3>
+    <div id="activityList" class="muted" style="min-height:40px">Pa gen aktivite ankò.</div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>Transaksyon (Firestore)</h3>
+    <div id="txList" class="muted" style="min-height:40px">—</div>
+  </div>
+</div>
 
-<!-- Firebase modular SDK -->
-<script type="module">
+<!-- Send Panel -->
+<div id="panelSend" class="panel">
+  <div class="card">
+    <h3>Voye Minit</h3>
+    <label class="muted">Operatè</label>
+    <select id="operator">
+      <option value="digicel">Digicel</option>
+      <option value="natcom">Natcom</option>
+    </select>
+    <label class="muted">Kantite minit</label>
+    <input id="mins" type="number" min="1" placeholder="Eg. 50" />
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn primary" id="composeBtn">Konpoze USSD</button>
+      <button class="btn ghost" id="sendBtn">Voye epi Mete nan Wallet</button>
+    </div>
+    <div id="digicelConfirm" class="muted" style="margin-top:8px;display:none">Pou konfime Digicel, peze *128*1# epi retounen.</div>
+  </div>
+</div>
+
+<!-- Pay Panel -->
+<div id="panelPay" class="panel">
+  <div class="card">
+    <h3>Peman / Retre</h3>
+    <div class="muted">Wallet</div>
+    <div class="wallet" style="margin-top:10px">
+      <div class="mini card"><div class="title">Sale</div><div class="value" id="saleVal2">0</div></div>
+      <div class="mini card"><div class="title">Withdraw</div><div class="value" id="withdrawVal2">0.00</div></div>
+    </div>
+    <div style="margin-top:10px">
+      <label class="muted">Metòd</label>
+      <select id="payMethod"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="paryajLakay">Paryaj Lakay</option><option value="paryajPam">Paryaj Pam</option></select>
+      <input id="payName" placeholder="Non kont (oswa itilizatè)" />
+      <input id="payNumber" placeholder="Nimewo kont / telefòn" />
+      <input id="payAmount" type="number" placeholder="Montan (Gdes)" />
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn primary" id="paySave">Sove / Peye</button>
+        <button class="btn ghost" id="payWithdrawAll">Retre Tout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Panel -->
+<div id="panelProfile" class="panel">
+  <div class="card" id="profileCard">
+    <h3>Profil</h3>
+    <div id="profileModeEdit">
+      <input id="pf_name" placeholder="Non" />
+      <input id="pf_phone" placeholder="Telefòn" />
+      <label class="muted">Dat nesans</label>
+      <input id="pf_dob" type="date" />
+      <select id="pf_sex"><option value="">Chwazi</option><option value="Gason">Gason</option><option value="Fi">Fi</option></select>
+      <input id="pf_city" placeholder="Vil" />
+      <input id="pf_photo" placeholder="URL Foto (opsyonèl)" />
+      <button class="btn primary" id="pf_save">Sove Profil (fèmen pou modifye)</button>
+    </div>
+    <div id="profileView" style="display:none" class="profile-read">
+      <div class="row"><div>Non</div><div id="pv_name"></div></div>
+      <div class="row"><div>Telefòn</div><div id="pv_phone"></div></div>
+      <div class="row"><div>Dat nesans</div><div id="pv_dob"></div></div>
+      <div class="row"><div>Laj</div><div id="pv_age"></div></div>
+      <div class="row"><div>Vil</div><div id="pv_city"></div></div>
+      <div class="row"><div>Sèks</div><div id="pv_sex"></div></div>
+      <div style="margin-top:8px"><button class="btn ghost" id="pf_edit" style="display:none">Modifye</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- About Panel (logout only here) -->
+<div id="panelAbout" class="panel">
+  <div class="card">
+    <h3>About</h3>
+    <div class="acc">
+      <div class="head">🔼 Kontak & Èd</div>
+      <div class="body">WhatsApp: +50947111123<br>Email: echanjplus@gmail.com<br>Adrès: Boulva Gaya, Rue #72</div>
+    </div>
+    <div class="acc">
+      <div class="head">🔼 Kondisyon Sistèm lan</div>
+      <div class="body">Sèvis la disponib sèlman pou Ayiti. Laj minimòm 18 ane. Frè sistèm <span id="feeRateText2">17.5%</span>. Pa gen ranvèsman.</div>
+    </div>
+    <div class="acc">
+      <div class="head">🔼 SEO & Rezo</div>
+      <div class="body">SEO: ARS<br><a href='https://www.facebook.com/share/19pCBnyujR/' target='_blank'>Facebook</a> · <a href='https://youtube.com/@echanjplus?si=KtZiO5TmpXDbjynG' target='_blank'>YouTube</a></div>
+    </div>
+  </div>
+  <div style="margin-top:18px;text-align:center"><button class="btn ghost" id="btnLogout">Dekonekte</button></div>
+</div>
+
+  </div>  <!-- Bottom Navigation -->  <nav class="bottom-nav" id="bottomNav" style="display:none">
+    <div class="bn-item" id="bnSend"><button data-tab="Send">📤</button><div class="muted">Voye</div></div>
+    <div class="bn-item" id="bnPay"><button data-tab="Pay">💳</button><div class="muted">Peman</div></div>
+    <div class="bn-item" id="bnHome"><button class="bn-pill" data-tab="Home">🏠 Akey</button></div>
+    <div class="bn-item" id="bnProfile"><button data-tab="Profile">👤</button><div class="muted">Profil</div></div>
+    <div class="bn-item" id="bnAbout"><button data-tab="About">ℹ️</button><div class="muted">About</div></div>
+  </nav></div><div id="toast" role="status" aria-live="polite"></div><!-- Firebase modular SDK --><script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getDatabase, ref, set, get, runTransaction, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
-  /* ---------- Firebase config (you provided) ---------- */
+  /* ---------- Firebase config ---------- */
   const firebaseConfig = {
     apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
     authDomain: "echanj-plus-778cd.firebaseapp.com",
@@ -285,19 +337,51 @@
     appId: "1:111144762929:web:e64ce9a6da65781c289f10",
     measurementId: "G-J1BQRF32ZW"
   };
+  const APP_VERSION = '1.0.0';
+  const FEE_RATE = 0.175; // 17.5%
+
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const rdb = getDatabase(app);
   const fs = getFirestore(app);
+  const fx = getFunctions(app);
 
   /* ---------- Helpers ---------- */
   const $ = id => document.getElementById(id);
+  const qs = (sel, el=document) => el.querySelector(sel);
+  const qsa = (sel, el=document) => Array.from(el.querySelectorAll(sel));
   function toast(msg, t=3000){ const el=$('toast'); el.textContent=msg; el.style.display='block'; setTimeout(()=>el.style.display='none', t); }
   function loader(on=true){ $('loader').style.display = on ? 'flex' : 'none'; }
   function maskEmail(e){ if(!e) return ''; const [u,d]=e.split('@'); return (u? (u.slice(0,3)+'******@'+d):e); }
+  function computeAgeFromDMY(day,month,year){ const d=new Date(year,month-1,day); const now=new Date(); let age=now.getFullYear()-d.getFullYear(); const m=now.getMonth()-d.getMonth(); if(m<0 || (m===0 && now.getDate()<d.getDate())) age--; return age; }
+  function gdesFromMins(mins){ return Number(mins) * 0.82 * (1 - FEE_RATE); }
+
+  $('appVer').textContent = APP_VERSION;
+  $('feeRateText').textContent = (FEE_RATE*100).toFixed(1)+"%";
+  $('feeRateText2').textContent = (FEE_RATE*100).toFixed(1)+"%";
 
   /* ---------- Splash lifecycle ---------- */
-  setTimeout(()=>{ document.getElementById('splash').style.display='none'; document.getElementById('app').style.display='block'; }, 3500);
+  setTimeout(()=>{ $('splash').style.display='none'; $('app').style.display='block'; $('app').setAttribute('aria-hidden','false'); }, 2200);
+
+  /* ---------- Drawer / Dots / Swipes ---------- */
+  const drawer = $('drawer');
+  const dotsWrap = $('dots');
+  $('btnDots')?.addEventListener('click', ()=> drawer.classList.toggle('open'));
+  function openDrawer(){ drawer.classList.add('open'); }
+  function closeDrawer(){ drawer.classList.remove('open'); }
+  qsa('#drawer .item[data-goto]').forEach(it=> it.addEventListener('click', ()=>{ const k=it.getAttribute('data-goto'); switchPanel(k); closeDrawer(); }));
+
+  // Swipes to open/close drawer
+  let touchStartX = null, touchStartY = null;
+  window.addEventListener('touchstart', (e)=>{ if(e.touches.length===1){ touchStartX=e.touches[0].clientX; touchStartY=e.touches[0].clientY; } });
+  window.addEventListener('touchend', (e)=>{
+    if(touchStartX===null) return; const dx=(e.changedTouches[0].clientX - touchStartX); const dy=Math.abs(e.changedTouches[0].clientY - touchStartY);
+    if(dy < 80){
+      if(dx > 80) openDrawer(); // left -> right
+      if(dx < -80) closeDrawer(); // right -> left
+    }
+    touchStartX=null; touchStartY=null;
+  });
 
   /* ---------- UI wiring ---------- */
   $('su_terms').addEventListener('change', ()=> $('btnSignup').disabled = !$('su_terms').checked);
@@ -306,85 +390,70 @@
   $('openTerms').addEventListener('click', ()=>{ $('termsModal').style.display='block'; });
   $('closeTerms').addEventListener('click', ()=>{ $('termsModal').style.display='none'; });
 
-  /* ---------- Utility ---------- */
-  function computeAgeFromDMY(day,month,year){
-    const d = new Date(year,month-1,day); const now=new Date();
-    let age=now.getFullYear()-d.getFullYear(); const m=now.getMonth()-d.getMonth();
-    if(m<0 || (m===0 && now.getDate()<d.getDate())) age--;
-    return age;
+  // Bottom nav actions
+  qsa('.bottom-nav button').forEach(b=> b.addEventListener('click', ()=> switchPanel(b.dataset.tab)));
+
+  // Drawer & bottom nav visibility only when logged in
+  function showAuthedChrome(flag){ $('bottomNav').style.display = flag? 'flex':'none'; $('dots').style.display = flag? 'block':'none'; }
+
+  function setBalancesUI(profile){
+    $('saleVal').textContent = profile.wallet?.saleBalance ?? 0;
+    $('withdrawVal').textContent = (profile.wallet?.withdrawBalance ?? 0).toFixed(2);
+    $('saleVal2').textContent = profile.wallet?.saleBalance ?? 0;
+    $('withdrawVal2').textContent = (profile.wallet?.withdrawBalance ?? 0).toFixed(2);
+    $('acctNum').textContent = profile.accountNumber || '-';
   }
-  function computeGdes(mins){ return Number(mins) * 0.82 * 0.85; } // 15% fee
 
-  /* ---------- Auth state listener ---------- */
-  onAuthStateChanged(auth, async user=>{
-    if(user){
-      // show dashboard
-      $('auth').style.display='none'; $('dashboard').style.display='block';
-      $('userMini').textContent = maskEmail(user.email || user.phoneNumber || user.uid);
+  function switchPanel(key){
+    const map = { Home:'panelHome', Send:'panelSend', Pay:'panelPay', Profile:'panelProfile', About:'panelAbout' };
+    qsa('.panel').forEach(p=> p.classList.remove('active'));
+    $(map[key])?.classList.add('active');
+    // center pill on Home only
+    qsa('.bn-item button').forEach(b=> b.classList.remove('bn-pill'));
+    if(key==='Home') qs('#bnHome button')?.classList.add('bn-pill');
+    closeDrawer();
+  }
 
-      // load or create profile
-      try{
-        const pRef = ref(rdb, `users/${user.uid}/profile`);
-        const snap = await get(pRef);
-        if(!snap.exists()){
-          // if signed in but profile missing (e.g., google), create minimal profile but mark not accepted -> force accept
-          const acct = await nextAccountNumber();
-          const obj = { name: user.displayName || '(non)', email: user.email||'', phone: user.phoneNumber||'', dob:'', city:'', sex:'', accountNumber:acct, profileLocked:false, acceptedTerms:false, wallet:{ saleBalance:0, withdrawBalance:0 }, dateCreated:Date.now() };
-          await set(pRef, obj);
-        }
-        const profileSnap = await get(pRef);
-        const p = profileSnap.val();
-        if(!p.acceptedTerms){
-          // force accept before use
-          toast('Ou dwe aksepte kondisyon sistèm lan avan w kontinye.');
-          // show terms modal and block functionality until accepted
-          $('termsModal').style.display='block';
-          // provide a simple accept button (we reuse closeTerms but also set accepted true)
-          // add ephemeral handler:
-          const acceptHandler = async ()=>{
-            try{
-              await update(ref(rdb, `users/${user.uid}/profile`), { acceptedTerms: true });
-              $('termsModal').style.display='none';
-              toast('Kondisyon yo aksepte. Bon travay!');
-              // remove listener
-              $('closeTerms').removeEventListener('click', acceptHandler);
-              loadProfile(user.uid);
-            }catch(e){ console.error(e); toast('Erè lè w te aksepte kondisyon'); }
-          };
-          $('closeTerms').addEventListener('click', acceptHandler);
-          return;
-        }
-        // load profile normally
-        await loadProfile(user.uid);
-        await loadRecentActivity(user.uid);
-      }catch(e){ console.error('load profile err', e); toast('Erè chaje profil'); }
-    } else {
-      // show auth
-      $('dashboard').style.display='none';
-      $('auth').style.display='flex';
+  /* ---------- Auth providers ---------- */
+  const googleProvider = new GoogleAuthProvider();
+  let phConfirm = null; let phConfirmIn = null;
+  function setupRecaptcha(){
+    if(!window.recaptchaVerifier){
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size:'invisible' });
     }
+    if(!window.recaptchaVerifierIn){
+      window.recaptchaVerifierIn = new RecaptchaVerifier(auth, 'recaptcha-container-in', { size:'invisible' });
+    }
+  }
+
+  $('btnGoogle').addEventListener('click', async ()=>{ try{ loader(true); await signInWithPopup(auth, googleProvider); loader(false); }catch(e){ loader(false); toast(e.message || 'Google auth echwe'); }});
+  $('btnGoogleIn').addEventListener('click', async ()=>{ try{ loader(true); await signInWithPopup(auth, googleProvider); loader(false); }catch(e){ loader(false); toast(e.message || 'Google auth echwe'); }});
+
+  $('btnPhone').addEventListener('click', async ()=>{
+    try{ setupRecaptcha(); const phone = $('su_phone').value.trim(); if(!/^\+?509\d{8}$/.test(phone)){ toast('Telefòn dwe +509 ak 8 chif'); return; } loader(true); phConfirm = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier); loader(false); $('phoneStep2').style.display='block'; toast('Kod la voye.'); }catch(e){ loader(false); toast(e.message || 'Phone auth echwe'); }
+  });
+  $('btnVerifyCode').addEventListener('click', async ()=>{
+    try{ const code=$('ph_code').value.trim(); if(!code){ toast('Mete kod la'); return; } loader(true); await phConfirm.confirm(code); loader(false); toast('Phone verifye!'); }catch(e){ loader(false); toast('Kod pa bon'); }
   });
 
-  /* ---------- nextAccountNumber: atomic ---------- */
-  async function nextAccountNumber(){
-    const metaRef = ref(rdb, 'meta/lastAccount');
-    try{
-      const res = await runTransaction(metaRef, (curr)=>{
-        if(curr === null) return 1000001;
-        return curr + 1;
-      });
-      return res.snapshot.val();
-    }catch(e){ console.error('acct num err', e); return Date.now(); }
-  }
+  $('btnPhoneIn').addEventListener('click', async ()=>{
+    try{ setupRecaptcha(); const phone = $('li_email').value.trim(); // reuse field for phone
+      if(!/^\+?509\d{8}$/.test(phone)){ toast('Mete telefòn +509XXXXXXXX nan chan imèl la pou konekte pa telefòn'); return; }
+      loader(true); phConfirmIn = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifierIn); loader(false); $('phoneInStep2').style.display='block'; toast('Kod la voye.');
+    }catch(e){ loader(false); toast(e.message || 'Phone auth echwe'); }
+  });
+  $('btnVerifyCodeIn').addEventListener('click', async ()=>{
+    try{ const code=$('ph_in_code').value.trim(); if(!code){ toast('Mete kod la'); return; } loader(true); await phConfirmIn.confirm(code); loader(false); toast('Konekte!'); }catch(e){ loader(false); toast('Kod pa bon'); }
+  });
 
-  /* ---------- SIGNUP ---------- */
+  /* ---------- Email/Password flows ---------- */
   $('btnSignup').addEventListener('click', async ()=>{
     const name = $('su_name').value.trim(); const email = $('su_email').value.trim();
     const phone = $('su_phone').value.trim(); const day = parseInt($('su_day').value,10);
     const month = parseInt($('su_month').value,10); const year = parseInt($('su_year').value,10);
     const pass = $('su_pass').value; const terms = $('su_terms').checked;
     if(!name||!email||!phone||!day||!month||!year||!pass){ toast('Ranpli tout chan yo'); return; }
-    if(!/^\+?509[2-9]\d{6,7}$/.test(phone)){ toast('Telefòn dwe kòmanse ak +509 e valab'); return; }
+    if(!/^\+?509\d{8}$/.test(phone)){ toast('Telefòn dwe +509 ak 8 chif'); return; }
     const age = computeAgeFromDMY(day,month,year); if(isNaN(age)||age<18){ toast('Ou dwe gen 18 ane oswa plis'); return; }
     if(!terms){ toast('Ou dwe aksepte Kondisyon Sistèm lan'); return; }
 
@@ -393,168 +462,182 @@
       const uc = await createUserWithEmailAndPassword(auth, email, pass);
       const uid = uc.user.uid;
       const acct = await nextAccountNumber();
-      const profile = { name, email, phone, dob:`${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`, profileLocked:false, accountNumber:acct, acceptedTerms:true, wallet:{ saleBalance:0, withdrawBalance:0 }, dateCreated: Date.now() };
+      const profile = { name, email, phone, dob:`${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`, city:'', sex:'', photo:'', profileLocked:false, accountNumber:acct, acceptedTerms:true, wallet:{ saleBalance:0, withdrawBalance:0 }, dateCreated: Date.now() };
       await set(ref(rdb, `users/${uid}/profile`), profile);
       loader(false); toast('Kont kreye! Kounye a ou ka konekte.');
-      // switch to login
       $('signupCard').style.display='none'; $('loginCard').style.display='block';
     }catch(e){ loader(false); toast(e.message || 'Erè kreye kont'); console.error(e); }
   });
 
-  /* ---------- LOGIN ---------- */
   $('btnLogin').addEventListener('click', async ()=>{
     const email = $('li_email').value.trim(); const pass = $('li_pass').value; const accept = $('li_accept').checked;
     if(!email||!pass){ toast('Antre imèl ak modpas'); return; }
     if(!accept){ toast('Ou dwe aksepte Kondisyon Sistèm lan pou konekte'); return; }
     loader(true);
-    try{
-      const uc = await signInWithEmailAndPassword(auth, email, pass);
-      loader(false);
-      // onAuthStateChanged will handle next steps
-    }catch(e){ loader(false); toast(e.message || 'Erè login'); console.error(e); }
+    try{ await signInWithEmailAndPassword(auth, email, pass); loader(false);}catch(e){ loader(false); toast(e.message || 'Erè login'); console.error(e); }
   });
 
-  /* ---------- LOGOUT ---------- */
-  $('btnLogout').addEventListener('click', async ()=>{ try{ await signOut(auth); toast('Ou dekonkte'); }catch(e){console.error(e)} });
+  /* ---------- Auth state listener ---------- */
+  onAuthStateChanged(auth, async user=>{
+    if(user){
+      $('auth').style.display='none'; $('dashboard').style.display='block'; showAuthedChrome(true);
+      $('userMini').textContent = maskEmail(user.email || user.phoneNumber || user.uid);
+      try{
+        const pRef = ref(rdb, `users/${user.uid}/profile`);
+        const snap = await get(pRef);
+        if(!snap.exists()){
+          const acct = await nextAccountNumber();
+          const obj = { name: user.displayName || '(non)', email: user.email||'', phone: user.phoneNumber||'', dob:'', city:'', sex:'', accountNumber:acct, profileLocked:false, acceptedTerms:false, wallet:{ saleBalance:0, withdrawBalance:0 }, dateCreated:Date.now() };
+          await set(pRef, obj);
+        }
+        const profileSnap = await get(pRef); const p = profileSnap.val();
+        setBalancesUI(p);
+        if(p.profileLocked){ renderProfileView(p); } else { renderProfileEdit(p); }
+        // Load transactions
+        await loadRecentTx(user.uid);
+      }catch(e){ console.error(e); toast('Erè chajman done'); }
+    }else{
+      $('dashboard').style.display='none'; $('auth').style.display='flex'; showAuthedChrome(false);
+    }
+  });
 
-  /* ---------- loadProfile ---------- */
-  async function loadProfile(uid){
-    try{
-      const pRef = ref(rdb, `users/${uid}/profile`);
-      const snap = await get(pRef);
-      if(!snap.exists()) return;
-      const p = snap.val();
-      $('saleVal').textContent = (p.wallet?.saleBalance || 0);
-      $('saleVal2').textContent = (p.wallet?.saleBalance || 0);
-      $('withdrawVal').textContent = Number(p.wallet?.withdrawBalance || 0).toFixed(2);
-      $('withdrawVal2').textContent = Number(p.wallet?.withdrawBalance || 0).toFixed(2);
-      $('acctNum').textContent = p.accountNumber || '-';
-      // profile display
-      $('pv_name').textContent = p.name || '';
-      $('pv_phone').textContent = p.phone || '';
-      $('pv_dob').textContent = p.dob || '';
-      $('pv_city').textContent = p.city || '';
-      $('pv_sex').textContent = p.sex || '';
-      $('pf_name').value = p.name || ''; $('pf_phone').value = p.phone || '';
-      if(p.dob){ const parts = p.dob.split('/'); if(parts.length===3) $('pf_dob').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; }
-      $('pf_city').value = p.city || ''; $('pf_sex').value = p.sex || ''; $('pf_photo').value = p.photo || '';
-      if(p.profileLocked){ $('profileModeEdit').style.display='none'; $('profileView').style.display='block'; $('pf_edit').style.display='none'; } else { $('profileModeEdit').style.display='block'; $('profileView').style.display='none'; }
-    }catch(e){ console.error('loadProfile',e); }
+  /* ---------- Account number generator (atomic) ---------- */
+  async function nextAccountNumber(){
+    const keyRef = ref(rdb, 'meta/nextAccount');
+    const res = await runTransaction(keyRef, (cur)=> (cur||100000) + 1);
+    return res.snapshot.val();
   }
 
-  /* ---------- Save Profile ---------- */
+  /* ---------- Profile (save / lock) ---------- */
+  function renderProfileEdit(p){
+    $('profileModeEdit').style.display='block'; $('profileView').style.display='none';
+    $('pf_name').value = p.name||''; $('pf_phone').value = p.phone||''; $('pf_city').value=p.city||''; $('pf_photo').value=p.photo||'';
+    $('pf_sex').value = p.sex||''; $('pf_dob').value = toInputDate(p.dob);
+  }
+  function renderProfileView(p){
+    $('profileModeEdit').style.display='none'; $('profileView').style.display='block';
+    $('pv_name').textContent=p.name||'-'; $('pv_phone').textContent=p.phone||'-'; $('pv_city').textContent=p.city||'-'; $('pv_sex').textContent=p.sex||'-';
+    $('pv_dob').textContent=p.dob||'-';
+    $('pv_age').textContent = p.dob? computeAgeFromDMY(...fromDMY(p.dob)) : '-';
+    $('pf_edit').style.display='inline-block';
+  }
+  function toInputDate(ddmmyyyy){ if(!ddmmyyyy) return ''; const [d,m,y]=ddmmyyyy.split('/'); return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`; }
+  function fromDMY(ddmmyyyy){ const [d,m,y]=ddmmyyyy.split('/').map(Number); return [d,m,y]; }
+
   $('pf_save').addEventListener('click', async ()=>{
-    const user = auth.currentUser; if(!user){ toast('Pa konekte'); return; }
-    const name = $('pf_name').value.trim(), phone = $('pf_phone').value.trim(), dobVal = $('pf_dob').value, city = $('pf_city').value.trim(), sex = $('pf_sex').value, photo = $('pf_photo').value.trim();
-    if(!name||!phone||!dobVal){ toast('Ranpli non, telefòn, dat nesans'); return; }
-    if(!/^\+?509[2-9]\d{6,7}$/.test(phone)){ toast('Telefòn dwe kòmanse ak +509 e valab'); return; }
-    const parts = dobVal.split('-'); const dob = `${parts[2]}/${parts[1]}/${parts[0]}`;
-    loader(true);
+    const user = auth.currentUser; if(!user){ toast('Pa otorize'); return; }
+    const name=$('pf_name').value.trim(); const phone=$('pf_phone').value.trim(); const city=$('pf_city').value.trim(); const photo=$('pf_photo').value.trim(); const sex=$('pf_sex').value; const dobStr=$('pf_dob').value; // yyyy-mm-dd
+    if(!name || !phone){ toast('Non & telefòn obligatwa'); return; }
+    const dob = dobStr? `${dobStr.slice(8,10)}/${dobStr.slice(5,7)}/${dobStr.slice(0,4)}` : '';
     try{
+      loader(true);
       const pRef = ref(rdb, `users/${user.uid}/profile`);
-      const snap = await get(pRef); const prev = snap.exists()?snap.val():{};
-      await set(pRef, {...prev, name, phone, dob, city, sex, photo, profileLocked:true});
-      loader(false); toast('Profil sove; li fèmen pou modifye.');
-      loadProfile(user.uid);
+      await update(pRef, { name, phone, city, photo, sex, dob, profileLocked:true });
+      const snap = await get(pRef); renderProfileView(snap.val()); loader(false); toast('Profil sove!');
     }catch(e){ loader(false); console.error(e); toast('Erè sove profil'); }
   });
+  $('pf_edit').addEventListener('click', async ()=>{
+    const user = auth.currentUser; if(!user){ return; }
+    try{ await update(ref(rdb, `users/${user.uid}/profile`), { profileLocked:false }); const snap = await get(ref(rdb, `users/${user.uid}/profile`)); renderProfileEdit(snap.val()); }
+    catch(e){ console.error(e); toast('Erè ouvè profil pou modifye'); }
+  });
 
-  /* allow edit (hidden by default) */
-  $('pf_edit').addEventListener('click', async ()=>{ const user = auth.currentUser; if(!user) return; await update(ref(rdb, `users/${user.uid}/profile`), { profileLocked:false }); $('profileModeEdit').style.display='block'; $('profileView').style.display='none'; });
+  /* ---------- Send Minutes ---------- */
+  $('composeBtn').addEventListener('click', ()=>{
+    const op = $('operator').value; const mins = parseInt($('mins').value,10);
+    if(!mins || mins<=0){ toast('Mete kantite minit'); return; }
+    let ussd = '*122#'; // default
+    if(op==='digicel') ussd = `*128*${mins}#`;
+    if(op==='natcom') ussd = `*100*${mins}#`;
+    window.location.href = `tel:${encodeURIComponent(ussd)}`;
+    if(op==='digicel'){ $('digicelConfirm').style.display='block'; }
+  });
 
-  /* ---------- Tabs nav ---------- */
-  $('optHome').addEventListener('click', ()=> switchPanel('Home'));
-  $('optSend').addEventListener('click', ()=> switchPanel('Send'));
-  $('optPay').addEventListener('click', ()=> switchPanel('Pay'));
-  $('optProfile').addEventListener('click', ()=> switchPanel('Profile'));
-  $('optAbout').addEventListener('click', ()=> switchPanel('About'));
-  function switchPanel(k){
-    document.querySelectorAll('.opt').forEach(el=>el.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(el=>el.classList.remove('active'));
-    if(k==='Home'){ $('optHome').classList.add('active'); $('panelHome').classList.add('active'); }
-    if(k==='Send'){ $('optSend').classList.add('active'); $('panelSend').classList.add('active'); }
-    if(k==='Pay'){ $('optPay').classList.add('active'); $('panelPay').classList.add('active'); }
-    if(k==='Profile'){ $('optProfile').classList.add('active'); $('panelProfile').classList.add('active'); }
-    if(k==='About'){ $('optAbout').classList.add('active'); $('panelAbout').classList.add('active'); }
-  }
-
-  $('dismissWelcome').addEventListener('click', ()=> $('welcomeBox').style.display='none');
-
-  /* ---------- Send minutes (update atomically) ---------- */
   $('sendBtn').addEventListener('click', async ()=>{
-    const mins = Number($('mins').value); if(!mins||mins<=0){ toast('Antre minit valab'); return; }
-    const op = $('operator').value; const u = auth.currentUser; if(!u){ toast('Pa konekte'); return; }
-    loader(true);
+    const user = auth.currentUser; if(!user){ toast('Konekte avan'); return; }
+    const op = $('operator').value; const mins = parseInt($('mins').value,10);
+    if(!mins || mins<=0){ toast('Mete kantite minit'); return; }
     try{
-      const walletRef = ref(rdb, `users/${u.uid}/profile/wallet`);
-      await runTransaction(walletRef, (curr)=>{
-        if(curr===null) return { saleBalance: mins, withdrawBalance: computeGdes(mins) };
-        return { saleBalance: (Number(curr.saleBalance||0)+mins), withdrawBalance: (Number(curr.withdrawBalance||0)+computeGdes(mins)) };
+      loader(true);
+      // 1) record tx in Firestore
+      const tx = await addDoc(collection(fs, 'transactions'), {
+        uid: user.uid, type:'TOPUP_IN', operator: op, minutes: mins, gdes: gdesFromMins(mins), status: 'PENDING', createdAt: serverTimestamp()
       });
-      await addDoc(collection(fs,'transactions'), { userId:u.uid, type:'sale', operator:op, minutes:mins, gdes:computeGdes(mins), status:'pending', createdAt: serverTimestamp() });
-      await loadProfile(u.uid);
-      loader(false);
-      toast('Minit ajoute nan wallet. Kounyea konpoze USSD sou telefòn w.');
-      const sysDig = `*128*50947111123*${mins}#`;
-      const sysNat = `*123*88888888*32160708*${mins}#`;
-      const ussd = op==='digicel' ? sysDig : sysNat;
-      window.location.href = `tel:${encodeURIComponent(ussd)}`;
-      if(op==='digicel') $('digicelConfirm').style.display='block'; else $('digicelConfirm').style.display='none';
+
+      // 2) ask Cloud Function to verify (server-side)
+      try{
+        const verify = httpsCallable(fx, 'verifyTransfer');
+        await verify({ txId: tx.id });
+      }catch(_e){ /* ok if not deployed yet */ }
+
+      // 3) update wallet atomically in RTDB (simulate credit to wallet)
+      const pRef = ref(rdb, `users/${user.uid}/profile`);
+      await runTransaction(pRef, (cur)=>{
+        if(!cur) return cur;
+        const sale = (cur.wallet?.saleBalance||0) + mins;
+        const wd   = (cur.wallet?.withdrawBalance||0) + gdesFromMins(mins);
+        return { ...cur, wallet:{ saleBalance: sale, withdrawBalance: wd } };
+      });
+
+      // 4) UI refresh
+      const snap = await get(pRef); setBalancesUI(snap.val());
+      $('mins').value='';
+      await loadRecentTx(user.uid);
+      loader(false); toast('Minit yo ajoute nan wallet la!');
     }catch(e){ loader(false); console.error(e); toast('Erè lè w te ajoute minit'); }
   });
 
-  /* compose only */
-  $('composeBtn').addEventListener('click', ()=>{
-    const mins = Number($('mins').value); if(!mins||mins<=0){ toast('Antre minit valab'); return; }
-    const op = $('operator').value;
-    const sysDig = `*128*50947111123*${mins}#`;
-    const sysNat = `*123*88888888*32160708*${mins}#`;
-    const ussd = op==='digicel' ? sysDig : sysNat;
-    window.location.href = `tel:${encodeURIComponent(ussd)}`;
+  /* ---------- Payments / Withdraw ---------- */
+  $('payWithdrawAll').addEventListener('click', ()=>{
+    const val = parseFloat($('withdrawVal2').textContent)||0; $('payAmount').value = val.toFixed(2);
   });
-
-  /* ---------- Withdraw flow ---------- */
-  $('payWithdrawAll').addEventListener('click', async ()=>{
-    const user = auth.currentUser; if(!user) return;
-    const snap = await get(ref(rdb, `users/${user.uid}/profile/wallet`));
-    const w = snap.exists()?snap.val():{withdrawBalance:0};
-    $('payAmount').value = Number(w.withdrawBalance||0).toFixed(2);
-  });
-
   $('paySave').addEventListener('click', async ()=>{
-    const method = $('payMethod').value; const name = $('payName').value.trim(); const number = $('payNumber').value.trim();
-    const amount = Number($('payAmount').value); const user = auth.currentUser; if(!user){ toast('Pa konekte'); return; }
-    if(!amount || amount<=0){ toast('Antre montan valab'); return; }
-    loader(true);
+    const user = auth.currentUser; if(!user){ toast('Konekte avan'); return; }
+    const method=$('payMethod').value; const name=$('payName').value.trim(); const number=$('payNumber').value.trim(); const amount=parseFloat($('payAmount').value);
+    if(!name||!number||!amount||amount<=0){ toast('Ranpli tout done yo'); return; }
+    const pRef = ref(rdb, `users/${user.uid}/profile`);
     try{
-      const walletRef = ref(rdb, `users/${user.uid}/profile/wallet`);
-      const txRes = await runTransaction(walletRef, (curr)=>{
-        if(!curr) return curr;
-        const currWithdraw = Number(curr.withdrawBalance||0);
-        if(currWithdraw < amount) return; // abort
-        return { saleBalance: curr.saleBalance||0, withdrawBalance: currWithdraw - amount };
-      });
-      if(!txRes.committed){ loader(false); toast('Balance insuffisant'); return; }
-      await addDoc(collection(fs,'transactions'), { userId:user.uid, type:'withdraw', method, name, number, amount, status:'pending', createdAt: serverTimestamp() });
-      const msg = `Demann retrè: User ${user.uid}%0AMontan: ${amount} Gdes%0AMetòd: ${method}%0AKont: ${number}%0ANon: ${name}`;
-      window.open(`https://wa.me/50947111123?text=${encodeURIComponent(msg)}`, '_blank');
-      await loadProfile(user.uid);
-      loader(false); toast('Demann retrè anrejistre; admin va konfime via WhatsApp.');
-    }catch(e){ loader(false); console.error(e); toast('Erè retrè'); }
+      loader(true);
+      const psnap = await get(pRef); const p = psnap.val();
+      if((p.wallet?.withdrawBalance||0) < amount){ loader(false); toast('Sifizan balans pa disponib'); return; }
+      await addDoc(collection(fs, 'transactions'), { uid:user.uid, type:'WITHDRAW', method, name, number, amount, status:'PENDING', createdAt: serverTimestamp() });
+      await runTransaction(pRef, (cur)=>{ if(!cur) return cur; const wd=(cur.wallet?.withdrawBalance||0) - amount; return { ...cur, wallet:{...cur.wallet, withdrawBalance: wd } }; });
+      const snap2 = await get(pRef); setBalancesUI(snap2.val());
+      $('payAmount').value=''; $('payName').value=''; $('payNumber').value='';
+      await loadRecentTx(user.uid);
+      loader(false); toast('Demann peman an anrejistre');
+    }catch(e){ loader(false); console.error(e); toast('Erè peman'); }
   });
 
-  /* ---------- Activity (placeholder) ---------- */
-  async function loadRecentActivity(uid){
-    // For simplicity we leave empty; can query Firestore for transactions later.
-    $('activityList').textContent = 'Pa gen aktivite ankò.';
+  /* ---------- Transactions list (Firestore) ---------- */
+  async function loadRecentTx(uid){
+    try{
+      const q = query(collection(fs,'transactions'), where('uid','==',uid), orderBy('createdAt','desc'), limit(10));
+      const qsnap = await getDocs(q);
+      const rows = [];
+      qsnap.forEach(d=>{ const x=d.data(); rows.push(`<div>• ${x.type} — ${x.operator||x.method||''} ${x.minutes? (x.minutes+' min'):''} ${x.amount? (x.amount+' Gdes'):''} <span class='muted'>(${x.status})</span></div>`); });
+      $('txList').innerHTML = rows.join('') || '<span class="muted">Pa gen tranzaksyon</span>';
+      $('activityList').innerHTML = $('txList').innerHTML;
+    }catch(e){ console.error(e); $('txList').textContent='Erè chaje tranzaksyon'; }
   }
 
-  /* ---------- About accordion ---------- */
-  document.querySelectorAll('.acc .head').forEach(h=>h.addEventListener('click', ()=>{ const b=h.nextElementSibling; b.style.display = b.style.display==='block'?'none':'block'; }));
+  /* ---------- Welcome dismiss ---------- */
+  $('dismissWelcome').addEventListener('click', ()=> $('welcomeBox').style.display='none');
 
-  /* ---------- initial UI ---------- */
-  switchPanel('Home'); loader(false);
+  /* ---------- Reset password ---------- */
+  $('resetPwdBtn').addEventListener('click', async ()=>{
+    const user = auth.currentUser;
+    if(user?.email){ try{ await sendPasswordResetEmail(auth, user.email); toast('Nou voye reset nan imèl ou'); }catch(e){ toast('Erè reset modpas'); }
+    } else { toast('Konekte ak yon imèl pou resevwa reset'); }
+  });
 
-</script>
-</body>
-    </html>
+  /* ---------- Logout (sèlman sou About) ---------- */
+  $('btnLogout').addEventListener('click', async ()=>{ try{ await signOut(auth); toast('Orevwa!'); }catch(e){ toast('Erè dekoneksyon'); }});
+
+  /* ---------- Accordions ---------- */
+  qsa('.acc .head').forEach(h=> h.addEventListener('click', ()=>{ const body=h.nextElementSibling; body.style.display = (body.style.display==='block')? 'none':'block'; }));
+
+  // init
+  showAuthedChrome(false);
+</script></body>
+                                                    </html>
