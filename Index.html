@@ -928,4 +928,27 @@
       document.getElementById('auth').style.display='none';
       document.getElementById('dashboard').style.display='block';
       setBottomVisible(true);
-      document.getElementById('dots').style.display
+      document.getElementById('dots').style.display='block';
+    } else {
+      document.getElementById('auth').style.display='flex';
+      document.getElementById('dashboard').style.display='none';
+      setBottomVisible(false);
+      document.getElementById('dots').style.display='none';
+    }
+  });
+
+  // small: show/hide compose confirm for Digicel
+  $('operator').addEventListener('change', ()=>{
+    const op = $('operator').value;
+    $('digicelConfirm').style.display = (op === 'digicel') ? 'block' : 'none';
+  });
+
+  // initial: add event to open/close drawer (btnDots)
+  $('btnDots').addEventListener('click', ()=> document.getElementById('drawer').classList.toggle('open'));
+
+  // minimal protection: on page load, hide app until splash disappears (done above)
+  // End of module
+</script>
+</body>
+</html>
+  
