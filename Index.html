@@ -442,4 +442,490 @@
   $('btnDots').addEventListener('click', ()=> {
     document.getElementById('drawer').classList.toggle('open');
   });
-  $('openDrawer').addEventListener('cli
+  $('openDrawer').addEventListener('click', ()=> document.getElementById('drawer').classList.add('open'));
+
+  // sidebar nav items
+  document.querySelectorAll('#drawer .item[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> {
+      const g = el.getAttribute('data-goto');
+      openPanel(g);
+      document.getElementById('drawer').classList.remove('open');
+    });
+  });
+
+  // bottom nav wiring
+  document.querySelectorAll('.bottom-nav .bn-item').forEach(item=>{
+    item.addEventListener('click', ()=> {
+      const tab = item.getAttribute('data-tab');
+      openPanel(tab);
+    });
+  });
+
+  function openPanel(name){
+    // hide all panels
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    // map names to IDs
+    const map = { Home:'panelHome', Send:'panelSend', Pay:'panelPay', Profile:'panelProfile', Parrainage:'panelParrainage', About:'panelAbout' };
+    const id = map[name] || 'panelHome';
+    document.getElementById(id).classList.add('active');
+    // show bottom nav if logged in
+  }
+
+  // theme buttons
+  $('themeBlue').addEventListener('click', ()=> { document.body.removeAttribute('data-theme'); showToast('Tèm ble aktive') });
+  $('themeLight').addEventListener('click', ()=> { document.body.setAttribute('data-theme','light'); showToast('Tèm klè aktive') });
+
+  // language switching (simple example translations)
+  const translations = {
+    ht: {
+      signup: "Kreye Kont",
+      login: "Konekte",
+      send: "Voye Minit",
+      pay: "Peman",
+      profile: "Profil",
+      parrainage: "Parrainaj",
+      about: "About",
+      terms: "Kondisyon Sistèm"
+    },
+    en: {
+      signup: "Sign Up",
+      login: "Login",
+      send: "Send Minutes",
+      pay: "Payment",
+      profile: "Profile",
+      parrainage: "Referral",
+      about: "About",
+      terms: "Terms"
+    },
+    fr: {
+      signup: "S'inscrire",
+      login: "Connexion",
+      send: "Envoyer Minutes",
+      pay: "Paiement",
+      profile: "Profil",
+      parrainage: "Parrainage",
+      about: "À propos",
+      terms: "Conditions"
+    },
+    es: {
+      signup: "Registrarse",
+      login: "Iniciar sesión",
+      send: "Enviar Minutos",
+      pay: "Pago",
+      profile: "Perfil",
+      parrainage: "Referidos",
+      about: "Acerca",
+      terms: "Términos"
+    },
+    pt: {
+      signup: "Registrar",
+      login: "Entrar",
+      send: "Enviar Minutos",
+      pay: "Pagamento",
+      profile: "Perfil",
+      parrainage: "Apadrinhamento",
+      about: "Sobre",
+      terms: "Termos"
+    }
+  };
+  $('langSel').addEventListener('change', e=>{
+    const t = translations[e.target.value] || translations.ht;
+    // small labels update (as example)
+    document.querySelector('#signupCard h2').innerText = t.signup;
+    document.querySelector('#loginCard h2').innerText = t.login;
+    document.querySelector('#panelSend h3').innerText = t.send;
+    document.querySelector('#panelPay h3').innerText = t.pay;
+    document.querySelector('#panelProfile h3').innerText = t.profile;
+    document.querySelector('#panelParrainage h3').innerText = t.parrainage;
+    document.querySelector('#panelAbout h3').innerText = t.about;
+    // terms modal title
+    document.querySelector('#termsModal h3').innerText = t.terms + " - ECHANJ PLUS";
+    showToast('Lang chanje');
+  });
+
+  // ---------- referral utils ----------
+  function genAcctNum(){ return 'AC' + Math.floor(100000 + Math.random()*900000); }
+  function genRefCode(){ return 'REF' + Math.random().toString(36).slice(2,8).toUpperCase(); }
+
+  // ---------- Signup flow ----------
+  $('btnSignup').addEventListener('click', async ()=>{
+    const name = $('su_name').value.trim();
+    const email = $('su_email').value.trim();
+    const phone = $('su_phone').value.trim();
+    const pass = $('su_pass').value;
+    const refIn = $('su_referral').value.trim();
+    if(!name || !email || !phone || !pass){ showToast('Ranpli tout chan obligatwa'); return; }
+    showLoader(true);
+    try{
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      const uid = cred.user.uid;
+      // create acct/ref
+      const acctNum = genAcctNum();
+      let refCode = genRefCode();
+      // ensure uniqueness (light check)
+      const refKeySnap = await get(ref(db, 'referralCodes/' + refCode));
+      if(refKeySnap.exists()){
+        refCode = refCode + Math.floor(Math.random()*90);
+      }
+      // initial balances
+      let withdrawBalance = 7.0; // default
+      if(refIn){
+        // find referrer uid via referralCodes mapping
+        const refSnap = await get(ref(db, 'referralCodes/' + refIn));
+        if(refSnap.exists()){
+          withdrawBalance = 10.0; // bonus for using a referral
+          const referrerUid = refSnap.val();
+          // give parenn 3 Gdes
+          const rUserSnap = await get(ref(db, 'users/' + referrerUid));
+          if(rUserSnap.exists()){
+            const prev = rUserSnap.val().withdrawBalance || 0;
+            await update(ref(db, 'users/' + referrerUid), { withdrawBalance: Number((prev + 3).toFixed(2)) });
+          }
+        } else {
+          // ref code invalid - ignore
+        }
+      }
+      // user object
+      const userObj = {
+        name, email, phone,
+        acctNum, refCode,
+        parrain: refIn || null,
+        createdAt: Date.now(),
+        saleBalance: 0, // minutes
+        withdrawBalance: Number(withdrawBalance.toFixed(2))
+      };
+      await set(ref(db, 'users/' + uid), userObj);
+      // set referral mapping
+      await set(ref(db, 'referralCodes/' + refCode), uid);
+      showToast('Kont kreye. Bonis: ' + withdrawBalance + ' Gdes');
+    }catch(err){
+      showToast('Erè: ' + err.message);
+    } finally { showLoader(false); }
+  });
+
+  // ---------- Login flow ----------
+  $('btnLogin').addEventListener('click', async ()=>{
+    const email = $('li_email').value.trim();
+    const pass = $('li_pass').value;
+    if(!email || !pass){ showToast('Ranpli tout chan'); return; }
+    showLoader(true);
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
+      showToast('Konekte');
+    }catch(err){ showToast('Erè konekte: ' + err.message); }
+    finally { showLoader(false); }
+  });
+
+  // ---------- Reset password ----------
+  $('btnResetPwd').addEventListener('click', async ()=>{
+    const email = prompt('Antre imèl ou pou reset modpas');
+    if(!email) return;
+    try{
+      await sendPasswordResetEmail(auth, email);
+      showToast('Imèl reset voye');
+    }catch(err){ showToast('Erè: ' + err.message); }
+  });
+
+  // ---------- Google Sign-in (signup & login share same button) ----------
+  const gProvider = new GoogleAuthProvider();
+  $('btnGoogle').addEventListener('click', async ()=> {
+    try{ await signInWithPopup(auth, gProvider); showToast('Google sign-in siksè'); } catch(e){ showToast('Erè: ' + e.message); }
+  });
+  $('btnGoogleIn').addEventListener('click', async ()=> {
+    try{ await signInWithPopup(auth, gProvider); showToast('Google sign-in siksè'); } catch(e){ showToast('Erè: ' + e.message); }
+  });
+
+  // ---------- Phone Auth (Recaptcha) ----------
+  // We'll render invisible recaptcha container dynamically when phone flow used
+  let recaptchaVerifier = null;
+  $('btnPhone').addEventListener('click', ()=> {
+    const phone = $('su_phone').value.trim();
+    if(!phone){ showToast('Mete nimewo telefòn la avan'); return; }
+    if(!recaptchaVerifier){
+      recaptchaVerifier = new RecaptchaVerifier('btnPhone', { 'size':'invisible' }, auth);
+      recaptchaVerifier.render();
+    }
+    signInWithPhoneNumber(auth, phone, recaptchaVerifier)
+      .then(confirmResult => {
+        const code = prompt('Antre kòd OTP la ou resevwa pa SMS:');
+        if(!code) { showToast('OTP oblije'); return; }
+        return confirmResult.confirm(code);
+      })
+      .then(result => { showToast('Phone auth siksè'); })
+      .catch(e => showToast('Erè phone auth: ' + e.message));
+  });
+  $('btnPhoneIn').addEventListener('click', ()=> {
+    const phone = $('li_email').value.trim(); // allow phone in login field
+    if(!phone){ showToast('Mete nimewo telefòn pou login'); return; }
+    if(!recaptchaVerifier){
+      recaptchaVerifier = new RecaptchaVerifier('btnPhoneIn', { 'size':'invisible' }, auth);
+      recaptchaVerifier.render();
+    }
+    signInWithPhoneNumber(auth, phone, recaptchaVerifier)
+      .then(confirmResult => {
+        const code = prompt('Antre kòd OTP la ou resevwa pa SMS:');
+        if(!code) { showToast('OTP oblije'); return; }
+        return confirmResult.confirm(code);
+      })
+      .then(result => { showToast('Phone login siksè'); })
+      .catch(e => showToast('Erè phone login: ' + e.message));
+  });
+
+  // ---------- Auth listener: load profile & show dashboard ----------
+  let currentUserData = null;
+  onAuthStateChanged(auth, async user => {
+    if(user){
+      // show interface
+      document.getElementById('auth').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      document.getElementById('bottomNav').style.display='flex';
+      document.getElementById('dots').style.display='block';
+      // load user data
+      const uid = user.uid;
+      const uSnap = await get(ref(db, 'users/' + uid));
+      if(uSnap.exists()){
+        currentUserData = uSnap.val();
+        updateUIWithUser(uid, currentUserData);
+        // listen for updates
+        onValue(ref(db, 'users/' + uid), snap=> {
+          if(snap.exists()){ currentUserData = snap.val(); updateUIWithUser(uid, currentUserData); }
+        });
+      } else {
+        // user document missing (e.g. google sign-in). create minimal
+        const acctNum = genAcctNum();
+        const refCode = genRefCode();
+        const userObj = { name: user.displayName || 'User', email:user.email || '', phone:user.phoneNumber || '', acctNum, refCode, createdAt:Date.now(), saleBalance:0, withdrawBalance:0 };
+        await set(ref(db,'users/' + uid), userObj);
+        await set(ref(db,'referralCodes/' + refCode), uid);
+        currentUserData = userObj;
+        updateUIWithUser(uid, currentUserData);
+      }
+    } else {
+      // logged out
+      document.getElementById('auth').style.display='flex';
+      document.getElementById('dashboard').style.display='none';
+      document.getElementById('bottomNav').style.display='none';
+      document.getElementById('dots').style.display='none';
+    }
+  });
+
+  async function updateUIWithUser(uid, data){
+    $('userMini').innerText = data.name || data.email || '';
+    $('saleVal').innerText = data.saleBalance || 0;
+    $('withdrawVal').innerText = (data.withdrawBalance || 0).toFixed(2);
+    $('saleVal2').innerText = data.saleBalance || 0;
+    $('withdrawVal2').innerText = (data.withdrawBalance || 0).toFixed(2);
+    $('acctNum').innerText = data.acctNum || '-';
+    $('myAcct').innerText = data.acctNum || '-';
+    $('myRef').innerText = data.refCode || '-';
+    // parrainage stats: count number of users with parrain == myRef
+    const refCode = data.refCode;
+    const refSnap = await get(ref(db, 'referralCodes/' + refCode));
+    // count referrers by scanning users (small DB ok; for production use Cloud Function)
+    const allUsersSnap = await get(ref(db, 'users'));
+    let count = 0;
+    let totalBonus = 0;
+    if(allUsersSnap.exists()){
+      allUsersSnap.forEach(u => {
+        const v = u.val();
+        if(v.parrain === refCode) { count++; totalBonus += (v.referrerBonus || 0); }
+        // alternatively compute from withdraw changes
+      });
+    }
+    $('refCount').innerText = count;
+    $('refBonus').innerText = (data.withdrawBalance || 0).toFixed(2) + ' Gdes';
+    // fill profile fields
+    $('pf_name').value = data.name || '';
+    $('pf_phone').value = data.phone || '';
+    if(data.dob) $('pf_dob').value = data.dob;
+    if(data.dept) $('pf_dept').value = data.dept;
+    // load cities list based on dept
+    populateCities(data.dept || '');
+  }
+
+  // ---------- Send Minit: compose USSD (dialer) & send to wallet ----------
+  $('composeBtn').addEventListener('click', ()=>{
+    const operator = $('operator').value;
+    // Example USSD templates - adjust based on operator specifics
+    let ussd = '';
+    if(operator === 'digicel') ussd = '*152#'; // sample
+    if(operator === 'natcom') ussd = '*123#'; // sample
+    // open tel: link (works on mobile)
+    window.location.href = 'tel:' + encodeURIComponent(ussd);
+  });
+
+  $('sendBtn').addEventListener('click', async ()=>{
+    const mins = Number($('mins').value);
+    if(!mins || mins <= 0){ showToast('Antre kantite minit valab'); return; }
+    const user = auth.currentUser;
+    if(!user){ showToast('Ou dwe konekte'); return; }
+    showLoader(true);
+    try{
+      const uid = user.uid;
+      const userSnap = await get(ref(db, 'users/' + uid));
+      if(!userSnap.exists()){ showToast('Pa jwenn kont itilizatè'); showLoader(false); return; }
+      const userData = userSnap.val();
+      // add sale minutes
+      const prevSale = Number(userData.saleBalance || 0);
+      const newSale = prevSale + mins;
+      // convert to Gdes and add to withdraw balance
+      const conv = Number((mins * 0.85).toFixed(2));
+      const prevWithdraw = Number(userData.withdrawBalance || 0);
+      const newWithdraw = Number((prevWithdraw + conv).toFixed(2));
+      await update(ref(db, 'users/' + uid), { saleBalance: newSale, withdrawBalance: newWithdraw });
+      // record transaction
+      const tx = { type:'add_mins', mins, converted:conv, createdAt:Date.now() };
+      await push(ref(db, 'transactions/' + uid), tx);
+      showToast('Minit ajoute ak konvèti: ' + conv + ' Gdes');
+      $('mins').value = '';
+    }catch(err){ showToast('Erè: ' + err.message); }
+    finally{ showLoader(false); }
+  });
+
+  // ---------- Pay / Withdraw ----------
+  $('paySave').addEventListener('click', async ()=>{
+    const method = $('payMethod').value;
+    const name = $('payName').value.trim();
+    const number = $('payNumber').value.trim();
+    const amount = Number($('payAmount').value);
+    if(!amount || amount <= 0){ showToast('Antre montan valab'); return; }
+    const user = auth.currentUser;
+    if(!user){ showToast('Ou dwe konekte'); return; }
+    showLoader(true);
+    try{
+      const uid = user.uid;
+      const uSnap = await get(ref(db, 'users/' + uid));
+      if(!uSnap.exists()) throw new Error('Pa jwenn itilizatè');
+      const curr = Number(uSnap.val().withdrawBalance || 0);
+      if(amount > curr){ showToast('Montan depase withdraw balance'); showLoader(false); return; }
+      // deduct
+      const newBal = Number((curr - amount).toFixed(2));
+      await update(ref(db, 'users/' + uid), { withdrawBalance: newBal });
+      // save transaction
+      const tx = { type:'withdraw', method, name, number, amount, createdAt: Date.now() };
+      await push(ref(db, 'transactions/' + uid), tx);
+      showToast('Retre demann anrejistre');
+      // clear form
+      $('payAmount').value=''; $('payName').value=''; $('payNumber').value='';
+    }catch(err){ showToast('Erè: ' + err.message); }
+    finally{ showLoader(false); }
+  });
+
+  $('payWithdrawAll').addEventListener('click', async ()=>{
+    const user = auth.currentUser; if(!user){ showToast('Ou dwe konekte'); return; }
+    showLoader(true);
+    try{
+      const uid = user.uid;
+      const uSnap = await get(ref(db, 'users/' + uid));
+      const curr = Number(uSnap.val().withdrawBalance || 0);
+      if(curr <= 0){ showToast('Pa gen sa pou retre'); showLoader(false); return; }
+      await update(ref(db, 'users/' + uid), { withdrawBalance: 0 });
+      await push(ref(db, 'transactions/' + uid), { type:'withdraw_all', amount: curr, createdAt: Date.now() });
+      showToast('Tout withdraw mande');
+    }catch(err){ showToast('Erè: '+err.message) }
+    finally{ showLoader(false); }
+  });
+
+  // ---------- Profile save/view ----------
+  $('pf_save').addEventListener('click', async ()=>{
+    const user = auth.currentUser; if(!user){ showToast('Ou dwe konekte'); return; }
+    showLoader(true);
+    try{
+      const uid = user.uid;
+      const payload = {
+        name: $('pf_name').value.trim(),
+        phone: $('pf_phone').value.trim(),
+        dob: $('pf_dob').value,
+        dept: $('pf_dept').value,
+        city: $('pf_city').value,
+        photo: $('pf_photo').value
+      };
+      await update(ref(db, 'users/' + uid), payload);
+      showToast('Profil sove');
+    }catch(e){ showToast('Erè: ' + e.message); }
+    finally{ showLoader(false); }
+  });
+
+  $('pf_view').addEventListener('click', ()=> {
+    // toggle view
+    $('profileEdit').style.display = 'none';
+    $('profileView').style.display = 'block';
+    // fill view
+    $('pv_name').innerText = $('pf_name').value;
+    $('pv_phone').innerText = $('pf_phone').value;
+    $('pv_dob').innerText = $('pf_dob').value;
+    $('pv_dept').innerText = $('pf_dept').value;
+    $('pv_city').innerText = $('pf_city').value;
+  });
+  $('pf_edit_btn').addEventListener('click', ()=> { $('profileView').style.display='none'; $('profileEdit').style.display='block'; });
+
+  // ---------- Parrainage: copy & share ----------
+  $('shareRef').addEventListener('click', ()=> {
+    const refc = $('myRef').innerText;
+    const link = window.location.origin + window.location.pathname + '?ref=' + encodeURIComponent(refc);
+    navigator.clipboard?.writeText(link).then(()=> showToast('Lien kopiye: ' + link)).catch(()=> showToast('Kopi echwe'));
+  });
+
+  // ---------- Logout ----------
+  $('btnLogout').addEventListener('click', async ()=> {
+    await signOut(auth);
+    showToast('Dekonekte');
+  });
+
+  // ---------- Utility: populate cities by dept ----------
+  const citiesByDept = {
+    'Ouest': ['Port-au-Prince','Pétion-Ville','Delmas'],
+    'Nord': ['Cap-Haïtien','Limbé','Gros-Morne'],
+    'Sud': ['Les Cayes','Aquin','Port-Salut']
+  };
+  function populateCities(dept){
+    const sel = $('pf_city');
+    sel.innerHTML = '<option value="">Chwazi Komin</option>';
+    if(!dept || !citiesByDept[dept]) return;
+    for(const c of citiesByDept[dept]) sel.innerHTML += `<option value="${c}">${c}</option>`;
+  }
+  $('pf_dept').addEventListener('change', ()=> populateCities($('pf_dept').value));
+
+  // ---------- navigation initial defaults ----------
+  openPanel('Home');
+
+  // show/hide bottom nav depending on auth
+  const bottomNav = document.getElementById('bottomNav');
+  function setBottomVisible(visible){
+    document.getElementById('bottomNav').style.display = visible ? 'flex':'none';
+  }
+
+  // show bottom nav initially hidden (will show when logged)
+  setBottomVisible(false);
+
+  // expose some globals for debugging (optional)
+  window.ECHANJ = { auth, db };
+
+  // ensure bottom nav buttons actually switch panels
+  document.querySelectorAll('.bottom-nav .bn-item').forEach(btn=>{
+    btn.addEventListener('click', ()=> {
+      const tab = btn.getAttribute('data-tab');
+      openPanel(tab);
+    });
+  });
+
+  // utility: if page loaded with ?ref=CODE prefill referral in signup
+  const params = new URLSearchParams(location.search);
+  if(params.get('ref')) $('su_referral').value = params.get('ref');
+
+  // Hide terms modal on outside click (simple)
+  document.addEventListener('click', (e)=> {
+    const tm = $('termsModal');
+    if(tm.style.display === 'block' && !tm.contains(e.target) && !e.target.matches('#openTerms')) {
+      tm.style.display = 'none';
+    }
+  });
+
+  // Show loader when doing heavy auth state changes
+  onAuthStateChanged(auth, user => {
+    if(user){
+      // show dashboard and nav
+      document.getElementById('auth').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      setBottomVisible(true);
+      document.getElementById('dots').style.display
