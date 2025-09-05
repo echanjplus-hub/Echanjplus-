@@ -1,94 +1,132 @@
 <!doctype html>
 <html lang="ht">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>ECHANJ PLUS</title>
 
-<!-- Google Fonts: Italie -->
+<!-- Google font "Italiana" (free serif-like) as "Italie" -->
 <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#0D1B2A; --card: rgba(255,255,255,0.04);
-  --glass: rgba(255,255,255,0.08); --accent:#FFD700; --muted:#9fb8d9;
-  --line: rgba(255,255,255,0.22);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Italiana',serif;-webkit-font-smoothing:antialiased}
-body{background:var(--bg);color:#fff;font-size:16px;line-height:1.5;position:relative;overflow-x:hidden}
+  :root{
+    --bg-dark:#0D1B2A; --bg-light:#F6F8FB;
+    --card: rgba(255,255,255,0.04);
+    --accent:#FFD700; --muted:#9fb8d9; --line: rgba(255,255,255,0.18);
+    --text-dark:#061022; --text-light:#fff;
+  }
+  /* Basic reset */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:var(--bg-dark);
+    color:var(--text-light);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
 
-/* SPLASH */
-#splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9999;transition:opacity 0.5s ease}
-#splash h1{font-size:64px;color:var(--accent);margin-bottom:20px;text-shadow:0 2px 12px rgba(0,0,0,0.6)}
-#splash img{width:120px;height:auto;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.5)}
+  /* ---------- SPLASH ---------- */
+  #splash{
+    position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:var(--bg-dark); z-index:9999; transition:opacity .4s ease;
+  }
+  #splash h1{
+    font-family:'Italiana', serif;
+    font-size:56px; color:var(--accent); letter-spacing:1px; margin-bottom:18px;
+    text-shadow:0 3px 18px rgba(0,0,0,0.6);
+  }
+  #splash img{width:140px; max-width:38vw; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,0.6)}
 
-/* APP WRAP */
-#app{display:none;min-height:100vh;padding:16px;position:relative;z-index:10}
-.center{max-width:980px;margin:0 auto}
-.card{background:var(--card);border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(6px)}
-.muted{color:var(--muted);font-size:13px}
-input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);color:#fff}
-button.btn{padding:12px 14px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
-button.primary{background:var(--accent);color:#000}
-button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff}
-.row{display:flex;gap:8px}
-.small{width:33%}
+  /* ---------- APP LAYOUT ---------- */
+  #app{display:none; min-height:100vh; padding:18px; position:relative;}
+  .center{max-width:980px;margin:0 auto}
+  .card{background:var(--card); border-radius:14px; padding:16px; border:1px solid rgba(255,255,255,0.05); backdrop-filter: blur(6px); margin-bottom:12px;}
+  .muted{color:var(--muted); font-size:13px;}
+  input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit}
+  button.btn{padding:10px 12px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+  button.primary{background:var(--accent);color:#000}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:inherit}
 
-/* Sidebar Drawer */
-#drawer{position:fixed;top:0;left:-320px;width:300px;max-width:85vw;height:100vh;background:rgba(10,16,28,0.94);backdrop-filter:blur(10px);border-right:1px solid rgba(255,255,255,0.08);z-index:1300;padding:16px;transition:left .28s ease}
-#drawer.open{left:0}
-#drawer .title{font-family:'Italiana',serif;font-size:26px;color:var(--accent);margin:0 0 12px}
-#drawer .item{padding:10px 8px;border-radius:10px;cursor:pointer}
-#drawer .item:hover{background:rgba(255,255,255,0.06)}
-#drawer .ver{color:var(--muted);font-size:12px;margin-top:10px}
-#drawer .lang select{width:100%}
-#drawer .sep{height:1px;background:rgba(255,255,255,0.08);margin:8px 0}
+  .row{display:flex;gap:8px}
+  .small{width:33%}
 
-/* Floating Dots */
-#dots{position:fixed;top:14px;right:14px;z-index:1250}
-#dots button{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:12px;padding:8px 10px;font-weight:900}
+  /* ---------- SIDEBAR ---------- */
+  #drawer{
+    position:fixed; top:0; left:-320px; width:300px; height:100vh; padding:16px;
+    background: rgba(6,10,20,0.97); z-index:1400; transition:left .28s ease; overflow:auto;
+  }
+  #drawer.open{left:0}
+  #drawer .title{font-family:'Italiana', serif; font-size:24px; color:var(--accent); margin-bottom:10px}
+  #drawer .item{padding:10px;border-radius:8px;margin-bottom:6px;cursor:pointer}
+  #drawer .item:hover{background:rgba(255,255,255,0.03)}
+  #drawer .lang select{width:100%; padding:8px; border-radius:8px}
 
-/* TOAST */
-#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 18px;border-radius:10px;display:none;z-index:2000;max-width:90vw}
+  /* ---------- FLOAT MENU ---------- */
+  #dots{position:fixed; top:16px; right:16px; z-index:1500}
+  #dots button{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08); color:inherit}
 
-/* Bottom Nav */
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(6,10,20,0.65);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-around;align-items:center;padding:10px 8px;z-index:1000}
-.bn-item{flex:1;text-align:center;color:#cde1ff;font-size:12px}
-.bn-item button{background:transparent;border:none;color:inherit;cursor:pointer;font-weight:800}
-.bn-item.active{color:#000}
-.bn-pill{background:var(--accent);color:#000;padding:10px 18px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,0.3)}
+  /* ---------- PANELS ---------- */
+  .panel{display:none}
+  .panel.active{display:block}
 
-/* RESPONSIVE */
-@media (max-width:820px){ .card{padding:14px} }
+  /* ---------- BOTTOM NAV ---------- */
+  .bottom-nav{
+    position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:space-around; align-items:center;
+    padding:10px 6px; background: rgba(6,10,20,0.72); backdrop-filter: blur(10px); border-top:1px solid rgba(255,255,255,0.04);
+    z-index:1200;
+  }
+  .bn-item{flex:1; text-align:center; color:#cfe6ff; font-weight:700}
+  .bn-item.active{color:#000}
+  .bn-pill{background:var(--accent); color:#000; padding:10px 20px; border-radius:999px}
+
+  /* ---------- TOAST ---------- */
+  #toast{position:fixed; left:50%; transform:translateX(-50%); bottom:82px; padding:10px 14px; background:var(--accent); color:#000; border-radius:8px; display:none; z-index:2000}
+
+  /* ---------- LIGHT THEME (luminosité) ---------- */
+  body[data-theme="light"]{
+    background:var(--bg-light); color:var(--text-dark);
+  }
+  body[data-theme="light"] .card{ background:rgba(10,14,20,0.03); color:var(--text-dark) }
+  body[data-theme="light"] input,select,textarea{ background:#fff; color:var(--text-dark); border:1px solid rgba(0,0,0,0.08) }
+
+  /* Responsive */
+  @media (max-width:820px){
+    #splash h1{font-size:40px}
+    #drawer{width:85vw}
+  }
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
+<!-- SPLASH (1.5s) - shows ECHANJ PLUS big + Haiti flag -->
+<div id="splash" aria-hidden="false">
   <h1>ECHANJ PLUS</h1>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Flag_of_Haiti.svg" alt="Drapo Ayiti">
+  <!-- public SVG flag URL -->
+  <img alt="Drapo Ayiti" src="https://upload.wikimedia.org/wikipedia/commons/5/56/Flag_of_Haiti.svg" />
 </div>
 
-<!-- APP WRAP -->
-<div id="app" class="center">
+<!-- loader overlay for async ops -->
+<div id="loader" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.55); z-index:2000">
+  <div style="background:#fff;padding:12px 18px;border-radius:10px;color:#000;font-weight:800">Ap prepare aplikasyon an...</div>
+</div>
 
-<!-- Floating Dots / Sidebar Toggle -->
+<!-- floating dots (open sidebar) -->
 <div id="dots" style="display:none"><button id="btnDots">☰</button></div>
 
-<!-- Sidebar Drawer -->
-<aside id="drawer">
-  <h3 class="title">ECHANJ PLUS</h3>
+<!-- sidebar drawer -->
+<aside id="drawer" aria-label="Sidebar">
+  <div class="title">ECHANJ PLUS</div>
   <div class="item" data-goto="Home">🏠 Akey</div>
   <div class="item" data-goto="Send">📤 Voye Minit</div>
   <div class="item" data-goto="Pay">💳 Peman</div>
   <div class="item" data-goto="Profile">👤 Profil</div>
   <div class="item" data-goto="Parrainage">🎁 Parrainaj</div>
   <div class="item" data-goto="About">ℹ️ About</div>
-  <div class="sep"></div>
-  <div class="item lang">
-    <div class="muted">Chanje Lang</div>
+  <div class="sep" style="height:1px;background:rgba(255,255,255,0.06);margin:10px 0"></div>
+
+  <div class="lang">
+    <div class="muted">Chwazi Lang</div>
     <select id="langSel">
       <option value="ht" selected>Kreyòl</option>
       <option value="fr">Français</option>
@@ -97,58 +135,311 @@ button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color
       <option value="pt">Português</option>
     </select>
   </div>
-  <div class="ver">Vèsyon: <span id="appVer">1.0.0</span></div>
+
+  <div style="margin-top:12px">
+    <div class="muted">Luminosité</div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button id="themeBlue" class="btn ghost">🔅 Ble</button>
+      <button id="themeLight" class="btn ghost">🔆 Blan</button>
+    </div>
+  </div>
+
+  <div style="margin-top:14px">
+    <div id="appVer" class="muted">Vèsyon: 1.0.0</div>
+  </div>
 </aside>
 
-<!-- LOGIN / SIGNUP -->
-<div id="auth" class="auth-wrap" style="margin-top:20px;display:flex;justify-content:center;flex-wrap:wrap">
-  <!-- Sign Up -->
-  <div class="card" id="signupCard">
-    <h2>Kreye Kont</h2>
-    <input id="su_name" placeholder="Non konplè">
-    <input id="su_email" placeholder="Imèl">
-    <input id="su_phone" placeholder="Telefòn (+509XXXXXXXX)">
-    <input id="su_referral" placeholder="Kod parennaj (opsyonèl)">
-    <input id="su_pass" type="password" placeholder="Modpas">
-    <label class="muted"><input id="su_terms" type="checkbox"> Mwen aksepte <span id="openTerms" class="link">Kondisyon Sistèm</span></label>
-    <button class="btn primary" id="btnSignup" disabled>Kreye kont</button>
+<!-- MAIN APP -->
+<div id="app" class="center" style="max-width:980px;margin:16px auto">
+
+  <!-- AUTH area (login + signup) -->
+  <div id="auth" style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center">
+    <!-- Sign Up -->
+    <div class="card" style="width:380px" id="signupCard">
+      <h2 style="color:var(--accent);font-family:'Italiana',serif;margin-bottom:8px">Kreye Kont</h2>
+      <input id="su_name" placeholder="Non konplè" />
+      <input id="su_email" placeholder="Imèl" />
+      <input id="su_phone" placeholder="Telefòn (+509XXXXXXXX)" />
+      <input id="su_referral" placeholder="Kod parennaj (opsyonèl)" />
+      <div class="row">
+        <input id="su_day" class="small" placeholder="JJ" />
+        <input id="su_month" class="small" placeholder="MM" />
+        <input id="su_year" class="small" placeholder="AAAA" />
+      </div>
+      <input id="su_pass" type="password" placeholder="Modpas" />
+      <label class="muted"><input id="su_terms" type="checkbox" /> Mwen aksepte <span id="openTerms" style="text-decoration:underline;cursor:pointer">Kondisyon Sistèm</span></label>
+      <button class="btn primary" id="btnSignup" disabled>Kreye kont</button>
+      <div style="height:10px"></div>
+      <div style="display:flex;gap:8px">
+        <button id="btnGoogle" class="btn ghost" style="flex:1">Google</button>
+        <button id="btnPhone" class="btn ghost" style="flex:1">Phone</button>
+      </div>
+      <div style="text-align:center;margin-top:8px" class="muted">Ou deja gen kont? <span id="toLogin" style="text-decoration:underline;cursor:pointer">Konekte</span></div>
+    </div>
+
+    <!-- Login -->
+    <div class="card" style="width:380px;display:none" id="loginCard">
+      <h2 style="color:var(--accent);font-family:'Italiana',serif;margin-bottom:8px">Konekte</h2>
+      <input id="li_email" placeholder="Imèl oswa +509XXXXXXXX" />
+      <input id="li_pass" type="password" placeholder="Modpas" />
+      <label class="muted"><input id="li_accept" type="checkbox" /> Mwen aksepte Kondisyon Sistèm</label>
+      <button class="btn primary" id="btnLogin">Konekte</button>
+      <div style="height:8px"></div>
+      <div style="display:flex;gap:8px">
+        <button id="btnGoogleIn" class="btn ghost" style="flex:1">Google</button>
+        <button id="btnPhoneIn" class="btn ghost" style="flex:1">Phone</button>
+      </div>
+      <div style="text-align:center;margin-top:8px">
+        <button id="btnResetPwd" class="btn ghost">Reset Modpas</button>
+      </div>
+      <div style="text-align:center;margin-top:8px" class="muted">Pa gen kont? <span id="toSignup" style="text-decoration:underline;cursor:pointer">Enskri</span></div>
+    </div>
   </div>
 
-  <!-- Login -->
-  <div class="card" id="loginCard" style="display:none">
-    <h2>Konekte</h2>
-    <input id="li_email" placeholder="Imèl oswa Telefòn">
-    <input id="li_pass" type="password" placeholder="Modpas">
-    <label class="muted"><input id="li_accept" type="checkbox"> Mwen aksepte Kondisyon Sistèm</label>
-    <button class="btn primary" id="btnLogin">Konekte</button>
-    <button class="btn ghost" id="btnResetPwd">Reset Modpas</button>
+  <!-- TERMS modal -->
+  <div id="termsModal" class="card" style="display:none;max-width:820px;margin:20px auto">
+    <h3 style="color:var(--accent);font-family:'Italiana',serif">Kondisyon Sistèm - ECHANJ PLUS</h3>
+    <div style="line-height:1.5;color:#dbe9ff">
+      <p><strong>Disponibilite:</strong> Sèvis la disponib sèlman pou itilizatè ki rete an Ayiti.</p>
+      <p><strong>Laj minimòm:</strong> 18+.</p>
+      <p><strong>Konvèsyon Minit:</strong> 1 minit = 0.85 Gdes. Frè sistèm: 17.5%.</p>
+      <p><strong>Retre:</strong> MonCash, NatCash, Paryaj Lakay, Paryaj Pam.</p>
+      <p><strong>Tranzaksyon:</strong> Tout tranzaksyon anrejistre sou Firebase epi verifye pa Cloud Functions (si itilizatè admin mete yo).</p>
+      <p><strong>Sekirite:</strong> Activity fwod ap mennen nan blokaj kont.</p>
+      <p><strong>Kontak:</strong> WhatsApp: +509 4711 1123 | Email: echanjplus@gmail.com</p>
+    </div>
+    <div style="text-align:right;margin-top:12px">
+      <button id="closeTerms" class="btn ghost">Fèmen / Aksepte</button>
+    </div>
   </div>
-</div>
 
-<!-- TERMS Modal -->
-<div id="termsModal" class="card" style="display:none;max-width:820px;margin:20px auto;padding:18px">
-  <h3 style="color:var(--accent);font-family:'Italiana',serif">Kondisyon Sistèm - ECHANJ PLUS</h3>
-  <div style="line-height:1.5;color:#dbe9ff">
-    <p>Sèvis la disponib sèlman pou itilizatè ki rete an Ayiti.</p>
-    <p>Laj minimòm: 18 ane.</p>
-    <p>Konvèsyon Minit: 1 minit = 0.85 Gdes. Frè sistèm: 17.5%</p>
-    <p>Retre: MonCash, NatCash, Paryaj Lakay, Paryaj Pam. Montan pa ka depase Withdraw Balance.</p>
-    <p>Tranzaksyon verifye sou Firebase.</p>
-    <p>Sekirite: Security Rules an plas; fwod ap mennen nan blokaj kont.</p>
-    <p>Kontak: WhatsApp: +509 4711 1123 | Email: echanjplus@gmail.com</p>
-  </div>
-  <div style="text-align:right;margin-top:12px">
-    <button class="btn ghost" id="closeTerms">Fèmen / Aksepte</button>
-  </div>
-</div>
+  <!-- DASHBOARD (hidden until login) -->
+  <div id="dashboard" style="display:none">
+    <div class="header" style="margin-bottom:12px">
+      <div class="brand" style="font-family:'Italiana',serif;font-size:28px">ECHANJ <span style="color:var(--accent)">PLUS</span></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="userMini" class="muted"></div>
+        <button id="openDrawer" class="btn ghost">☰</button>
+        <button id="btnLogout" class="btn ghost">Dekonekte</button>
+      </div>
+    </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none;">
-  <div class="header">
-    <div class="brand">ECHANJ <span style="color:var(--accent)">PLUS</span></div>
-  </div>
-  <div id="panelHome" class="panel active"><div class="card"><h3>Byenveni sou Echanj Plus!</h3></div></div>
-  <div id="panelSend" class="panel"><div class="card"><h3>Voye Minit</h3></div></div>
-  <div id="panelPay" class="panel"><div class="card"><h3>Peman / Retre</h3></div></div>
-  <div id="panelProfile" class="panel"><div class="card"><h3>Profil</h3></div></div>
-  <div id="panelParrainage" class="panel"><
+    <!-- Panels -->
+    <div id="panelHome" class="panel active">
+      <div class="card">
+        <h3>Akey</h3>
+        <div class="wallet" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+          <div class="card mini" style="min-width:160px">
+            <div class="muted">Sale Balance (minit)</div>
+            <div id="saleVal" style="font-weight:900;font-size:20px;margin-top:6px">0</div>
+          </div>
+          <div class="card mini" style="min-width:160px">
+            <div class="muted">Withdraw Balance (Gdes)</div>
+            <div id="withdrawVal" style="font-weight:900;font-size:20px;margin-top:6px">0.00</div>
+          </div>
+          <div class="card mini" style="min-width:160px">
+            <div class="muted">Nimewo Kont</div>
+            <div id="acctNum" style="font-weight:900;font-size:20px;margin-top:6px">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panelSend" class="panel">
+      <div class="card">
+        <h3>Voye Minit</h3>
+        <label class="muted">Operatè</label>
+        <select id="operator">
+          <option value="digicel">Digicel</option>
+          <option value="natcom">Natcom</option>
+        </select>
+        <label class="muted">Kantite minit</label>
+        <input id="mins" type="number" min="1" placeholder="Eg. 50" />
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="composeBtn" class="btn primary">Konpoze USSD</button>
+          <button id="sendBtn" class="btn ghost">Voye epi Mete nan Wallet</button>
+        </div>
+        <div id="digicelConfirm" class="muted" style="margin-top:8px;display:none">Pou konfime Digicel, peze *128*1# epi retounen.</div>
+      </div>
+    </div>
+
+    <div id="panelPay" class="panel">
+      <div class="card">
+        <h3>Peman / Retre</h3>
+        <div class="muted">Wallet</div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <div style="flex:1">
+            <div class="muted">Sale (minit)</div>
+            <div id="saleVal2" style="font-weight:900">0</div>
+          </div>
+          <div style="flex:1">
+            <div class="muted">Withdraw (Gdes)</div>
+            <div id="withdrawVal2" style="font-weight:900">0.00</div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label class="muted">Metòd</label>
+          <select id="payMethod">
+            <option value="moncash">MonCash</option>
+            <option value="natcash">NatCash</option>
+            <option value="paryajLakay">Paryaj Lakay</option>
+            <option value="paryajPam">Paryaj Pam</option>
+          </select>
+          <input id="payName" placeholder="Non kont / itilizatè" />
+          <input id="payNumber" placeholder="Nimewo kont / telefòn" />
+          <input id="payAmount" type="number" placeholder="Montan (Gdes)" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="paySave" class="btn primary">Sove / Peye</button>
+            <button id="payWithdrawAll" class="btn ghost">Retre Tout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panelProfile" class="panel">
+      <div class="card">
+        <h3>Profil</h3>
+        <div id="profileEdit">
+          <input id="pf_name" placeholder="Non" />
+          <input id="pf_phone" placeholder="Telefòn" />
+          <label class="muted">Dat nesans</label>
+          <input id="pf_dob" type="date" />
+          <label class="muted">Depatman</label>
+          <select id="pf_dept">
+            <option value="">Chwazi</option>
+            <option value="Ouest">Ouest</option>
+            <option value="Nord">Nord</option>
+            <option value="Sud">Sud</option>
+          </select>
+          <label class="muted">Komin</label>
+          <select id="pf_city">
+            <option value="">Chwazi Komin</option>
+          </select>
+          <input id="pf_photo" placeholder="URL Foto (opsyonèl)" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="pf_save" class="btn primary">Sove Profil</button>
+            <button id="pf_view" class="btn ghost">Wè Profil</button>
+          </div>
+        </div>
+
+        <div id="profileView" style="display:none;margin-top:12px">
+          <div class="profile-read">
+            <div class="row"><div>Non</div><div id="pv_name"></div></div>
+            <div class="row"><div>Telefòn</div><div id="pv_phone"></div></div>
+            <div class="row"><div>Dat nesans</div><div id="pv_dob"></div></div>
+            <div class="row"><div>Depatman</div><div id="pv_dept"></div></div>
+            <div class="row"><div>Komin</div><div id="pv_city"></div></div>
+          </div>
+          <div style="margin-top:8px"><button id="pf_edit_btn" class="btn ghost">Modifye</button></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="panelParrainage" class="panel">
+      <div class="card">
+        <h3>Parrainaj</h3>
+        <div>
+          <div class="muted">Nimewo Kont inik</div>
+          <div id="myAcct" style="font-weight:900;margin-top:6px">-</div>
+          <div class="muted" style="margin-top:8px">Kod Parrainaj</div>
+          <div id="myRef" style="font-weight:900;margin-top:6px">-</div>
+          <div style="margin-top:8px">
+            <button id="shareRef" class="btn primary">Kopi & Pataje Lien</button>
+          </div>
+          <div style="margin-top:10px">
+            <div class="muted">Moun refere</div>
+            <div id="refCount" style="font-weight:900">0</div>
+          </div>
+          <div style="margin-top:10px">
+            <div class="muted">Total bonis resevwa</div>
+            <div id="refBonus" style="font-weight:900">0.00 Gdes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panelAbout" class="panel">
+      <div class="card">
+        <h3>About</h3>
+        <p class="muted">Echanj Plus — sèvis echanj minit pou Ayiti.</p>
+        <p class="muted">Kontak: WhatsApp +509 4711 1123 | Email echanjplus@gmail.com</p>
+      </div>
+    </div>
+
+  </div> <!-- end dashboard -->
+
+</div> <!-- end app -->
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" id="bottomNav" style="display:none">
+  <div class="bn-item" data-tab="Send"><button>📤</button><div class="muted">Voye</div></div>
+  <div class="bn-item" data-tab="Pay"><button>💳</button><div class="muted">Peman</div></div>
+  <div class="bn-item" data-tab="Home"><button class="bn-pill">🏠</button></div>
+  <div class="bn-item" data-tab="Profile"><button>👤</button><div class="muted">Profil</div></div>
+  <div class="bn-item" data-tab="Parrainage"><button>🎁</button><div class="muted">Parrainaj</div></div>
+  <div class="bn-item" data-tab="About"><button>ℹ️</button><div class="muted">About</div></div>
+</nav>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Firebase Modular SDK -->
+<script type="module">
+  // --- Firebase imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    GoogleAuthProvider, signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber,
+    onAuthStateChanged, sendPasswordResetEmail, signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getDatabase, ref, set, get, update, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  // --------- Firebase config (use the one you provided) ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    projectId: "echanj-plus-778cd",
+    storageBucket: "echanj-plus-778cd.appspot.com",
+    messagingSenderId: "111144762929",
+    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+    measurementId: "G-J1BQRF32ZW"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  // ---------- helper UI fns ----------
+  const $ = id => document.getElementById(id);
+  function showToast(msg, ms=2500){
+    const t = $('toast');
+    t.innerText = msg;
+    t.style.display='block';
+    setTimeout(()=>t.style.display='none', ms);
+  }
+  function showLoader(show=true){ $('loader').style.display = show? 'flex':'none'; }
+
+  // ---------- Splash (1.5s) ----------
+  setTimeout(()=>{
+    document.getElementById('splash').style.opacity = '0';
+    setTimeout(()=>{ document.getElementById('splash').style.display='none'; document.getElementById('app').style.display='block'; }, 400);
+  }, 1500);
+
+  // ---------- small UI wiring ----------
+  // enable signup button when terms checked
+  $('su_terms').addEventListener('change', e => { $('btnSignup').disabled = !e.target.checked; });
+
+  // open/close terms modal
+  $('openTerms').addEventListener('click', ()=> { $('termsModal').style.display='block'; });
+  $('closeTerms').addEventListener('click', ()=> { $('termsModal').style.display='none'; });
+
+  // toggle auth panels
+  $('toLogin').addEventListener('click', ()=>{ $('signupCard').style.display='none'; $('loginCard').style.display='block'; });
+  $('toSignup').addEventListener('click', ()=>{ $('loginCard').style.display='none'; $('signupCard').style.display='block'; });
+
+  // open drawer
+  $('btnDots').addEventListener('click', ()=> {
+    document.getElementById('drawer').classList.toggle('open');
+  });
+  $('openDrawer').addEventListener('cli
