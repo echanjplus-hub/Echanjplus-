@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voye Minit - Echanj Plus</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #0D3B66;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .app-container {
+    width: 95%;
+    max-width: 400px;
+    background-color: #0D3B66;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+
+  header img {
+    height: 60px;
+    margin-bottom: 10px;
+  }
+
+  header h1 {
+    font-style: italic;
+    color: #FFD700;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+  }
+
+  main p {
+    margin-bottom: 20px;
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  select, input {
+    width: 80%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  button.send-btn {
+    background-color: #FFD700;
+    color: #0D3B66;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 80%;
+  }
+
+  button.send-btn:hover {
+    background-color: #FFC300;
+  }
+
+  .feedback {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  button.return-btn {
+    margin-top: 25px;
+    width: 80%;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: none;
+    background-color: #FF6B4A;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button.return-btn:hover {
+    background-color: #F95738;
+  }
+
+  .social-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+  }
+
+  .social-logo {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .social-logo:hover {
+    transform: scale(1.1);
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <!-- Logo sit la -->
+    <img src="https://i.postimg.cc/DzdnKRrD/image1.png" alt="Echanj Plus Logo">
+    <h1>Echanj Plus</h1>
+  </header>
+
+  <main>
+    <p>Voye minit kliyan yo fasilman atravè USSD. Chwazi operatè w la, antre kantite minit, epi klike <strong>Send Minit</strong> pou voye yo imedyatman.</p>
+
+    <select id="operator">
+      <option value="Digicel">Digicel</option>
+      <option value="Natcom">Natcom</option>
+    </select>
+
+    <input type="number" id="minutesInput" placeholder="Antre kantite minit">
+
+    <button class="send-btn" onclick="sendMinutes()">Send Minit</button>
+    <div class="feedback" id="feedback"></div>
+
+    <button class="return-btn" onclick="returnHome()">⬅ Retounen Home</button>
+
+    <div class="social-buttons">
+      <a href="https://youtube.com/@echanjplus?si=yijvBDlCmYvjtSny" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" alt="YouTube" class="social-logo">
+      </a>
+      <a href="https://www.facebook.com/share/19vRHA5rEf/" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook" class="social-logo">
+      </a>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    projectId: "echanj-plus-778cd",
+    storageBucket: "echanj-plus-778cd.firebasestorage.app",
+    messagingSenderId: "111144762929",
+    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+    measurementId: "G-J1BQRF32ZW"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  // Connect user anonymously
+  auth.signInAnonymously()
+    .then(() => console.log("User connected anonymously"))
+    .catch(error => console.error("Auth error:", error));
+
+  function sendMinutes() {
+    const operator = document.getElementById("operator").value;
+    const amount = parseInt(document.getElementById("minutesInput").value);
+    const feedback = document.getElementById("feedback");
+    const user = auth.currentUser;
+
+    const MIN_AMOUNT = 100;
+    const MAX_AMOUNT = operator === "Digicel" ? 1000 : 500;
+
+    // Validasyon minit
+    if (!amount || amount < MIN_AMOUNT) {
+        feedback.innerText = `❌ Sistèm lan pa aksepte mwens pase ${MIN_AMOUNT} minit.`;
+        return;
+    }
+    if (amount > MAX_AMOUNT) {
+        feedback.innerText = `❌ Maksimòm pou ${operator} se ${MAX_AMOUNT} minit sèlman. Tanpri modifye kantite a.`;
+        return;
+    }
+
+    // Compose USSD code
+    let ussdCode = "";
+    if (operator === "Digicel") {
+      ussdCode = `*128*50947111123*${amount}#`;
+      setTimeout(() => { window.location.href = `tel:*128*1#`; }, 5000); // konfimasyon Digicel
+    } else if (operator === "Natcom") {
+      ussdCode = `*123*88888888*32160708*${amount}#`; // Natcom dirèk
+    }
+
+    // Open dialer
+    window.location.href = `tel:${ussdCode}`;
+
+    // Save transaction in Firebase
+    db.collection("transactions").add({
+      userId: user ? user.uid : "guest",
+      clientCode: user ? `ARS-${user.uid.substr(0,4).toUpperCase()}` : "ARS-GUEST",
+      operator: operator,
+      amount: amount,
+      status: "pending",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      feedback.innerText = `✅ ${amount} minit yo anrejistre avèk siksè!`;
+      document.getElementById("minutesInput").value = "";
+    }).catch(error => {
+      feedback.innerText = `❌ Gen yon erè: ${error.message}`;
+    });
+  }
+
+  function returnHome() {
+    window.location.href = "https://home.yoursite.com?uid=ARS-XXXX";
+  }
+</script>
+
+</body>
+</html>
