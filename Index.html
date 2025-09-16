@@ -1,629 +1,138 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Echanj Plus — App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARS App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase -->
+  <script type="module">
+    // Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-<!-- Firebase compat -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    const firebaseConfig = {
+      apiKey: "VIRE_API_KEY_W_LA",
+      authDomain: "ARS-APP.firebaseapp.com",
+      projectId: "ARS-APP",
+      storageBucket: "ARS-APP.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:xxxx"
+    };
 
-<style>
-  /* ---------- Base / Layout ---------- */
-  :root{
-    --bg:#071532;
-    --card: rgba(255,255,255,0.04);
-    --accent: #FFD700;
-    --accent-dark: #FFA500;
-    --muted: #cbd7f5;
-    --radius: 14px;
-  }
-  *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#08204a);color:#fff;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:920px;margin:18px auto;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;}
-  header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:0 8px 30px rgba(0,0,0,0.6);}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:68px;height:68px;border-radius:12px;background:#fff;padding:8px;display:flex;align-items:center;justify-content:center}
-  .logo img{width:100%;height:100%;object-fit:contain}
-  .title{font-style:italic;color:var(--accent);font-size:18px}
-  .notice{font-size:13px;color:var(--muted)}
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-  /* ---------- Card / Center ---------- */
-  main{width:100%;display:flex;justify-content:center}
-  .card{width:100%;max-width:900px;background:var(--card);border-radius:18px;padding:18px;display:grid;grid-template-columns:1fr;gap:14px}
-  @media(min-width:920px){ .card{grid-template-columns:1fr 320px} }
-
-  /* ---------- Left area (app UI) ---------- */
-  .left{padding:6px}
-  .center-block{max-width:520px;margin:0 auto;text-align:center}
-  h2{margin:6px 0;color:var(--accent)}
-  .small{color:var(--muted);font-size:13px}
-  input,select,textarea{
-    width:100%;padding:10px 12px;margin:8px 0;border-radius:12px;border:none;background:rgba(255,255,255,0.03);color:#fff;font-size:15px;
-  }
-  button{padding:10px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:700}
-  .btn-primary{background:var(--accent);color:#000}
-  .btn-primary:hover{background:var(--accent-dark)}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
-  .row{display:flex;gap:8px}
-  .col{flex:1}
-
-  /* ---------- balance boxes ---------- */
-  .balances{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-  .bal{min-width:160px;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));}
-  .bal .label{font-size:13px;color:var(--muted)}
-  .bal .val{font-size:20px;color:var(--accent);font-weight:800}
-
-  /* ---------- Simple nav (app style) ---------- */
-  .app-nav{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
-  .app-nav button{background:transparent;border:1px solid rgba(255,255,255,0.05);color:var(--muted);padding:9px 12px;border-radius:12px}
-  .app-nav button.active{background:var(--accent);color:#000;border-color:transparent}
-
-  /* ---------- right column ---------- */
-  .right{padding:6px;display:flex;flex-direction:column;gap:12px}
-  .panel{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
-  .panel h4{color:var(--accent);margin:0 0 6px 0}
-  .small-muted{color:var(--muted);font-size:13px}
-
-  /* ---------- tx list ---------- */
-  .tx-list{max-height:320px;overflow:auto;margin-top:6px}
-  .tx-item{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:8px;font-size:14px}
-  .tx-item .meta{color:var(--muted);font-size:12px;margin-top:6px}
-
-  /* ---------- footer / bottom nav for phone ---------- */
-  .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;background:rgba(0,0,0,0.6);padding:8px;border-radius:999px;display:flex;gap:8px;z-index:40}
-  .nav-btn{padding:8px 12px;border-radius:999px;border:none;background:transparent;color:var(--muted);cursor:pointer}
-  .nav-btn.active{background:var(--accent);color:#000}
-
-  /* ---------- misc ---------- */
-  .center{text-align:center}
-  .muted{color:var(--muted)}
-  .link{color:var(--accent);cursor:pointer}
-  #recaptcha-container{display:none}
-</style>
-</head>
-<body>
-
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <div class="logo"><img src="https://i.postimg.cc/L8VgxQq9/image1-removebg-preview.png" alt="logo"></div>
-      <div>
-        <div class="title">Échanj Plus</div>
-        <div class="notice">100 minit = 85 Gdes • Frè = 15% • CEO: ARS</div>
-      </div>
-    </div>
-    <div class="notice" id="top-notice">Byenvini — Konekte pou kontinye</div>
-  </header>
-
-  <main class="card">
-    <!-- LEFT -->
-    <div class="left">
-      <!-- AUTH (shows until logged in) -->
-      <div id="authCard" class="panel center-block">
-        <h2 id="authTitle">Konekte / Enskri 🔐</h2>
-
-        <!-- Signup (compact) -->
-        <div id="signupView">
-          <input id="su_name" placeholder="Non konplè" />
-          <input id="su_phone" placeholder="Telefòn (+509...)" />
-          <input id="su_email" placeholder="Imèl" />
-          <input id="su_pass" type="password" placeholder="Modpas (min 6)" />
-          <div class="row">
-            <div class="col"><button class="btn-primary" id="btnSignup">Enskri</button></div>
-            <div class="col"><button class="btn-ghost" id="btnToLogin">Konekte</button></div>
-          </div>
-          <div style="margin-top:8px;">
-            <button class="btn-ghost" id="btnGoogleUp">Google</button>
-            <button class="btn-ghost" id="btnPhoneUp">Phone</button>
-          </div>
-        </div>
-
-        <!-- Login -->
-        <div id="loginView" style="display:none;">
-          <input id="li_email" placeholder="Imèl" />
-          <input id="li_pass" type="password" placeholder="Modpas" />
-          <div class="row">
-            <div class="col"><button class="btn-primary" id="btnLogin">Konekte</button></div>
-            <div class="col"><button class="btn-ghost" id="btnToSignup">Enskri</button></div>
-          </div>
-          <div style="margin-top:8px;">
-            <button class="btn-ghost" id="btnGoogleIn">Google</button>
-            <button class="btn-ghost" id="btnPhoneIn">Phone</button>
-          </div>
-        </div>
-
-        <div id="authMsg" class="small muted" style="margin-top:8px"></div>
-      </div>
-
-      <!-- APP content (visible after login) -->
-      <div id="appMain" style="display:none;">
-        <div class="center-block">
-          <h2>🏠 Dashboard</h2>
-          <div class="muted small">Firebase UID: <span id="fbUid">—</span></div>
-          <div class="muted small">Kont ID: <strong id="customUID">—</strong></div>
-
-          <div class="balances">
-            <div class="bal">
-              <div class="label">Sale Balance</div>
-              <div class="val" id="saleBal">0.00 minit</div>
-            </div>
-            <div class="bal">
-              <div class="label">Withdraw Balance</div>
-              <div class="val" id="withdrawBal">0.00 Gdes</div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px" class="small-muted">Fè atansyon — minimòm transfè 100 minit. Digicel max 1000, Natcom max 500.</div>
-
-          <div class="app-nav" style="margin-top:14px;">
-            <button class="nav-btn active" data-target="home">Home</button>
-            <button class="nav-btn" data-target="voye">Voye</button>
-            <button class="nav-btn" data-target="peyman">Peyman</button>
-            <button class="nav-btn" data-target="profil">Profil</button>
-            <button class="nav-btn" data-target="istorik">Istorik</button>
-            <button class="nav-btn" data-target="about">About</button>
-          </div>
-
-          <!-- Sections -->
-          <div id="home" class="section active" style="margin-top:14px">
-            <div class="panel">
-              <div class="small-muted">Aksyon rapid</div>
-              <div style="display:flex;gap:8px;margin-top:10px">
-                <button class="btn-primary" id="goVoye">📤 Voye Minit</button>
-                <button class="btn-primary" id="goPeyman">💸 Transfere pou Peyman</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="voye" class="section" style="margin-top:14px;display:none">
-            <div class="panel">
-              <h3 class="small-muted">Voye Minit 📲</h3>
-              <select id="voyeOperator"><option value="">-- Chwazi Operatè --</option><option value="digicel">Digicel (max 1000)</option><option value="natcom">Natcom (max 500)</option></select>
-              <input id="voyeMinit" type="number" placeholder="Kantite minit (100 minimòm)" />
-              <div class="row">
-                <div class="col"><button class="btn-primary" id="btnVoye">Voye & Anrejistre</button></div>
-                <div class="col"><button class="btn-ghost" id="btnVoyeSim">Simile (dev)</button></div>
-              </div>
-              <div id="voyeMsg" class="small muted" style="margin-top:8px"></div>
-            </div>
-          </div>
-
-          <div id="peyman" class="section" style="margin-top:14px;display:none">
-            <div class="panel">
-              <h3 class="small-muted">Peye / Retire lajan 💳</h3>
-              <div class="small-muted">Sale: <span id="py_sale">0</span> minit • Withdraw: <span id="py_with">0</span> Gdes</div>
-              <input id="py_amount" type="number" placeholder="Antre kantite minit pou transfere (min 100)" />
-              <div style="margin-top:8px">
-                <select id="py_method">
-                  <option value="">-- Chwazi Metòd Peyman --</option>
-                  <option value="moncash">MonCash</option>
-                  <option value="natcash">Natcash</option>
-                  <option value="paryaj-lakay">Paryaj Lakay</option>
-                  <option value="paryaj-pam">Paryaj Pam</option>
-                  <option value="biwo">Biwo ARS</option>
-                </select>
-              </div>
-              <div style="margin-top:8px" class="row">
-                <div class="col"><button class="btn-primary" id="btnTransfer">Transfere → Peyman</button></div>
-                <div class="col"><button class="btn-ghost" id="btnReqPayout">Mande Peyman (WhatsApp)</button></div>
-              </div>
-              <div id="pyMsg" class="small muted" style="margin-top:8px"></div>
-            </div>
-          </div>
-
-          <div id="profil" class="section" style="margin-top:14px;display:none">
-            <div class="panel">
-              <h3 class="small-muted">Profil 👤</h3>
-              <input id="pf_name" placeholder="Non" />
-              <input id="pf_phone" placeholder="Telefòn" />
-              <input id="pf_email" placeholder="Imèl (soti nan auth)" disabled />
-              <div class="row" style="margin-top:8px">
-                <div class="col"><button class="btn-primary" id="btnSaveProfile">Sere Profil</button></div>
-                <div class="col"><button class="btn-ghost" id="btnLogout">Dekonekte</button></div>
-              </div>
-              <div id="pfMsg" class="small muted" style="margin-top:8px"></div>
-            </div>
-          </div>
-
-          <div id="istorik" class="section" style="margin-top:14px;display:none">
-            <div class="panel">
-              <h3 class="small-muted">Istorik Tranzaksyon 📜</h3>
-              <div id="txList" class="tx-list"></div>
-            </div>
-          </div>
-
-          <div id="about" class="section" style="margin-top:14px;display:none">
-            <div class="panel center">
-              <h3 class="small-muted">About ℹ️</h3>
-              <p class="small-muted">Définisyon: Echanj Plus se yon platfòm echanj minit pou itilizatè Ayisyen sèlman.</p>
-              <p class="small-muted">WhatsApp: <a class="link" href="https://wa.me/50947111123" target="_blank">+50947111123</a></p>
-              <p class="small-muted">Email: echanjplus@gmail.com</p>
-              <p class="small-muted">Vèsyon: v5.0.1 • CEO: ARS</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT column -->
-    <aside class="right">
-      <div class="panel">
-        <h4>Estati Kont</h4>
-        <div class="small-muted">Custom UID:</div>
-        <div id="dispCustom" style="font-weight:800;color:var(--accent);margin-bottom:6px">—</div>
-        <div class="small-muted">Firebase UID:</div>
-        <div id="dispFb" class="small-muted">—</div>
-      </div>
-
-      <div class="panel">
-        <h4>Opsyon Rapide</h4>
-        <button class="btn-ghost" id="openHistory">⏱️ Istorik</button>
-        <button class="btn-ghost" id="openAbout">ℹ️ About</button>
-      </div>
-
-      <div class="panel">
-        <h4>Frè & Règleman</h4>
-        <div class="small-muted">Frè sistèm: <strong>15%</strong></div>
-        <div class="small-muted">Kalkil: 100 minit = 85 Gdes (rate = 0.85 Gdes/minit)</div>
-      </div>
-
-      <div class="panel small-muted">
-        <div style="font-weight:700;color:var(--accent)">Anons:</div>
-        <div>Byenvini sou Echanj Plus — konekte pou kòmanse.</div>
-      </div>
-    </aside>
-  </main>
-
-  <!-- bottom nav (mobile) -->
-  <div class="bottom-nav" id="bottomNav" style="display:none">
-    <button class="nav-btn active" data-target="home">🏠</button>
-    <button class="nav-btn" data-target="voye">📤</button>
-    <button class="nav-btn" data-target="peyman">💸</button>
-    <button class="nav-btn" data-target="profil">👤</button>
-    <button class="nav-btn" data-target="istorik">📜</button>
-  </div>
-
-</div>
-
-<!-- invisible recaptcha container -->
-<div id="recaptcha-container"></div>
-
-<script>
-/* ================= FIREBASE CONFIG - replace if needed ================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.appspot.com",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-  measurementId: "G-J1BQRF32ZW"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-
-/* ================= Helpers ================= */
-const $ = id => document.getElementById(id);
-const fmt = n => (typeof n==='number' ? n.toFixed(2) : n);
-const genCustomUID = () => 'ARS-' + Math.random().toString(36).slice(2,6).toUpperCase();
-
-/* ================= UI state & helpers ================= */
-let recaptchaVerifier = null;
-function ensureRecaptcha(){
-  if(recaptchaVerifier) return;
-  try{
-    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {size:'invisible'});
-    recaptchaVerifier.render().catch(()=>{/* ignore render errors until domain configured */});
-  }catch(e){ console.warn('recaptcha init failed', e); }
-}
-
-function showAuthView(view){
-  $('authCard').style.display = '';
-  $('appMain').style.display = 'none';
-  $('signupView').style.display = view==='signup' ? '' : 'none';
-  $('loginView').style.display = view==='login' ? '' : 'none';
-  $('authMsg').textContent = '';
-}
-function showApp(){
-  $('authCard').style.display = 'none';
-  $('appMain').style.display = '';
-  $('bottomNav').style.display = 'flex';
-  document.querySelectorAll('.app-nav .nav-btn, .bottom-nav .nav-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.app-nav .nav-btn')[0].classList.add('active');
-  showSection('home');
-}
-
-/* central show section */
-function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-  const el = $(id);
-  if(el) el.style.display = '';
-  // nav active
-  document.querySelectorAll('.app-nav .nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
-  document.querySelectorAll('.bottom-nav .nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
-}
-
-/* ================= AUTH flows ================= */
-$('btnToLogin').addEventListener('click', ()=> showAuthView('login'));
-$('btnToSignup').addEventListener('click', ()=> showAuthView('signup'));
-
-/* Email sign up */
-$('btnSignup').addEventListener('click', async ()=>{
-  const name = $('su_name').value.trim();
-  const phone = $('su_phone').value.trim();
-  const email = $('su_email').value.trim();
-  const pass = $('su_pass').value;
-  if(!name || !phone || !email || pass.length < 6){ $('authMsg').textContent = 'Tanpri ranpli tout chan yo (modpas 6 karaktè min).'; return; }
-  try{
-    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    const uid = cred.user.uid;
-    const custom = genCustomUID();
-    await db.ref('users/'+uid).set({ customUID: custom, name, phone, email, saleBalance:0, withdrawBalance:0, createdAt: Date.now() });
-    await db.ref('index/customUID/'+custom).set(uid);
-    $('authMsg').textContent = 'Kont kreye. W ap konekte...';
-    // allow onAuthStateChanged to handle UI
-  }catch(e){ $('authMsg').textContent = e.message; }
-});
-
-/* Email login */
-$('btnLogin').addEventListener('click', async ()=>{
-  const email = $('li_email').value.trim();
-  const pass = $('li_pass').value;
-  if(!email || !pass){ $('authMsg').textContent = 'Ranpli imel ak modpas.'; return; }
-  try{
-    await auth.signInWithEmailAndPassword(email, pass);
-    $('authMsg').textContent = 'Konekte...';
-  }catch(e){ $('authMsg').textContent = e.message; }
-});
-
-/* Google sign-in */
-async function googleSignIn(){
-  try{
-    const provider = new firebase.auth.GoogleAuthProvider();
-    await auth.signInWithPopup(provider);
-  }catch(e){ $('authMsg').textContent = e.message; }
-}
-$('btnGoogleUp').addEventListener('click', googleSignIn);
-$('btnGoogleIn').addEventListener('click', googleSignIn);
-
-/* Phone sign-in (OTP) */
-async function phoneSignFlow(){
-  ensureRecaptcha();
-  const phone = prompt('Antre nimewo telefòn (+509...)');
-  if(!phone) return;
-  try{
-    const confirmation = await auth.signInWithPhoneNumber(phone, recaptchaVerifier);
-    const code = prompt('Antre kòd SMS ou resevwa:');
-    if(!code) return;
-    const result = await confirmation.confirm(code);
-    // if new user, ensure DB user record exists
-    const uid = result.user.uid;
-    const snap = await db.ref('users/'+uid).once('value');
-    if(!snap.exists()){
-      const custom = genCustomUID();
-      await db.ref('users/'+uid).set({ customUID: custom, name:'', phone, email:'', saleBalance:0, withdrawBalance:0, createdAt:Date.now() });
-      await db.ref('index/customUID/'+custom).set(uid);
-    }
-  }catch(e){ $('authMsg').textContent = 'Phone auth: ' + e.message; }
-}
-$('btnPhoneUp').addEventListener('click', phoneSignFlow);
-$('btnPhoneIn').addEventListener('click', phoneSignFlow);
-
-/* Auth state observer */
-let currentUser = null;
-auth.onAuthStateChanged(async user=>{
-  if(user){
-    currentUser = user;
-    // ensure users/{uid} exists and has customUID
-    const uRef = db.ref('users/'+user.uid);
-    const snap = await uRef.once('value');
-    let data = snap.val();
-    if(!data){
-      const custom = genCustomUID();
-      await uRef.set({ customUID: custom, name: user.displayName||'', phone: user.phoneNumber||'', email: user.email||'', saleBalance:0, withdrawBalance:0, createdAt: Date.now() });
-      await db.ref('index/customUID/'+custom).set(user.uid);
-      data = (await uRef.once('value')).val();
-    } else if(!data.customUID){
-      const custom = genCustomUID();
-      await uRef.update({ customUID: custom });
-      await db.ref('index/customUID/'+custom).set(user.uid);
-      data.customUID = custom;
-    }
-    // update UI with balances & user info
-    $('dispCustom').textContent = data.customUID;
-    $('dispFb').textContent = user.uid;
-    $('fbUid').textContent = user.uid;
-    $('customUID').textContent = data.customUID;
-    $('pf_email').value = user.email || data.email || '';
-    $('pf_name').value = data.name || '';
-    $('pf_phone').value = data.phone || '';
-    $('saleBal').textContent = fmt(data.saleBalance || 0) + ' minit';
-    $('withdrawBal').textContent = fmt(data.withdrawBalance || 0) + ' Gdes';
-    $('py_sale').textContent = fmt(data.saleBalance || 0);
-    $('py_with').textContent = fmt(data.withdrawBalance || 0);
-    // show app
-    showApp();
-    // attach realtime listener to user balances
-    db.ref('users/'+user.uid).on('value', snap2=>{
-      const u = snap2.val() || {};
-      $('saleBal').textContent = fmt(u.saleBalance || 0) + ' minit';
-      $('withdrawBal').textContent = fmt(u.withdrawBalance || 0) + ' Gdes';
-      $('py_sale').textContent = fmt(u.saleBalance || 0);
-      $('py_with').textContent = fmt(u.withdrawBalance || 0);
+    // Verify user session
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("authSection").classList.add("hidden");
+        document.getElementById("appSection").classList.remove("hidden");
+        document.getElementById("uidDisplay").innerText = `UID: ${user.uid}`;
+      } else {
+        document.getElementById("authSection").classList.remove("hidden");
+        document.getElementById("appSection").classList.add("hidden");
+      }
     });
-    // load transactions
-    loadTransactions(data.customUID);
-  } else {
-    currentUser = null;
-    // cleanup listeners optionally
-    showAuthView('signup');
-    $('top-notice').textContent = 'Byenvini — Konekte pou kontinye';
-    $('authMsg').textContent = '';
-    $('dispCustom').textContent = '—';
-    $('dispFb').textContent = '—';
-    $('fbUid').textContent = '—';
-    $('customUID').textContent = '—';
-    $('pf_email').value = '';
-    $('pf_name').value = '';
-    $('pf_phone').value = '';
-    $('saleBal').textContent = '0.00 minit';
-    $('withdrawBal').textContent = '0.00 Gdes';
-    $('txList').innerHTML = '';
-    $('bottomNav').style.display = 'none';
-  }
-});
 
-/* Logout */
-$('btnLogout').addEventListener('click', ()=> auth.signOut());
+    // Signup email/password
+    window.signup = () => {
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => alert("✅ Kont kreye!"))
+        .catch(err => alert(err.message));
+    };
 
-/* ================= TRANSACTION LOGIC ================= */
-/* constants */
-const RATE = 0.85;      // 100 min => 85 Gdes -> 0.85 Gdes/min
-const FEE_PERC = 0.15;  // 15%
+    // Login email/password
+    window.login = () => {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      signInWithEmailAndPassword(auth, email, password)
+        .catch(err => alert(err.message));
+    };
 
-/* Voye minit */
-$('btnVoye').addEventListener('click', async()=>{
-  if(!currentUser){ $('voyeMsg').textContent='Ou dwe konekte.'; return; }
-  const op = $('voyeOperator').value;
-  const minit = Number($('voyeMinit').value);
-  $('voyeMsg').textContent = '';
-  if(!op){ $('voyeMsg').textContent='Chwazi operatè.'; return; }
-  if(!minit || minit < 100){ $('voyeMsg').textContent='Minimòm 100 minit.'; return; }
-  if(op==='digicel' && minit>1000){ $('voyeMsg').textContent='Digicel max 1000 minit.'; return; }
-  if(op==='natcom' && minit>500){ $('voyeMsg').textContent='Natcom max 500 minit.'; return; }
+    // Login Google
+    window.loginGoogle = () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider).catch(err => alert(err.message));
+    };
 
-  try{
-    // record transaction under transactions/{customUID}
-    const uSnap = await db.ref('users/'+currentUser.uid).once('value');
-    const custom = (uSnap.val() && uSnap.val().customUID) || genCustomUID();
-    const txRef = db.ref('transactions/'+custom).push();
-    const tx = { timestamp: Date.now(), type:'VoyeMinit', operator:op, minit, feePercent: FEE_PERC, status:'pending' };
-    await txRef.set(tx);
+    // Logout
+    window.logout = () => {
+      signOut(auth);
+    };
+  </script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-    // increment saleBalance transactionally
-    await db.ref('users/'+currentUser.uid+'/saleBalance').transaction(v => (v||0) + minit);
+  <!-- Auth Section -->
+  <section id="authSection" class="w-full max-w-sm mx-auto bg-white shadow-lg rounded-2xl p-6 space-y-6">
+    <h1 class="text-2xl font-bold text-center text-blue-600">ARS 📱</h1>
+    <p class="text-center text-gray-500">Enskri oswa konekte pou kontinye</p>
 
-    $('voyeMsg').textContent = `✅ ${minit} minit anrejistre sou Sale Balance.`;
-    // reload tx
-    loadTransactions(custom);
-  }catch(e){ $('voyeMsg').textContent = e.message; }
-});
+    <!-- Signup -->
+    <div class="space-y-3">
+      <input id="signupEmail" type="email" placeholder="📧 Email" class="w-full p-3 border rounded-xl">
+      <input id="signupPassword" type="password" placeholder="🔑 Modpas" class="w-full p-3 border rounded-xl">
+      <button onclick="signup()" class="w-full bg-blue-600 text-white p-3 rounded-xl">📌 Enskri</button>
+    </div>
 
-/* dev simulate */
-$('btnVoyeSim').addEventListener('click', ()=>{ $('voyeOperator').value='digicel'; $('voyeMinit').value=150; $('btnVoye').click(); });
+    <hr class="my-4">
 
-/* Transfer Sale -> Withdraw */
-$('btnTransfer').addEventListener('click', async()=>{
-  if(!currentUser){ $('pyMsg').textContent='Ou dwe konekte.'; return; }
-  const minit = Number($('py_amount').value);
-  if(!minit || minit < 100){ $('pyMsg').textContent='Minimòm 100 minit pou transfè.'; return; }
-  try{
-    // check saleBalance
-    const userSnap = await db.ref('users/'+currentUser.uid).once('value');
-    const sale = Number(userSnap.val().saleBalance || 0);
-    if(minit > sale){ $('pyMsg').textContent='Pa gen ase minit sou Sale Balance.'; return; }
+    <!-- Login -->
+    <div class="space-y-3">
+      <input id="loginEmail" type="email" placeholder="📧 Email" class="w-full p-3 border rounded-xl">
+      <input id="loginPassword" type="password" placeholder="🔑 Modpas" class="w-full p-3 border rounded-xl">
+      <button onclick="login()" class="w-full bg-green-600 text-white p-3 rounded-xl">🔐 Konekte</button>
+      <button onclick="loginGoogle()" class="w-full bg-red-500 text-white p-3 rounded-xl">🌍 Google Login</button>
+    </div>
+  </section>
 
-    // remove from saleBalance
-    await db.ref('users/'+currentUser.uid+'/saleBalance').transaction(v => (v||0) - minit);
+  <!-- App Section -->
+  <section id="appSection" class="hidden w-full max-w-md bg-white shadow-xl rounded-2xl p-4 relative">
+    
+    <!-- Header -->
+    <header class="bg-blue-600 text-white text-center rounded-xl p-3 mb-4">
+      <p id="uidDisplay" class="text-xs">UID: ---</p>
+      <p class="font-bold">👋 Byenvini nan ARS App</p>
+      <p class="text-sm">Frè sistèm lan: 15% | 100 minit = 85 gdes</p>
+    </header>
 
-    // compute conversion and fee
-    const gross = +(minit * RATE).toFixed(2);
-    const fee = +(gross * FEE_PERC).toFixed(2);
-    const net = +(gross - fee).toFixed(2);
+    <!-- Balance -->
+    <div class="bg-gray-100 p-4 rounded-xl text-center mb-4">
+      <p class="text-lg font-bold">💰 Balance: 0 MINIT</p>
+    </div>
 
-    // add net to withdrawBalance
-    await db.ref('users/'+currentUser.uid+'/withdrawBalance').transaction(v => (v||0) + net);
+    <!-- Pages (for navigation content) -->
+    <div id="pageContent" class="p-3 text-center text-gray-600">
+      <p>Chwazi youn nan bouton anba yo 👇</p>
+    </div>
 
-    // log transaction under customUID
-    const userData = await db.ref('users/'+currentUser.uid).once('value');
-    const custom = userData.val().customUID;
-    await db.ref('transactions/'+custom).push({ timestamp: Date.now(), type:'SaleToWithdraw', minit, gross, fee, net, status:'completed' });
+    <!-- Bottom Navbar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-inner flex justify-around p-2 rounded-t-xl">
+      <button onclick="loadPage('voye')" class="flex-1 text-center">📤 Voye</button>
+      <button onclick="loadPage('peyman')" class="flex-1 text-center">💳 Peman</button>
+      <button onclick="loadPage('profil')" class="flex-1 text-center">👤 Profil</button>
+      <button onclick="loadPage('istorik')" class="flex-1 text-center">📜 Istorik</button>
+      <button onclick="loadPage('about')" class="flex-1 text-center">ℹ️ About</button>
+    </nav>
 
-    $('pyMsg').textContent = `✅ Transfè fini: ${minit} minit → ${net} Gdes apre frè ${fee} Gdes.`;
-    loadTransactions(custom);
-  }catch(e){ $('pyMsg').textContent = e.message; }
-});
+    <!-- Logout -->
+    <button onclick="logout()" class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-xl">🚪 Soti</button>
+  </section>
 
-/* Request payout (open WhatsApp with prefilled message) */
-$('btnReqPayout').addEventListener('click', async()=>{
-  if(!currentUser){ $('pyMsg').textContent='Ou dwe konekte.'; return; }
-  const method = $('py_method').value;
-  const minit = Number($('py_amount').value);
-  if(!method){ $('pyMsg').textContent='Chwazi metòd peman.'; return; }
-  if(!minit || minit <= 0){ $('pyMsg').textContent='Antre kantite valid.'; return; }
-  // build message
-  const userSnap = await db.ref('users/'+currentUser.uid).once('value');
-  const custom = userSnap.val().customUID;
-  const text = `PAYOUT REQUEST\nUID: ${custom}\nMetòd: ${method}\nKantite minit: ${minit}\nTan: ${new Date().toLocaleString()}`;
-  window.open('https://wa.me/50947111123?text=' + encodeURIComponent(text), '_blank');
-});
-
-/* Save profile */
-$('btnSaveProfile').addEventListener('click', async()=>{
-  if(!currentUser){ $('pfMsg').textContent='Ou dwe konekte.'; return; }
-  const name = $('pf_name').value.trim();
-  const phone = $('pf_phone').value.trim();
-  try{
-    await db.ref('users/'+currentUser.uid).update({ name, phone });
-    $('pfMsg').textContent = 'Profil an sove ✅';
-  }catch(e){ $('pfMsg').textContent = e.message; }
-});
-
-/* ================= Transactions listing ================= */
-async function loadTransactions(customUID){
-  const list = $('txList');
-  list.innerHTML = '<div class="small-muted">Chaje tranzaksyon...</div>';
-  if(!customUID){ list.innerHTML = '<div class="small-muted">Pa gen tranzaksyon.</div>'; return; }
-  const snap = await db.ref('transactions/'+customUID).orderByChild('timestamp').once('value');
-  if(!snap.exists()){ list.innerHTML = '<div class="small-muted">Ou poko gen tranzaksyon.</div>'; return; }
-  const data = snap.val();
-  // convert and sort desc
-  const arr = Object.values(data).sort((a,b)=>b.timestamp - a.timestamp);
-  list.innerHTML = '';
-  arr.forEach((tx, i)=>{
-    const el = document.createElement('div');
-    el.className = 'tx-item';
-    const date = new Date(tx.timestamp).toLocaleString();
-    let content = `<div><strong>${tx.type}</strong> • <span class="muted">${date}</span></div>`;
-    content += `<div style="margin-top:6px">Minit: ${tx.minit || '-'} • Gross: ${tx.gross || '-'} • Fee: ${tx.fee || '-'} • Net: ${tx.net || '-'}</div>`;
-    content += `<div class="meta">Status: ${tx.status || '-'} • Method: ${tx.operator || tx.method || '-'}</div>`;
-    el.innerHTML = content;
-    list.appendChild(el);
-  });
-}
-
-/* load transactions by current user's customUID */
-async function loadTransactionsForCurrent(){
-  if(!currentUser) return;
-  const u = await db.ref('users/'+currentUser.uid).once('value');
-  const custom = u.val() && u.val().customUID;
-  if(custom) loadTransactions(custom);
-}
-
-/* Shortcut nav */
-document.querySelectorAll('.app-nav .nav-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=> showSection(btn.dataset.target));
-});
-document.querySelectorAll('.bottom-nav .nav-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=> showSection(btn.dataset.target));
-});
-$('openHistory').addEventListener('click', ()=> { showSection('istorik'); });
-$('openAbout').addEventListener('click', ()=> { showSection('about'); });
-$('goVoye').addEventListener('click', ()=> showSection('voye'));
-$('goPeyman').addEventListener('click', ()=> showSection('peyman'));
-
-/* wire logout also on auth sign out */
-$('btnLogout').addEventListener('click', ()=> auth.signOut());
-
-/* On startup ensure recaptcha for phone */
-ensureRecaptcha();
-</script>
-
+  <script>
+    function loadPage(page) {
+      const content = {
+        "voye": "📤 Paj Voye Minit",
+        "peyman": "💳 Paj Peman",
+        "profil": "👤 Paj Profil",
+        "istorik": "📜 Paj Istorik Transaksyon",
+        "about": "ℹ️ CEO: ARS | Vèsyon 5.0.1"
+      };
+      document.getElementById("pageContent").innerHTML = `<p class="text-lg font-bold">${content[page]}</p>`;
+    }
+  </script>
 </body>
                                                                                </html>
