@@ -1,138 +1,274 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ARS App</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase -->
-  <script type="module">
-    // Import Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echanj Plus App</title>
 
-    const firebaseConfig = {
-      apiKey: "VIRE_API_KEY_W_LA",
-      authDomain: "ARS-APP.firebaseapp.com",
-      projectId: "ARS-APP",
-      storageBucket: "ARS-APP.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:xxxx"
-    };
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+<style>
+/* Reset & body */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0a1f44;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    // Verify user session
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById("authSection").classList.add("hidden");
-        document.getElementById("appSection").classList.remove("hidden");
-        document.getElementById("uidDisplay").innerText = `UID: ${user.uid}`;
-      } else {
-        document.getElementById("authSection").classList.remove("hidden");
-        document.getElementById("appSection").classList.add("hidden");
-      }
-    });
+/* Logo */
+.logo {
+  width: 150px;
+  margin: 20px 0;
+}
 
-    // Signup email/password
-    window.signup = () => {
-      const email = document.getElementById("signupEmail").value;
-      const password = document.getElementById("signupPassword").value;
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(() => alert("✅ Kont kreye!"))
-        .catch(err => alert(err.message));
-    };
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-    // Login email/password
-    window.login = () => {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .catch(err => alert(err.message));
-    };
+header h1 {
+  font-style: italic;
+  color: #FFD700;
+  margin: 0;
+}
 
-    // Login Google
-    window.loginGoogle = () => {
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider).catch(err => alert(err.message));
-    };
+/* Navigation */
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
 
-    // Logout
-    window.logout = () => {
-      signOut(auth);
-    };
-  </script>
+nav button {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+nav button:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Container for sections */
+section {
+  display: none;
+  width: 95%;
+  max-width: 500px;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1em;
+}
+
+/* Buttons */
+button.action-btn {
+  background: #FFD700;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.action-btn:hover {
+  background: #FFA500;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th, td {
+  border: 1px solid white;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #FFD700;
+  color: black;
+}
+
+tr:nth-child(even) {
+  background: rgba(255,255,255,0.1);
+}
+
+/* Responsive */
+@media(max-width:600px){
+  nav {
+    flex-direction: column;
+  }
+}
+</style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <!-- Auth Section -->
-  <section id="authSection" class="w-full max-w-sm mx-auto bg-white shadow-lg rounded-2xl p-6 space-y-6">
-    <h1 class="text-2xl font-bold text-center text-blue-600">ARS 📱</h1>
-    <p class="text-center text-gray-500">Enskri oswa konekte pou kontinye</p>
+<body>
 
-    <!-- Signup -->
-    <div class="space-y-3">
-      <input id="signupEmail" type="email" placeholder="📧 Email" class="w-full p-3 border rounded-xl">
-      <input id="signupPassword" type="password" placeholder="🔑 Modpas" class="w-full p-3 border rounded-xl">
-      <button onclick="signup()" class="w-full bg-blue-600 text-white p-3 rounded-xl">📌 Enskri</button>
-    </div>
+<!-- Logo -->
+<img src="https://i.postimg.cc/L8VgxQq9/image1-removebg-preview.png" alt="Echanj Plus" class="logo">
 
-    <hr class="my-4">
+<header>
+  <h1>Echanj Plus</h1>
+</header>
 
-    <!-- Login -->
-    <div class="space-y-3">
-      <input id="loginEmail" type="email" placeholder="📧 Email" class="w-full p-3 border rounded-xl">
-      <input id="loginPassword" type="password" placeholder="🔑 Modpas" class="w-full p-3 border rounded-xl">
-      <button onclick="login()" class="w-full bg-green-600 text-white p-3 rounded-xl">🔐 Konekte</button>
-      <button onclick="loginGoogle()" class="w-full bg-red-500 text-white p-3 rounded-xl">🌍 Google Login</button>
-    </div>
-  </section>
+<!-- Navigation -->
+<nav>
+  <button onclick="showSection('home')">Home</button>
+  <button onclick="showSection('voyeminit')">Voye Minit</button>
+  <button onclick="showSection('peyman')">Peman</button>
+  <button onclick="showSection('profil')">Profil</button>
+  <button onclick="showSection('istorik')">Istorik</button>
+  <button onclick="showSection('about')">About</button>
+</nav>
 
-  <!-- App Section -->
-  <section id="appSection" class="hidden w-full max-w-md bg-white shadow-xl rounded-2xl p-4 relative">
-    
-    <!-- Header -->
-    <header class="bg-blue-600 text-white text-center rounded-xl p-3 mb-4">
-      <p id="uidDisplay" class="text-xs">UID: ---</p>
-      <p class="font-bold">👋 Byenvini nan ARS App</p>
-      <p class="text-sm">Frè sistèm lan: 15% | 100 minit = 85 gdes</p>
-    </header>
+<!-- Sections -->
+<section id="loginSection">
+  <h2>Login / Sign Up Obligatory</h2>
+  <form id="signupForm">
+    <input type="text" placeholder="Non" id="signupName" required>
+    <input type="email" placeholder="Email" id="signupEmail" required>
+    <input type="text" placeholder="Téléphone" id="signupPhone" required>
+    <input type="password" placeholder="Modpas" id="signupPassword" required>
+    <button type="submit" class="action-btn">Sign Up</button>
+    <button type="button" onclick="loginWithGoogle()" class="action-btn">Login Google</button>
+    <button type="button" onclick="loginWithPhone()" class="action-btn">Login Phone</button>
+  </form>
+</section>
 
-    <!-- Balance -->
-    <div class="bg-gray-100 p-4 rounded-xl text-center mb-4">
-      <p class="text-lg font-bold">💰 Balance: 0 MINIT</p>
-    </div>
+<section id="home">
+  <h2>Home</h2>
+  <p>UID: <span id="uidDisplay">...</span></p>
+  <p>Sale Balance: <span id="saleBalance">0</span> minit</p>
+  <p>Withdraw Balance: <span id="withdrawBalance">0</span> gdes</p>
+</section>
 
-    <!-- Pages (for navigation content) -->
-    <div id="pageContent" class="p-3 text-center text-gray-600">
-      <p>Chwazi youn nan bouton anba yo 👇</p>
-    </div>
+<section id="voyeminit">
+  <h2>Voye Minit</h2>
+  <form id="voyeminitForm">
+    <select id="operateur" required>
+      <option value="">Chwazi Operatè</option>
+      <option value="digicel">Digicel</option>
+      <option value="natcom">Natcom</option>
+    </select>
+    <input type="number" id="quantite" placeholder="Kantite minit" required>
+    <button type="submit" class="action-btn">Voye Minit</button>
+  </form>
+</section>
 
-    <!-- Bottom Navbar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-inner flex justify-around p-2 rounded-t-xl">
-      <button onclick="loadPage('voye')" class="flex-1 text-center">📤 Voye</button>
-      <button onclick="loadPage('peyman')" class="flex-1 text-center">💳 Peman</button>
-      <button onclick="loadPage('profil')" class="flex-1 text-center">👤 Profil</button>
-      <button onclick="loadPage('istorik')" class="flex-1 text-center">📜 Istorik</button>
-      <button onclick="loadPage('about')" class="flex-1 text-center">ℹ️ About</button>
-    </nav>
+<section id="peyman">
+  <h2>Peman</h2>
+  <p>Sale Balance: <span id="saleBalanceP">0</span> minit</p>
+  <p>Withdraw Balance: <span id="withdrawBalanceP">0</span> gdes</p>
+  <form id="peymanForm">
+    <select id="paymentMethod">
+      <option value="moncash">Mon Cash</option>
+      <option value="natcash">NatCash</option>
+      <option value="paryajlakay">Paryaj Lakay</option>
+      <option value="paryajpam">Paryaj Pam</option>
+      <option value="biwoars">Biwo ARS</option>
+    </select>
+    <input type="number" id="withdrawAmount" placeholder="Kantite pou retire" required>
+    <button type="submit" class="action-btn">Send Peyman</button>
+  </form>
+</section>
 
-    <!-- Logout -->
-    <button onclick="logout()" class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-xl">🚪 Soti</button>
-  </section>
+<section id="profil">
+  <h2>Profil</h2>
+  <form id="profilForm">
+    <input type="text" id="profilName" placeholder="Non" required>
+    <input type="email" id="profilEmail" placeholder="Email" required>
+    <input type="text" id="profilPhone" placeholder="Téléphone" required>
+    <button type="submit" class="action-btn">Anrejistre</button>
+  </form>
+</section>
 
-  <script>
-    function loadPage(page) {
-      const content = {
-        "voye": "📤 Paj Voye Minit",
-        "peyman": "💳 Paj Peman",
-        "profil": "👤 Paj Profil",
-        "istorik": "📜 Paj Istorik Transaksyon",
-        "about": "ℹ️ CEO: ARS | Vèsyon 5.0.1"
-      };
-      document.getElementById("pageContent").innerHTML = `<p class="text-lg font-bold">${content[page]}</p>`;
-    }
-  </script>
-</body>
-                                                                               </html>
+<section id="istorik">
+  <h2>Istorik Tranzaksyon</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Dat / Lè</th>
+        <th>Kantite Minit</th>
+        <th>Frè Sistèm</th>
+        <th>Res ki rete</th>
+        <th>Metòd Peyman</th>
+      </tr>
+    </thead>
+    <tbody id="transaction-body">
+    </tbody>
+  </table>
+</section>
+
+<section id="about">
+  <h2>About</h2>
+  <p>Echanj Plus se yon sèvis pou itilizatè ayisyen vann minit.</p>
+  <p>WhatsApp: +50947111123</p>
+  <p>Email: echanjplus@gmail.com</p>
+</section>
+
+<script>
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  authDomain: "echanj-plus-778cd.firebaseapp.com",
+  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+  projectId: "echanj-plus-778cd",
+  storageBucket: "echanj-plus-778cd.appspot.com",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+  measurementId: "G-J1BQRF32ZW"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+/* Show section */
+function showSection(id){
+  document.querySelectorAll('section').forEach(sec => sec.style.display='none');
+  document.getElementById(id).style.display = 'block';
+}
+
+/* SignUp */
+document.getElementById('signupForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const email = document.getElementById('signupEmail').value;
+  const pass = document.getElementById('signupPassword').value;
+  auth.createUserWithEmailAndPassword(email, pass)
+  .then(userCredential=>{
+    const user = userCredential.user;
+    localStorage.setItem('uid', user.uid);
+    document.getElementById('uidDisplay').innerText = user.uid;
+    alert('Kreye kont avèk siksè!');
+    showSection('home');
+  }).catch
