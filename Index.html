@@ -1,274 +1,171 @@
 <!DOCTYPE html>
 <html lang="ht">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Echanj Plus App</title>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
-<style>
-/* Reset & body */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0a1f44;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Logo */
-.logo {
-  width: 150px;
-  margin: 20px 0;
-}
-
-/* Header */
-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-header h1 {
-  font-style: italic;
-  color: #FFD700;
-  margin: 0;
-}
-
-/* Navigation */
-nav {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-nav button {
-  background: rgba(255,255,255,0.1);
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-nav button:hover {
-  background: rgba(255,255,255,0.3);
-}
-
-/* Container for sections */
-section {
-  display: none;
-  width: 95%;
-  max-width: 500px;
-  background: rgba(255,255,255,0.1);
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-}
-
-/* Form styling */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-input, select {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  font-size: 1em;
-}
-
-/* Buttons */
-button.action-btn {
-  background: #FFD700;
-  color: black;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button.action-btn:hover {
-  background: #FFA500;
-}
-
-/* Table */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-th, td {
-  border: 1px solid white;
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background: #FFD700;
-  color: black;
-}
-
-tr:nth-child(even) {
-  background: rgba(255,255,255,0.1);
-}
-
-/* Responsive */
-@media(max-width:600px){
-  nav {
-    flex-direction: column;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Echanj Plus — Antre / Enskri</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
+    body {
+      background: linear-gradient(135deg, #50502f, #1e1e1e);
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; color: #fff;
+    }
+    .container {
+      background: rgba(255,255,255,0.1);
+      padding: 30px; border-radius: 15px; width: 90%; max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+    }
+    h2 { text-align: center; margin-bottom: 20px; color: #e0e0e0; }
+    input {
+      width: 100%; padding: 12px; margin: 8px 0;
+      border: none; border-radius: 8px;
+    }
+    input[type="email"], input[type="password"], input[type="text"] {
+      background: rgba(255,255,255,0.8);
+      color: #000;
+    }
+    button {
+      width: 100%; padding: 12px; border: none;
+      background: #50502f; color: white; font-weight: bold;
+      border-radius: 8px; cursor: pointer; transition: 0.3s;
+    }
+    button:hover { background: #6b6b3b; }
+    .toggle {
+      text-align: center; margin-top: 15px;
+      font-size: 0.9em;
+    }
+    .toggle span {
+      color: #9cd67d; cursor: pointer; font-weight: bold;
+    }
+    .msg { text-align: center; margin-top: 10px; font-size: 0.9em; color: #ffcccb; }
+    .google-btn {
+      background: #fff; color: #000; display: flex; align-items: center;
+      justify-content: center; gap: 10px; font-weight: 600;
+    }
+    .google-btn img { width: 20px; height: 20px; }
+    @media (max-width: 600px) {
+      .container { width: 95%; padding: 25px; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- Logo -->
-<img src="https://i.postimg.cc/L8VgxQq9/image1-removebg-preview.png" alt="Echanj Plus" class="logo">
+  <div class="container" id="loginContainer">
+    <h2>Antre nan kont ou</h2>
+    <input type="email" id="loginEmail" placeholder="Imèl ou" required />
+    <input type="password" id="loginPassword" placeholder="Modpas ou" required />
+    <button onclick="login()">Konekte</button>
+    <button class="google-btn" onclick="googleLogin()">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+      Konekte ak Google
+    </button>
+    <p class="msg" id="loginMsg"></p>
+    <div class="toggle">Pa gen kont? <span onclick="showRegister()">Enskri</span></div>
+  </div>
 
-<header>
-  <h1>Echanj Plus</h1>
-</header>
+  <div class="container" id="registerContainer" style="display:none;">
+    <h2>Kreye yon kont</h2>
+    <input type="text" id="regName" placeholder="Non konplè" required />
+    <input type="email" id="regEmail" placeholder="Imèl ou" required />
+    <input type="password" id="regPassword" placeholder="Modpas ou" required />
+    <button onclick="register()">Enskri</button>
+    <p class="msg" id="registerMsg"></p>
+    <div class="toggle">Ou gen kont deja? <span onclick="showLogin()">Konekte</span></div>
+  </div>
 
-<!-- Navigation -->
-<nav>
-  <button onclick="showSection('home')">Home</button>
-  <button onclick="showSection('voyeminit')">Voye Minit</button>
-  <button onclick="showSection('peyman')">Peman</button>
-  <button onclick="showSection('profil')">Profil</button>
-  <button onclick="showSection('istorik')">Istorik</button>
-  <button onclick="showSection('about')">About</button>
-</nav>
+  <!-- Firebase & JS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } 
+    from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
-<!-- Sections -->
-<section id="loginSection">
-  <h2>Login / Sign Up Obligatory</h2>
-  <form id="signupForm">
-    <input type="text" placeholder="Non" id="signupName" required>
-    <input type="email" placeholder="Email" id="signupEmail" required>
-    <input type="text" placeholder="Téléphone" id="signupPhone" required>
-    <input type="password" placeholder="Modpas" id="signupPassword" required>
-    <button type="submit" class="action-btn">Sign Up</button>
-    <button type="button" onclick="loginWithGoogle()" class="action-btn">Login Google</button>
-    <button type="button" onclick="loginWithPhone()" class="action-btn">Login Phone</button>
-  </form>
-</section>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+      authDomain: "echanj-plus-778cd.firebaseapp.com",
+      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+      projectId: "echanj-plus-778cd",
+      storageBucket: "echanj-plus-778cd.firebasestorage.app",
+      messagingSenderId: "111144762929",
+      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+      measurementId: "G-J1BQRF32ZW"
+    };
 
-<section id="home">
-  <h2>Home</h2>
-  <p>UID: <span id="uidDisplay">...</span></p>
-  <p>Sale Balance: <span id="saleBalance">0</span> minit</p>
-  <p>Withdraw Balance: <span id="withdrawBalance">0</span> gdes</p>
-</section>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-<section id="voyeminit">
-  <h2>Voye Minit</h2>
-  <form id="voyeminitForm">
-    <select id="operateur" required>
-      <option value="">Chwazi Operatè</option>
-      <option value="digicel">Digicel</option>
-      <option value="natcom">Natcom</option>
-    </select>
-    <input type="number" id="quantite" placeholder="Kantite minit" required>
-    <button type="submit" class="action-btn">Voye Minit</button>
-  </form>
-</section>
+    const loginContainer = document.getElementById("loginContainer");
+    const registerContainer = document.getElementById("registerContainer");
 
-<section id="peyman">
-  <h2>Peman</h2>
-  <p>Sale Balance: <span id="saleBalanceP">0</span> minit</p>
-  <p>Withdraw Balance: <span id="withdrawBalanceP">0</span> gdes</p>
-  <form id="peymanForm">
-    <select id="paymentMethod">
-      <option value="moncash">Mon Cash</option>
-      <option value="natcash">NatCash</option>
-      <option value="paryajlakay">Paryaj Lakay</option>
-      <option value="paryajpam">Paryaj Pam</option>
-      <option value="biwoars">Biwo ARS</option>
-    </select>
-    <input type="number" id="withdrawAmount" placeholder="Kantite pou retire" required>
-    <button type="submit" class="action-btn">Send Peyman</button>
-  </form>
-</section>
+    function showLogin() {
+      registerContainer.style.display = "none";
+      loginContainer.style.display = "block";
+    }
+    function showRegister() {
+      loginContainer.style.display = "none";
+      registerContainer.style.display = "block";
+    }
 
-<section id="profil">
-  <h2>Profil</h2>
-  <form id="profilForm">
-    <input type="text" id="profilName" placeholder="Non" required>
-    <input type="email" id="profilEmail" placeholder="Email" required>
-    <input type="text" id="profilPhone" placeholder="Téléphone" required>
-    <button type="submit" class="action-btn">Anrejistre</button>
-  </form>
-</section>
+    window.showLogin = showLogin;
+    window.showRegister = showRegister;
 
-<section id="istorik">
-  <h2>Istorik Tranzaksyon</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Dat / Lè</th>
-        <th>Kantite Minit</th>
-        <th>Frè Sistèm</th>
-        <th>Res ki rete</th>
-        <th>Metòd Peyman</th>
-      </tr>
-    </thead>
-    <tbody id="transaction-body">
-    </tbody>
-  </table>
-</section>
+    // Register
+    async function register() {
+      const email = document.getElementById("regEmail").value;
+      const password = document.getElementById("regPassword").value;
+      const name = document.getElementById("regName").value;
+      const msg = document.getElementById("registerMsg");
 
-<section id="about">
-  <h2>About</h2>
-  <p>Echanj Plus se yon sèvis pou itilizatè ayisyen vann minit.</p>
-  <p>WhatsApp: +50947111123</p>
-  <p>Email: echanjplus@gmail.com</p>
-</section>
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        msg.style.color = "#9cd67d";
+        msg.innerText = "Kont ou kreye avèk siksè!";
+      } catch (error) {
+        if (error.code === "auth/email-already-in-use") msg.innerText = "Kont sa deja egziste.";
+        else if (error.code === "auth/weak-password") msg.innerText = "Modpas la two fèb.";
+        else msg.innerText = "Gen yon pwoblèm. Tanpri tcheke enfòmasyon yo.";
+      }
+    }
 
-<script>
-/* Firebase Config */
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.appspot.com",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-  measurementId: "G-J1BQRF32ZW"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
+    // Login
+    async function login() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      const msg = document.getElementById("loginMsg");
 
-/* Show section */
-function showSection(id){
-  document.querySelectorAll('section').forEach(sec => sec.style.display='none');
-  document.getElementById(id).style.display = 'block';
-}
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        msg.style.color = "#9cd67d";
+        msg.innerText = "Byenvini! Ou konekte avèk siksè.";
+        setTimeout(() => { window.location.href = "home.html"; }, 1500);
+      } catch (error) {
+        if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+          msg.innerText = "Imèl oswa modpas ou pa kòrèk.";
+        } else if (error.code === "auth/user-not-found") {
+          msg.innerText = "Kont sa pa egziste.";
+        } else {
+          msg.innerText = "Rezo pa disponib oswa gen yon pwoblèm.";
+        }
+      }
+    }
 
-/* SignUp */
-document.getElementById('signupForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const email = document.getElementById('signupEmail').value;
-  const pass = document.getElementById('signupPassword').value;
-  auth.createUserWithEmailAndPassword(email, pass)
-  .then(userCredential=>{
-    const user = userCredential.user;
-    localStorage.setItem('uid', user.uid);
-    document.getElementById('uidDisplay').innerText = user.uid;
-    alert('Kreye kont avèk siksè!');
-    showSection('home');
-  }).catch
+    // Google login
+    async function googleLogin() {
+      const msg = document.getElementById("loginMsg");
+      try {
+        await signInWithPopup(auth, provider);
+        msg.style.color = "#9cd67d";
+        msg.innerText = "Koneksyon reyisi!";
+        setTimeout(() => { window.location.href = "home.html"; }, 1500);
+      } catch (error) {
+        msg.innerText = "Koneksyon echwe. Eseye ankò.";
+      }
+    }
+
+    window.login = login;
+    window.register = register;
+    window.googleLogin = googleLogin;
+  </script>
+</body>
+</html>
