@@ -1,171 +1,427 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ht">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Echanj Plus — Antre / Enskri</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Echanj Plus — App</title>
+  <link rel="icon" href="https://i.postimg.cc/25mXDFwK/image1.png" />
+  <!-- Tailwind CDN (dev use) -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
-    body {
-      background: linear-gradient(135deg, #50502f, #1e1e1e);
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; color: #fff;
-    }
-    .container {
-      background: rgba(255,255,255,0.1);
-      padding: 30px; border-radius: 15px; width: 90%; max-width: 400px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
-    }
-    h2 { text-align: center; margin-bottom: 20px; color: #e0e0e0; }
-    input {
-      width: 100%; padding: 12px; margin: 8px 0;
-      border: none; border-radius: 8px;
-    }
-    input[type="email"], input[type="password"], input[type="text"] {
-      background: rgba(255,255,255,0.8);
-      color: #000;
-    }
-    button {
-      width: 100%; padding: 12px; border: none;
-      background: #50502f; color: white; font-weight: bold;
-      border-radius: 8px; cursor: pointer; transition: 0.3s;
-    }
-    button:hover { background: #6b6b3b; }
-    .toggle {
-      text-align: center; margin-top: 15px;
-      font-size: 0.9em;
-    }
-    .toggle span {
-      color: #9cd67d; cursor: pointer; font-weight: bold;
-    }
-    .msg { text-align: center; margin-top: 10px; font-size: 0.9em; color: #ffcccb; }
-    .google-btn {
-      background: #fff; color: #000; display: flex; align-items: center;
-      justify-content: center; gap: 10px; font-weight: 600;
-    }
-    .google-btn img { width: 20px; height: 20px; }
-    @media (max-width: 600px) {
-      .container { width: 95%; padding: 25px; }
-    }
+    .tab-active { background: linear-gradient(90deg,#ffd166,#ffc857); color:#071428; }
+    .glass { background: rgba(255,255,255,0.03); }
   </style>
 </head>
-<body>
+<body class="bg-gradient-to-b from-slate-900 to-slate-800 text-slate-100 min-h-screen">
 
-  <div class="container" id="loginContainer">
-    <h2>Antre nan kont ou</h2>
-    <input type="email" id="loginEmail" placeholder="Imèl ou" required />
-    <input type="password" id="loginPassword" placeholder="Modpas ou" required />
-    <button onclick="login()">Konekte</button>
-    <button class="google-btn" onclick="googleLogin()">
-      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
-      Konekte ak Google
-    </button>
-    <p class="msg" id="loginMsg"></p>
-    <div class="toggle">Pa gen kont? <span onclick="showRegister()">Enskri</span></div>
-  </div>
+<!-- =======================
+     CONFIG / NOTES
+     ======================= -->
+<!--
+  - Sove sa kòm index.html
+  - Kouri sou localhost oswa HTTPS
+  - Aktive Google sign-in nan Firebase Console
+  - Ajiste API_URL si bezwen
+-->
 
-  <div class="container" id="registerContainer" style="display:none;">
-    <h2>Kreye yon kont</h2>
-    <input type="text" id="regName" placeholder="Non konplè" required />
-    <input type="email" id="regEmail" placeholder="Imèl ou" required />
-    <input type="password" id="regPassword" placeholder="Modpas ou" required />
-    <button onclick="register()">Enskri</button>
-    <p class="msg" id="registerMsg"></p>
-    <div class="toggle">Ou gen kont deja? <span onclick="showLogin()">Konekte</span></div>
-  </div>
+<script type="module">
+  // =========================
+  // CONFIG
+  // =========================
+  const API_URL = "https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec";
+  const SYS_WHATSAPP = '50947111123';     // system number (no +)
+  const SUPPORT_WHATSAPP = '17863618020'; // support number e.g. 1 786 361 8020 (no +)
 
-  <!-- Firebase & JS -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } 
-    from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+  // =========================
+  // FIREBASE (v10 modules)
+  // =========================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, setPersistence, browserLocalPersistence,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-      authDomain: "echanj-plus-778cd.firebaseapp.com",
-      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-      projectId: "echanj-plus-778cd",
-      storageBucket: "echanj-plus-778cd.firebasestorage.app",
-      messagingSenderId: "111144762929",
-      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-      measurementId: "G-J1BQRF32ZW"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+    authDomain: "echanj-plus-778cd.firebaseapp.com",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    projectId: "echanj-plus-778cd",
+    storageBucket: "echanj-plus-778cd.firebasestorage.app",
+    messagingSenderId: "111144762929",
+    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+    measurementId: "G-J1BQRF32ZW"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
+  const gProvider = new GoogleAuthProvider();
 
-    const loginContainer = document.getElementById("loginContainer");
-    const registerContainer = document.getElementById("registerContainer");
+  // Persistence so user stays logged in
+  setPersistence(auth, browserLocalPersistence).catch(e => console.warn('persistence:', e.message));
 
-    function showLogin() {
-      registerContainer.style.display = "none";
-      loginContainer.style.display = "block";
+  // =========================
+  // UI TEMPLATE (DOM)
+  // We'll create UI after DOM is ready
+  // =========================
+</script>
+
+<!-- Main App HTML (below) -->
+<div id="root" class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="flex items-center gap-3 p-4">
+    <div class="w-12 h-12 rounded-lg bg-yellow-300 flex items-center justify-center font-extrabold text-slate-900">E+</div>
+    <div>
+      <div class="text-lg font-bold">Echanj Plus</div>
+      <div class="text-sm text-slate-400">Minit ou pa dwe gaspiye — sèvis rapid</div>
+    </div>
+    <button id="openAuthBtn" class="ml-auto text-sm px-3 py-1 border rounded-md glass">Login</button>
+  </header>
+
+  <main class="flex-1 p-4 overflow-auto">
+    <!-- AUTH CARD -->
+    <section id="authCard" class="bg-slate-800 glass rounded-xl p-4 shadow mb-4">
+      <div class="flex items-center gap-3">
+        <img src="https://i.postimg.cc/25mXDFwK/image1.png" class="w-14 h-14 rounded" alt="logo">
+        <div>
+          <div class="text-xl font-bold">Konekte / Kreye kont</div>
+          <div class="text-sm text-slate-400">Itilize imèl oswa Google</div>
+        </div>
+      </div>
+
+      <div class="mt-4 space-y-3">
+        <form id="formAuth" class="space-y-3">
+          <input id="authEmail" type="email" placeholder="Imèl (Gmail)" class="w-full p-3 rounded bg-slate-900 border border-slate-700" required />
+          <input id="authPass" type="password" placeholder="Modpas (min 6)" class="w-full p-3 rounded bg-slate-900 border border-slate-700" required />
+          <div class="flex gap-3">
+            <button id="btnSignIn" type="submit" class="flex-1 bg-yellow-300 text-slate-900 font-bold py-2 rounded">Konekte</button>
+            <button id="btnSignUp" type="button" class="flex-1 border border-slate-600 rounded py-2">Kreye</button>
+          </div>
+        </form>
+
+        <div class="flex items-center gap-3">
+          <div class="flex-1 h-px bg-slate-700"></div>
+          <div class="text-sm text-slate-400">oswa</div>
+          <div class="flex-1 h-px bg-slate-700"></div>
+        </div>
+
+        <button id="btnGoogle" class="w-full py-2 rounded bg-white text-slate-900 flex items-center justify-center gap-2">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"/> Konekte ak Google
+        </button>
+
+        <div id="authNote" class="text-sm text-slate-400 mt-2">Asire w Google Sign-In aktive nan Firebase Console (Auth → Sign-in method → Google).</div>
+      </div>
+    </section>
+
+    <!-- APP (hidden until auth) -->
+    <section id="appMain" class="hidden space-y-4">
+
+      <!-- HOME SCREEN -->
+      <div id="screenHome" class="screen bg-slate-800 glass rounded-xl p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-700" id="homeAvatar"><img id="homeAvatarImg" class="w-full h-full object-cover hidden" /></div>
+          <div>
+            <div id="homeName" class="text-lg font-bold">—</div>
+            <div id="homePhone" class="text-sm text-slate-400">—</div>
+          </div>
+          <div class="ml-auto text-right">
+            <div class="text-sm text-slate-400">Solde est.</div>
+            <div id="homeBalance" class="font-bold">0 G</div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-between items-center">
+          <div class="font-semibold">Dènye tranzaksyon</div>
+          <button id="openSell" class="text-sm px-3 py-1 border rounded glass">Vann</button>
+        </div>
+        <div id="homeTxList" class="mt-3 space-y-2"></div>
+      </div>
+
+      <!-- SELL SCREEN -->
+      <div id="screenSell" class="screen hidden bg-slate-800 glass rounded-xl p-4">
+        <div class="font-semibold">Vann Minit</div>
+        <div class="text-sm text-slate-400">Limit: min 100 — Digicel max 1000 / Natcom max 500</div>
+
+        <input id="sellPhone" placeholder="Nimewo MonCash/NatCash (509...)" class="mt-3 p-3 rounded bg-slate-900" />
+        <input id="sellAmount" type="number" placeholder="Montant (ex:100)" class="mt-2 p-3 rounded bg-slate-900" />
+
+        <div class="mt-3 grid grid-cols-3 gap-2">
+          <button id="btnDigicelSell" class="py-2 rounded bg-yellow-300 text-slate-900 font-bold">Digicel</button>
+          <button id="btnDigicelConfirm" class="py-2 rounded bg-yellow-300 text-slate-900 font-bold">Confirm</button>
+          <button id="btnNatcomSell" class="py-2 rounded bg-yellow-300 text-slate-900 font-bold">Natcom</button>
+        </div>
+
+        <div class="mt-3 flex gap-2">
+          <button id="btnCreateTx" class="flex-1 border rounded py-2">Anrejistre (En attente)</button>
+          <div id="sellStatus" class="text-sm text-slate-400 flex-1"></div>
+        </div>
+
+        <div class="mt-2 text-sm text-red-300" id="blockMessage"></div>
+        <div class="text-yellow-300 font-semibold" id="sellCountdown"></div>
+      </div>
+
+      <!-- TRANSACTIONS SCREEN -->
+      <div id="screenTx" class="screen hidden bg-slate-800 glass rounded-xl p-4">
+        <div class="font-semibold">Transaksyon Mwen</div>
+        <div class="text-sm text-slate-400">Se tranzaksyon ou sèlman</div>
+        <div id="txListArea" class="mt-3 space-y-2"></div>
+      </div>
+
+      <!-- REFERRAL SCREEN -->
+      <div id="screenReferral" class="screen hidden bg-slate-800 glass rounded-xl p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-semibold">Referral</div>
+            <div class="text-sm text-slate-400">Pataje epi touche bonis 7 jou</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-slate-400">Kòd ou</div>
+            <div id="userReferralCode" class="font-bold">ARS-0001</div>
+          </div>
+        </div>
+
+        <div class="mt-3 flex gap-2">
+          <button id="shareReferral" class="flex-1 py-2 rounded bg-blue-600">Pataje WhatsApp</button>
+          <button id="copyReferral" class="py-2 px-3 border rounded">Kopi</button>
+        </div>
+
+        <div class="mt-3 text-sm text-slate-400" id="referralStats">Envite: 0 — Bonis aktif: 0</div>
+      </div>
+
+      <!-- PAYMENT SCREEN -->
+      <div id="screenPayment" class="screen hidden bg-slate-800 glass rounded-xl p-4">
+        <div class="font-semibold">Peyman</div>
+        <div class="text-sm text-slate-400">Antre nimewo MonCash/NatCash pou resevwa lajan</div>
+
+        <input id="payNumber" placeholder="Nimewo resevwa (509...)" class="mt-3 p-3 rounded bg-slate-900" />
+        <div class="mt-3 flex gap-2">
+          <button id="btnSendPay" class="flex-1 py-2 rounded bg-green-600">Voye detay sou WhatsApp</button>
+          <button id="btnRecordPay" class="py-2 px-3 border rounded">Sere</button>
+        </div>
+
+        <div class="mt-3 text-sm text-slate-400">Nimewo sistem: <strong>47111123</strong></div>
+      </div>
+
+      <!-- PROFILE SCREEN -->
+      <div id="screenProfile" class="screen hidden bg-slate-800 glass rounded-xl p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-20 h-20 rounded overflow-hidden bg-slate-700" id="profAvatar"><img id="profAvatarImg" class="w-full h-full object-cover hidden" /></div>
+          <div class="flex-1">
+            <input id="inputName" placeholder="Non ou" class="p-3 rounded bg-slate-900" />
+            <input id="inputPhone" placeholder="Nimewo MonCash/NatCash" class="mt-2 p-3 rounded bg-slate-900" />
+            <div class="mt-2 flex gap-2">
+              <button id="btnPickPhoto" class="flex-1 py-2 rounded bg-yellow-300 text-slate-900">Chwazi foto</button>
+              <button id="btnSaveProfile" class="py-2 px-3 border rounded">Sove</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <button id="btnLogout" class="w-full py-2 rounded bg-red-600">Dekonekte</button>
+        </div>
+      </div>
+
+      <!-- SUPPORT SCREEN -->
+      <div id="screenSupport" class="screen hidden bg-slate-800 glass rounded-xl p-4">
+        <div class="font-semibold">Sipò & Chat</div>
+        <div class="text-sm text-slate-400">Chwazi fason pou kontakte nou</div>
+        <div class="mt-3 grid grid-cols-2 gap-2">
+          <a id="supportWA" class="block text-center py-2 rounded bg-green-600" target="_blank">WhatsApp</a>
+          <a id="supportCall" class="block text-center py-2 rounded bg-slate-700" href="tel:+17863618020">Rele</a>
+        </div>
+        <div class="mt-3 text-sm text-slate-400">Email: echanjplus@gmail.com</div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottomNav" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 hidden">
+    <div class="bg-transparent flex gap-3">
+      <button class="tab tab-active p-3 rounded-lg" data-screen="screenHome">🏠<div class="text-xs">Akèy</div></button>
+      <button class="tab p-3 rounded-lg" data-screen="screenSell">💰<div class="text-xs">Vann</div></button>
+      <button class="tab p-3 rounded-lg" data-screen="screenTx">📜<div class="text-xs">Tx</div></button>
+      <button class="tab p-3 rounded-lg" data-screen="screenReferral">🤝<div class="text-xs">Referral</div></button>
+      <button class="tab p-3 rounded-lg" data-screen="screenProfile">👤<div class="text-xs">Profil</div></button>
+      <button class="tab p-3 rounded-lg" data-screen="screenSupport">💬<div class="text-xs">Sipo</div></button>
+    </div>
+  </nav>
+
+</div>
+
+<script type="module">
+  // Re-import modules inside this script block for scope (some browsers)
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+  // UI Refs
+  const authCard = document.getElementById('authCard');
+  const appMain = document.getElementById('appMain');
+  const bottomNav = document.getElementById('bottomNav');
+  const tabs = document.querySelectorAll('.tab');
+  const screens = document.querySelectorAll('.screen');
+
+  const formAuth = document.getElementById('formAuth');
+  const btnSignUp = document.getElementById('btnSignUp');
+  const btnGoogle = document.getElementById('btnGoogle');
+  const openAuthBtn = document.getElementById('openAuthBtn');
+
+  const authEmail = document.getElementById('authEmail');
+  const authPass = document.getElementById('authPass');
+
+  const homeName = document.getElementById('homeName');
+  const homePhone = document.getElementById('homePhone');
+  const homeAvatarImg = document.getElementById('homeAvatarImg');
+  const profAvatarImg = document.getElementById('profAvatarImg');
+  const profName = document.getElementById('inputName');
+  const profPhone = document.getElementById('inputPhone');
+
+  const btnPickPhoto = document.getElementById('btnPickPhoto');
+  const btnSaveProfile = document.getElementById('btnSaveProfile');
+
+  const sellPhone = document.getElementById('sellPhone');
+  const sellAmount = document.getElementById('sellAmount');
+  const btnDigicelSell = document.getElementById('btnDigicelSell');
+  const btnDigicelConfirm = document.getElementById('btnDigicelConfirm');
+  const btnNatcomSell = document.getElementById('btnNatcomSell');
+  const btnCreateTx = document.getElementById('btnCreateTx');
+  const sellStatus = document.getElementById('sellStatus');
+  const sellCountdown = document.getElementById('sellCountdown');
+  const blockMessage = document.getElementById('blockMessage');
+
+  const txListArea = document.getElementById('txListArea');
+  const homeTxList = document.getElementById('homeTxList');
+
+  const userReferralCodeEl = document.getElementById('userReferralCode');
+  const shareReferral = document.getElementById('shareReferral');
+  const copyReferral = document.getElementById('copyReferral');
+  const referralStats = document.getElementById('referralStats');
+
+  const payNumber = document.getElementById('payNumber');
+  const btnSendPay = document.getElementById('btnSendPay');
+  const btnRecordPay = document.getElementById('btnRecordPay');
+
+  const supportWA = document.getElementById('supportWA');
+  supportWA.href = `https://wa.me/${SUPPORT_WHATSAPP}`;
+
+  // Navigation behavior
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      tabs.forEach(t=>t.classList.remove('tab-active'));
+      tab.classList.add('tab-active');
+      const screen = tab.dataset.screen;
+      screens.forEach(s=>s.classList.add('hidden'));
+      document.getElementById(screen).classList.remove('hidden');
+    });
+  });
+  document.querySelector('.tab[data-screen="screenHome"]').click();
+
+  // Helper: API POST
+  async function apiPost(body){
+    try{
+      const r = await fetch(API_URL, { method:'POST', body: JSON.stringify(body) });
+      return await r.json();
+    }catch(e){ console.error('API error', e); return { status:'error', message: e.message }; }
+  }
+
+  // Auth handlers
+  formAuth.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = authEmail.value.trim(), pass = authPass.value;
+    if(!email || !pass) return alert('Antre imèl epi modpas.');
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
+    }catch(err){ alert('Login: '+err.message); }
+  });
+
+  btnSignUp.addEventListener('click', async ()=>{
+    const email = authEmail.value.trim(), pass = authPass.value;
+    if(!email || !pass) return alert('Antre imèl epi modpas.');
+    try{
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      // Register on Sheets (best-effort)
+      await apiPost({ action:'register_user', nom: email.split('@')[0], email, numero:'', type_compte:'', modpas:'', referral_code:'' });
+      alert('Kont kreye avèk siksè!');
+    }catch(err){ alert('Signup: '+err.message); }
+  });
+
+  btnGoogle.addEventListener('click', async ()=>{
+    try{
+      const res = await signInWithPopup(auth, gProvider);
+      const user = res.user;
+      // Register user in Sheets
+      await apiPost({ action:'register_user', nom: user.displayName || user.email.split('@')[0], email: user.email, numero:'', type_compte:'', modpas:'', referral_code:'' });
+    }catch(err){ alert('Google sign-in: '+err.message); }
+  });
+
+  openAuthBtn.addEventListener('click', ()=> { window.scrollTo({top:0,behavior:'smooth'}); });
+
+  // Auth state observer
+  onAuthStateChanged(auth, async user=>{
+    if(user){
+      // show app
+      authCard.classList.add('hidden');
+      appMain.classList.remove('hidden');
+      bottomNav.classList.remove('hidden');
+
+      // load profile + txs
+      await loadProfile(user);
+      await loadTxs();
+    } else {
+      authCard.classList.remove('hidden');
+      appMain.classList.add('hidden');
+      bottomNav.classList.add('hidden');
+
+      // reset UI
+      homeName.innerText='—'; homePhone.innerText='—';
+      homeAvatarImg.classList.add('hidden'); profAvatarImg.classList.add('hidden');
     }
-    function showRegister() {
-      loginContainer.style.display = "none";
-      registerContainer.style.display = "block";
-    }
+  });
 
-    window.showLogin = showLogin;
-    window.showRegister = showRegister;
+  // Profile photo & save
+  btnPickPhoto.addEventListener('click', async ()=>{
+    if(!auth.currentUser) return alert('Tanpri konekte.');
+    const file = await chooseFile();
+    if(!file) return;
+    const path = `profile_pics/${auth.currentUser.uid}/${Date.now()}_${file.name}`;
+    const ref = sRef(storage, path);
+    try{
+      const task = await uploadBytes(ref, file);
+      const url = await getDownloadURL(task.ref);
+      await apiPost({ action:'update_profile', email: auth.currentUser.email, nom: profName.value || '', numero: profPhone.value || '', profile_pic: url });
+      profAvatarImg.src = url; profAvatarImg.classList.remove('hidden');
+      homeAvatarImg.src = url; homeAvatarImg.classList.remove('hidden');
+      alert('Foto telechaje ak sove.');
+    }catch(e){ console.error(e); alert('Upload error: '+e.message); }
+  });
 
-    // Register
-    async function register() {
-      const email = document.getElementById("regEmail").value;
-      const password = document.getElementById("regPassword").value;
-      const name = document.getElementById("regName").value;
-      const msg = document.getElementById("registerMsg");
+  btnSaveProfile.addEventListener('click', async ()=>{
+    if(!auth.currentUser) return alert('Tanpri konekte.');
+    const nom = profName.value.trim(), numero = profPhone.value.trim();
+    const res = await apiPost({ action:'update_profile', email: auth.currentUser.email, nom, numero });
+    if(res && res.status==='success'){ alert('Profil mete ajou'); await loadProfile(auth.currentUser); } else alert('Erè sove profil');
+  });
 
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        msg.style.color = "#9cd67d";
-        msg.innerText = "Kont ou kreye avèk siksè!";
-      } catch (error) {
-        if (error.code === "auth/email-already-in-use") msg.innerText = "Kont sa deja egziste.";
-        else if (error.code === "auth/weak-password") msg.innerText = "Modpas la two fèb.";
-        else msg.innerText = "Gen yon pwoblèm. Tanpri tcheke enfòmasyon yo.";
+  function chooseFile(){ return new Promise(resolve=>{ const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange = ()=> resolve(inp.files[0]); inp.click(); }); }
+
+  // Load profile from Sheets via API
+  async function loadProfile(user){
+    try{
+      const res = await apiPost({ action:'login', emailOrPhone: user.email, modpas:'' });
+      if(res && res.status==='success'){
+        const p = res;
+        homeName.innerText = p.nom || (user.displayName || user.email.split('@')[0]);
+        profName.value = p.nom || '';
+        profPhone.value = p.numero || '';
+        homePhone.innerText = p.numero || '';
+        if(p.profile_pic){ homeAvatarImg.src = p.profile_pic; homeAvatarImg.classList.remove('hidden'); profAvatarImg.src = p.profile_pic; profAvatarImg.classList.remove('hidden'); }
+        userReferralCodeEl.innerText = p.referral_code || userReferralCodeEl.innerText;
+        if(p.blocked_until) startCountdown(new Date(p.blocked_until));
+      } else {
+        homeName.innerText = user.displayName || user.email.split('@')[0];
+        homePhone.innerText = user.phoneNumber || '—';
       }
-    }
-
-    // Login
-    async function login() {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-      const msg = document.getElementById("loginMsg");
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        msg.style.color = "#9cd67d";
-        msg.innerText = "Byenvini! Ou konekte avèk siksè.";
-        setTimeout(() => { window.location.href = "home.html"; }, 1500);
-      } catch (error) {
-        if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
-          msg.innerText = "Imèl oswa modpas ou pa kòrèk.";
-        } else if (error.code === "auth/user-not-found") {
-          msg.innerText = "Kont sa pa egziste.";
-        } else {
-          msg.innerText = "Rezo pa disponib oswa gen yon pwoblèm.";
-        }
-      }
-    }
-
-    // Google login
-    async function googleLogin() {
-      const msg = document.getElementById("loginMsg");
-      try {
-        await signInWithPopup(auth, provider);
-        msg.style.color = "#9cd67d";
-        msg.innerText = "Koneksyon reyisi!";
-        setTimeout(() => { window.location.href = "home.html"; }, 1500);
-      } catch (error) {
-        msg.innerText = "Koneksyon echwe. Eseye ankò.";
-      }
-    }
-
-    window.login = login;
-    window.register = register;
-    window.googleLogin = googleLogin;
-  </script>
-</body>
-</html>
+    }catch(e){ console.warn('profil
