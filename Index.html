@@ -12,48 +12,47 @@
     body {
         font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     }
-    /* Efè Glassmorphism sou Kat la */
-    .glass { 
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px); 
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Konte style pou background fò, nwa, ak jòn */
+    .auth-card { 
+        background: #1e293b; /* Slate-800 fènwa */
+        border: 1px solid #334155; /* Slate-700 */
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2); 
     }
     /* Estil pou chwa Operator */
     .operator-select:checked + label {
-        background-color: #fca311 !important; /* Jon pi fò */
-        color: #1a1a1a !important; 
-        border-color: #fca311 !important;
+        background-color: #f59e0b !important; /* Jon pi fò (amber-500) */
+        color: #111827 !important; /* Griy pi fènwa */
+        border-color: #f59e0b !important;
     }
     .auth-input {
       /* Tailwinds CSS aplike nan chak input/select */
-      @apply w-full p-3 rounded-lg bg-slate-900 border border-slate-700 placeholder-slate-500 text-white shadow-inner focus:ring-yellow-500 focus:border-yellow-500 transition duration-300;
+      @apply w-full p-3 rounded-lg bg-slate-700 border border-slate-600 placeholder-slate-400 text-white shadow-inner focus:ring-amber-500 focus:border-amber-500 transition duration-300;
     }
   </style>
 </head>
-<body class="bg-gradient-to-b from-slate-900 to-slate-800 text-slate-100 min-h-screen **flex items-center justify-center**">
+<body class="bg-gradient-to-b from-slate-900 to-slate-800 text-slate-100 min-h-screen flex items-center justify-center">
 
-<div id="root" class="w-full max-w-md mx-auto flex flex-col p-4">
+<div id="root" class="w-full max-w-sm mx-auto flex flex-col p-4">
 
-  <header class="flex flex-col items-center gap-2 p-4 mb-4">
-    <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-16 h-16 rounded-full border-2 border-yellow-500 shadow-xl" alt="Echanj Plus Logo">
+  <header class="flex flex-col items-center gap-2 mb-6">
+    <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-16 h-16 rounded-full border-4 border-amber-500 shadow-xl" alt="Echanj Plus Logo">
     <div class="text-center">
       <div class="text-2xl font-extrabold text-white">ECHANJ PLUS</div>
-      <div class="text-sm text-slate-400">Minit ou pa dwe gaspiye — sèvis rapid</div>
+      <div class="text-sm text-slate-400">Platfòm Echanj Minit ak Lajan an Ayiti</div>
     </div>
   </header>
   
-  <div class="bg-yellow-500 text-slate-900 text-sm py-1 px-4 overflow-hidden mb-4 rounded shadow-md">
-    <marquee class="font-bold">⚠️ Nouvo: Sistèm Vann Minit la pi otomatik. Swiv tout enstriksyon yo pou yon tranzaksyon rapid!</marquee>
+  <div class="bg-amber-500 text-slate-900 text-sm py-2 px-4 mb-6 rounded shadow-lg font-bold">
+    Anons: Sistèm Vann Minit la pi otomatik!
   </div>
 
-  <main class="flex-1 overflow-auto">
-    <section id="authCard" class="bg-slate-800 glass rounded-xl p-6 shadow-2xl">
-        <div class="flex items-center gap-3 mb-4">
-            <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-10 h-10 rounded-full" alt="logo">
+  <main class="flex-1">
+    <section id="authCard" class="auth-card rounded-xl p-6">
+        <div class="flex items-center gap-3 mb-5">
+            <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-8 h-8 rounded-full" alt="logo">
             <div>
-                <div id="authTitle" class="text-xl font-bold text-yellow-300">Kreye Kont</div>
-                <div class="text-sm text-slate-400">Antre detay ou pou kòmanse vann.</div>
+                <div id="authTitle" class="text-xl font-bold text-amber-300">Kreye Kont</div>
+                <div class="text-sm text-slate-400">Ranpli tout enfòmasyon yo pou w antre.</div>
             </div>
         </div>
         
@@ -76,32 +75,32 @@
 
                 <div class="flex gap-2">
                     <select id="authNasyonalite" class="auth-input flex-1" required>
-                        <option value="Haiti" selected>🇭🇹 Nasyonalite: Ayiti</option>
+                        <option value="Haiti" selected>🇭🇹 Ayiti</option>
                     </select>
                     <select id="authDepatman" class="auth-input flex-1" required>
-                        <option value="">Chwazi Depatman</option>
+                        <option value="">Depatman</option>
                     </select>
                 </div>
                 <select id="authKomin" class="auth-input" required>
-                    <option value="">Chwazi Komin</option>
+                    <option value="">Komin</option>
                 </select>
 
                 <input id="authReferralCode" type="text" placeholder="Kòd Referral (Si ou genyen)" class="auth-input" />
                 <input id="authEmail" type="email" placeholder="Imèl (Gmail)" class="auth-input" required />
                 <input id="authPass" type="password" placeholder="Modpas (min 6 chif)" class="auth-input" required />
                 
-                <button id="btnSignUp" type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-lg shadow-yellow-900/50 transition duration-300 transform hover:scale-[1.01]">
+                <button id="btnSignUp" type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-xl shadow-amber-900/50 transition duration-300 transform hover:scale-[1.01]">
                     Kreye Kont
                 </button>
             </form>
 
-            <button id="btnGotoSignIn" type="button" class="w-full border border-slate-600 rounded-lg py-2 text-yellow-300 hover:bg-slate-700 transition duration-200">
+            <button id="btnGotoSignIn" type="button" class="w-full text-sm border border-slate-600 rounded-lg py-2 text-amber-300 hover:bg-slate-700 transition duration-200">
                 Mwen gen yon Kont. Konekte >
             </button>
 
             <div class="flex items-center gap-3 my-2">
                 <div class="flex-1 h-px bg-slate-700"></div>
-                <div class="text-sm text-slate-400">oswa</div>
+                <div class="text-sm text-slate-400">OSWA</div>
                 <div class="flex-1 h-px bg-slate-700"></div>
             </div>
 
@@ -116,22 +115,22 @@
                 <input id="signInPass" type="password" placeholder="Modpas" class="auth-input" required />
                 
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" id="acceptTerms" class="form-checkbox h-4 w-4 text-yellow-400 bg-slate-700 border-slate-600 rounded transition duration-200" required>
-                    <label for="acceptTerms" class="text-sm text-slate-400">Mwen <a href="#" class="text-yellow-400 underline hover:text-yellow-300">aksepte kondisyon yo</a></label>
+                    <input type="checkbox" id="acceptTerms" class="form-checkbox h-4 w-4 text-amber-500 bg-slate-700 border-slate-600 rounded transition duration-200" required>
+                    <label for="acceptTerms" class="text-sm text-slate-400">Mwen <a href="#" class="text-amber-400 underline hover:text-amber-300">aksepte kondisyon yo</a></label>
                 </div>
 
-                <button id="btnSignIn" type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-lg shadow-yellow-900/50 transition duration-300 transform hover:scale-[1.01]">
+                <button id="btnSignIn" type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-xl shadow-amber-900/50 transition duration-300 transform hover:scale-[1.01]">
                     Konekte
                 </button>
             </form>
 
-            <button id="btnGotoSignUp" type="button" class="w-full border border-slate-600 rounded-lg py-2 text-yellow-300 hover:bg-slate-700 transition duration-200">
+            <button id="btnGotoSignUp" type="button" class="w-full text-sm border border-slate-600 rounded-lg py-2 text-amber-300 hover:bg-slate-700 transition duration-200">
                 Ou pa gen Kont? Kreye youn >
             </button>
 
             <div class="flex items-center gap-3 my-2">
                 <div class="flex-1 h-px bg-slate-700"></div>
-                <div class="text-sm text-slate-400">oswa</div>
+                <div class="text-sm text-slate-400">OSWA</div>
                 <div class="flex-1 h-px bg-slate-700"></div>
             </div>
 
@@ -144,20 +143,13 @@
 
 </div>
 
----
-
-## 💻 Kòd JavaScript Lojik (Tout Nan Youn)
-
-*(Blòk script sa a dwe kole nan fen `<body>` a. Li gen ladan tout **Konfigirasyon Firebase** la.)*
-
-```javascript
 <script type="module">
   // ===========================================
-  // 🚀 KONFIGIRASYON AK LOJIK JS (TOUT NAN YONN)
+  // 🚀 KÒD JAVASCRIPT AK KOREKSYON LOJIK YO
   // ===========================================
   
   // --- KONFIGURASYON DE BAZ ---
-  const API_URL = "[https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec](https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec)";
+  const API_URL = "https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec";
   
   // --- DONE JENERAL AYITI ---
   const DEPARTMENTS = {
@@ -174,20 +166,18 @@
   };
 
   // --- FIREBASE IMPORT AK INIT ---
-  import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js)";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, setPersistence, browserLocalPersistence,
     createUserWithEmailAndPassword, signInWithEmailAndPassword,
     GoogleAuthProvider, signInWithPopup
-    // onAuthStateChanged, signOut (Pou lojik konplè)
-  } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js)";
-  // import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js)";
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   // Konfigirasyon Firebase (Kòd ou a)
   const firebaseConfig = {
     apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
     authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "[https://echanj-plus-778cd-default-rtdb.firebaseio.com](https://echanj-plus-778cd-default-rtdb.firebaseio.com)",
+    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
     projectId: "echanj-plus-778cd",
     storageBucket: "echanj-plus-778cd.firebasestorage.app",
     messagingSenderId: "111144762929",
@@ -196,7 +186,7 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app); // **auth kounye a byen defini**
+  const auth = getAuth(app); 
   const gProvider = new GoogleAuthProvider();
   setPersistence(auth, browserLocalPersistence).catch(e => console.warn('persistence:', e.message));
 
@@ -212,19 +202,13 @@
   const formSignIn = document.getElementById('formSignIn');
   const btnGoogleSignUp = document.getElementById('btnGoogleSignUp');
   const btnGoogleSignIn = document.getElementById('btnGoogleSignIn');
-  const authNom = document.getElementById('authNom');
-  const authEmail = document.getElementById('authEmail');
-  const authPass = document.getElementById('authPass');
-  const authPhone = document.getElementById('authPhone');
-  const authReferralCode = document.getElementById('authReferralCode');
   const authDepatman = document.getElementById('authDepatman');
   const authKomin = document.getElementById('authKomin');
-  const signInEmail = document.getElementById('signInEmail');
-  const signInPass = document.getElementById('signInPass');
+  // ... (rès input yo nan formSignUp/formSignIn)
 
-
-  // --- FUNKSYON API (Pou sove done nan Google Sheet) ---
+  // --- FUNKSYON API POST ---
   async function apiPost(body){
+    // ... (lojik apiPost)
     try{
       const r = await fetch(API_URL, { 
         method:'POST', 
@@ -233,17 +217,14 @@
       });
       if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
       const text = await r.text();
-      try {
-        return JSON.parse(text);
-      } catch (e) {
-        return { status: 'error', message: 'Repons API a pa kòrèk.', raw: text };
-      }
+      try { return JSON.parse(text); } 
+      catch (e) { return { status: 'error', message: 'Repons API a pa kòrèk.', raw: text }; }
     }catch(e){ 
       return { status:'error', message: 'Koneksyon echwe. Tanpri eseye ankò.' }; 
     }
   }
 
-  // --- LOGIK NAVIGASYON (KREYE KONT / KONEKTE) ---
+  // --- LOGIK NAVIGASYON (KOREKSYON) ---
 
   function showSignIn() {
       authTitle.innerText = 'Konekte sou Kont ou';
@@ -257,12 +238,12 @@
       signUpForm.classList.remove('hidden');
   }
 
-  btnGotoSignIn.addEventListener('click', showSignIn);
+  // KOREKSYON: Bouton yo dwe rele fonksyon yo san pwoblèm
+  btnGotoSignIn.addEventListener('click', showSignIn); 
   btnGotoSignUp.addEventListener('click', showSignUp);
 
   // Bouton Konekte nan Header la
   openAuthBtn.addEventListener('click', showSignIn);
-
 
   // --- POPULATE DEPARTMENTS/COMMUNES ---
   function populateDepartments() {
@@ -275,7 +256,7 @@
   }
 
   function populateCommunes(department) {
-      authKomin.innerHTML = '<option value="">Chwazi Komin</option>';
+      authKomin.innerHTML = '<option value="">Komin</option>';
       if (department && DEPARTMENTS[department]) {
           DEPARTMENTS[department].forEach(com => {
               const option = document.createElement('option');
@@ -291,32 +272,32 @@
   });
   
   populateDepartments(); 
-  showSignUp(); // Montre paj enskripsyon an nan kòmansman
+  showSignUp(); 
 
-
-  // --- HANDLERS FIREBASE ---
+  // --- HANDLERS FIREBASE (TESTE AK KOREJI) ---
   
   // 1. LOGIN (Sign In) Handler
   formSignIn.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = signInEmail.value.trim(), pass = signInPass.value;
+    const email = document.getElementById('signInEmail').value.trim();
+    const pass = document.getElementById('signInPass').value;
     if(!email || !pass) return alert('Antre imèl epi modpas.');
     try{
-      // auth is defined here! No more error.
       await signInWithEmailAndPassword(auth, email, pass);
-      alert('Koneksyon Reyisi!'); // Ajoute lojik pou redireksyon isit la
+      alert('Koneksyon Reyisi! Redireksyon sou Akèy...'); 
     }catch(err){ 
-      alert('Login echwe: ' + err.message); 
+      alert('Login echwe: '+err.message); 
     }
   });
   
   // 2. SIGN UP (Create Account) Handler
   formSignUp.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = authEmail.value.trim(), pass = authPass.value;
-    const nom = authNom.value.trim();
-    const numero = authPhone.value.trim();
-    const referral_code = authReferralCode.value.trim();
+    const email = document.getElementById('authEmail').value.trim();
+    const pass = document.getElementById('authPass').value;
+    const nom = document.getElementById('authNom').value.trim();
+    const numero = document.getElementById('authPhone').value.trim();
+    const referral_code = document.getElementById('authReferralCode').value.trim();
     const depatman = authDepatman.value; 
     const komin = authKomin.value; 
     const type_compte = document.querySelector('input[name="op_type"]:checked')?.value;
@@ -326,17 +307,13 @@
     }
 
     try{
-      // Kreye itilizatè a nan Firebase Auth
       await createUserWithEmailAndPassword(auth, email, pass);
-      
-      // Sove enfòmasyon pwofil nan Google Sheet via API
       const res = await apiPost({ 
-        action:'register_user', 
-        nom, email, numero, type_compte, referral_code, depatman, komin 
+        action:'register_user', nom, email, numero, type_compte, referral_code, depatman, komin 
       });
 
       if (res && res.status === 'success') {
-          alert('Kont kreye avèk siksè! Byenveni nan Echanj Plus. Konekte kounye a.');
+          alert('Kont kreye avèk siksè! Konekte kounye a.');
           showSignIn(); 
       } else {
            alert('Kont kreye nan Firebase, men erè sove nan sistèm nan: ' + res.message);
@@ -355,3 +332,5 @@
   btnGoogleSignUp.addEventListener('click', handleGoogleAuth);
 
 </script>
+</body>
+</html>
