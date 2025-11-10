@@ -3,245 +3,191 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Echanj Plus — App</title>
-  <link rel="icon" href="https://i.postimg.cc/25mXDFwK/image1.png" />
+  <title>Echanj Plus — Sèvis Rapid</title>
+  <link rel="icon" href="https://i.postimg.cc/0QrPXhKk/image1.png" />
+  <link rel="manifest" href="/manifest.json">
   <script src="https://cdn.tailwindcss.com"></script>
-  
   <style>
-    /* CSS Pèsonalize */
-    /* Pi bon gradyan pou tab aktif la */
-    .tab-active { 
-        background: linear-gradient(90deg,#ffb700,#ff8800); 
-        color:#071428; 
+    /* Estil Custom: Pou yon konsepsyon pi pwofesyonèl */
+    body {
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     }
-    /* Efè Glassmorphism la */
+    /* Efè Glassmorphism sou Kat la */
     .glass { 
-        background: rgba(255,255,255,0.03); 
-        backdrop-filter: blur(5px);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    /* Fixe pou nav anba a lè li aktif */
-    .tab-active span {
-        font-weight: bold;
+    /* Estil pou chwa Operator */
+    .operator-select:checked + label {
+        background-color: #fca311 !important; /* Jon pi fò */
+        color: #1a1a1a !important; 
+        border-color: #fca311 !important;
+    }
+    .auth-input {
+      /* Tailwinds CSS aplike nan chak input/select */
+      @apply w-full p-3 rounded-lg bg-slate-900 border border-slate-700 placeholder-slate-500 text-white shadow-inner focus:ring-yellow-500 focus:border-yellow-500 transition duration-300;
     }
   </style>
 </head>
+<body class="bg-gradient-to-b from-slate-900 to-slate-800 text-slate-100 min-h-screen **flex items-center justify-center**">
 
-<body class="bg-gradient-to-b from-slate-900 to-slate-800 text-slate-100 min-h-screen">
+<div id="root" class="w-full max-w-md mx-auto flex flex-col p-4">
 
-<div id="root" class="max-w-md mx-auto min-h-screen flex flex-col">
-
-  <header class="flex items-center gap-3 p-4">
-    <div class="w-12 h-12 rounded-lg bg-yellow-300 flex items-center justify-center font-extrabold text-slate-900">E+</div>
-    <div>
-      <div class="text-lg font-bold">Echanj Plus</div>
+  <header class="flex flex-col items-center gap-2 p-4 mb-4">
+    <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-16 h-16 rounded-full border-2 border-yellow-500 shadow-xl" alt="Echanj Plus Logo">
+    <div class="text-center">
+      <div class="text-2xl font-extrabold text-white">ECHANJ PLUS</div>
       <div class="text-sm text-slate-400">Minit ou pa dwe gaspiye — sèvis rapid</div>
     </div>
-    <button id="openAuthBtn" class="ml-auto text-sm px-3 py-1 rounded-md bg-slate-700/50 hover:bg-slate-700">Login</button>
   </header>
-
-  <main class="flex-1 p-4 overflow-auto pb-24"> 
-    
-    <section id="authCard" class="bg-slate-800 glass rounded-xl p-4 shadow mb-4">
-      <div class="flex items-center gap-3">
-        <img src="https://i.postimg.cc/25mXDFwK/image1.png" class="w-14 h-14 rounded" alt="logo">
-        <div>
-          <div class="text-xl font-bold">Konekte / Kreye kont</div>
-          <div class="text-sm text-slate-400">Itilize imèl oswa Google</div>
-        </div>
-      </div>
-
-      <div class="mt-4 space-y-3">
-        <form id="formAuth" class="space-y-3">
-          <input id="authEmail" type="email" placeholder="Imèl (Gmail)" class="w-full p-3 rounded bg-slate-900 border border-slate-700 focus:ring-yellow-500 focus:border-yellow-500" required />
-          <input id="authPass" type="password" placeholder="Modpas (min 6)" class="w-full p-3 rounded bg-slate-900 border border-slate-700 focus:ring-yellow-500 focus:border-yellow-500" required />
-          <div class="flex gap-3">
-            <button id="btnSignIn" type="submit" class="flex-1 bg-yellow-400 text-slate-900 font-bold py-2 rounded hover:bg-yellow-500">Konekte</button>
-            <button id="btnSignUp" type="button" class="flex-1 border border-slate-600 rounded py-2 hover:bg-slate-700">Kreye</button>
-          </div>
-        </form>
-
-        <div class="flex items-center gap-3">
-          <div class="flex-1 h-px bg-slate-700"></div>
-          <div class="text-sm text-slate-400">oswa</div>
-          <div class="flex-1 h-px bg-slate-700"></div>
-        </div>
-
-        <button id="btnGoogle" class="w-full py-2 rounded bg-white text-slate-900 flex items-center justify-center gap-2 hover:bg-slate-200">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"/> Konekte ak Google
-        </button>
-
-        <div id="authNote" class="text-sm text-slate-400 mt-2">Asire w Google Sign-In aktive nan Firebase Console (Auth → Sign-in method → Google).</div>
-      </div>
-    </section>
-
-    <section id="appMain" class="hidden space-y-4">
-
-      <div id="screenHome" class="screen bg-slate-800 glass rounded-xl p-4">
-        <div class="flex items-center gap-3">
-          <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-700" id="homeAvatar"><img id="homeAvatarImg" class="w-full h-full object-cover hidden" /></div>
-          <div>
-            <div id="homeName" class="text-lg font-bold">—</div>
-            <div id="homePhone" class="text-sm text-slate-400">—</div>
-          </div>
-          <div class="ml-auto text-right">
-            <div class="text-sm text-slate-400">Solde est.</div>
-            <div id="homeBalance" class="font-bold">0 G</div>
-          </div>
-        </div>
-
-        <div class="mt-4 flex justify-between items-center">
-          <div class="font-semibold">Dènye tranzaksyon</div>
-          <button id="openSell" class="text-sm px-3 py-1 border border-slate-600 rounded glass hover:bg-slate-700/50">Vann</button>
-        </div>
-        <div id="homeTxList" class="mt-3 space-y-2"></div>
-      </div>
-
-      <div id="screenSell" class="screen hidden bg-slate-800 glass rounded-xl p-4">
-        <div class="font-semibold">Vann Minit</div>
-        <div class="text-sm text-slate-400">Limit: min 100 — Digicel max 1000 / Natcom max 500</div>
-
-        <div class="mt-4 space-y-3">
-          <label for="sellPhone" class="block text-sm font-medium text-slate-300">Nimewo Resevwa (MonCash/NatCash)</label>
-          <input id="sellPhone" type="tel" placeholder="Ex: 5094XXXXXXX" class="w-full p-3 rounded bg-slate-900 border border-slate-700 focus:ring-yellow-500 focus:border-yellow-500" />
   
-          <label for="sellAmount" class="block text-sm font-medium text-slate-300">Montan Minit pou Vann</label>
-          <input id="sellAmount" type="number" placeholder="Min 100 G" class="w-full p-3 rounded bg-slate-900 border border-slate-700 focus:ring-yellow-500 focus:border-yellow-500" />
-        </div>
+  <div class="bg-yellow-500 text-slate-900 text-sm py-1 px-4 overflow-hidden mb-4 rounded shadow-md">
+    <marquee class="font-bold">⚠️ Nouvo: Sistèm Vann Minit la pi otomatik. Swiv tout enstriksyon yo pou yon tranzaksyon rapid!</marquee>
+  </div>
 
-        <div class="mt-4 grid grid-cols-2 gap-2">
-          <button id="btnDigicelSell" class="py-3 rounded bg-red-600 font-bold hover:bg-red-700">Vann Digicel</button>
-          <button id="btnNatcomSell" class="py-3 rounded bg-green-600 font-bold hover:bg-green-700">Vann Natcom</button>
-        </div>
-        <button id="btnDigicelConfirm" class="w-full py-3 mt-2 rounded bg-yellow-400 text-slate-900 font-bold text-lg hover:bg-yellow-500">KONFIME VANN AN</button>
-
-        <div class="mt-3 flex gap-2">
-          <button id="btnCreateTx" class="flex-1 border border-slate-600 rounded py-2 hover:bg-slate-700">Anrejistre (En attente)</button>
-          <div id="sellStatus" class="text-sm text-slate-400 flex-1 flex items-center"></div>
-        </div>
-
-        <div class="mt-2 text-sm text-red-300" id="blockMessage"></div>
-        <div class="text-yellow-300 font-semibold" id="sellCountdown"></div>
-      </div>
-
-      <div id="screenTx" class="screen hidden bg-slate-800 glass rounded-xl p-4">
-        <div class="font-semibold">Transaksyon Mwen</div>
-        <div class="text-sm text-slate-400">Se tranzaksyon ou sèlman</div>
-        <div id="txListArea" class="mt-3 space-y-2"></div>
-      </div>
-
-      <div id="screenReferral" class="screen hidden bg-slate-800 glass rounded-xl p-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="font-semibold">Referral</div>
-            <div class="text-sm text-slate-400">Pataje epi touche bonis 7 jou</div>
-          </div>
-          <div class="text-right">
-            <div class="text-sm text-slate-400">Kòd ou</div>
-            <div id="userReferralCode" class="font-bold">ARS-0001</div>
-          </div>
-        </div>
-
-        <div class="mt-3 flex gap-2">
-          <button id="shareReferral" class="flex-1 py-2 rounded bg-blue-600 hover:bg-blue-700">Pataje WhatsApp</button>
-          <button id="copyReferral" class="py-2 px-3 border border-slate-600 rounded hover:bg-slate-700">Kopi</button>
-        </div>
-
-        <div class="mt-3 text-sm text-slate-400" id="referralStats">Envite: 0 — Bonis aktif: 0</div>
-      </div>
-
-      <div id="screenPayment" class="screen hidden bg-slate-800 glass rounded-xl p-4">
-        <div class="font-semibold">Peyman</div>
-        <div class="text-sm text-slate-400">Antre nimewo MonCash/NatCash pou resevwa lajan</div>
-
-        <input id="payNumber" type="tel" placeholder="Nimewo resevwa (509...)" class="mt-3 p-3 rounded bg-slate-900 w-full" />
-        <div class="mt-3 flex gap-2">
-          <button id="btnSendPay" class="flex-1 py-2 rounded bg-green-600 hover:bg-green-700">Voye detay sou WhatsApp</button>
-          <button id="btnRecordPay" class="py-2 px-3 border border-slate-600 rounded hover:bg-slate-700">Sere</button>
-        </div>
-
-        <div class="mt-3 text-sm text-slate-400">Nimewo sistem: <strong>47111123</strong></div>
-      </div>
-
-      <div id="screenProfile" class="screen hidden bg-slate-800 glass rounded-xl p-4">
-        <div class="flex items-start gap-3">
-          <div class="w-20 h-20 rounded overflow-hidden bg-slate-700 flex-shrink-0" id="profAvatar"><img id="profAvatarImg" class="w-full h-full object-cover hidden" /></div>
-          <div class="flex-1 space-y-2">
-            <input id="inputName" placeholder="Non ou" class="p-3 rounded bg-slate-900 w-full" />
-            <input id="inputPhone" type="tel" placeholder="Nimewo MonCash/NatCash" class="p-3 rounded bg-slate-900 w-full" />
-            <div class="flex gap-2">
-              <button id="btnPickPhoto" class="flex-1 py-2 rounded bg-yellow-400 text-slate-900 hover:bg-yellow-500">Chwazi foto</button>
-              <button id="btnSaveProfile" class="py-2 px-3 border border-slate-600 rounded hover:bg-slate-700">Sove</button>
+  <main class="flex-1 overflow-auto">
+    <section id="authCard" class="bg-slate-800 glass rounded-xl p-6 shadow-2xl">
+        <div class="flex items-center gap-3 mb-4">
+            <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-10 h-10 rounded-full" alt="logo">
+            <div>
+                <div id="authTitle" class="text-xl font-bold text-yellow-300">Kreye Kont</div>
+                <div class="text-sm text-slate-400">Antre detay ou pou kòmanse vann.</div>
             </div>
-          </div>
+        </div>
+        
+        <div id="signUpForm" class="space-y-4">
+            <form id="formSignUp" class="space-y-4">
+                <input id="authNom" type="text" placeholder="Non & Prenon" class="auth-input" required />
+                
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <label class="text-xs text-slate-400 block mb-1">Operatè (Lajan)</label>
+                        <div class="flex gap-2">
+                            <input type="radio" id="opDigi" name="op_type" value="Digicel" class="hidden operator-select" required>
+                            <label for="opDigi" class="flex-1 text-center py-2 rounded-lg border border-slate-600 cursor-pointer text-red-400 font-semibold transition duration-200">Digicel</label>
+                            <input type="radio" id="opNatcom" name="op_type" value="Natcom" class="hidden operator-select">
+                            <label for="opNatcom" class="flex-1 text-center py-2 rounded-lg border border-slate-600 cursor-pointer text-blue-400 font-semibold transition duration-200">Natcom</label>
+                        </div>
+                    </div>
+                    <input id="authPhone" type="tel" placeholder="Nimewo MonCash/NatCash (509...)" class="auth-input w-1/2 mt-3" required />
+                </div>
+
+                <div class="flex gap-2">
+                    <select id="authNasyonalite" class="auth-input flex-1" required>
+                        <option value="Haiti" selected>🇭🇹 Nasyonalite: Ayiti</option>
+                    </select>
+                    <select id="authDepatman" class="auth-input flex-1" required>
+                        <option value="">Chwazi Depatman</option>
+                    </select>
+                </div>
+                <select id="authKomin" class="auth-input" required>
+                    <option value="">Chwazi Komin</option>
+                </select>
+
+                <input id="authReferralCode" type="text" placeholder="Kòd Referral (Si ou genyen)" class="auth-input" />
+                <input id="authEmail" type="email" placeholder="Imèl (Gmail)" class="auth-input" required />
+                <input id="authPass" type="password" placeholder="Modpas (min 6 chif)" class="auth-input" required />
+                
+                <button id="btnSignUp" type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-lg shadow-yellow-900/50 transition duration-300 transform hover:scale-[1.01]">
+                    Kreye Kont
+                </button>
+            </form>
+
+            <button id="btnGotoSignIn" type="button" class="w-full border border-slate-600 rounded-lg py-2 text-yellow-300 hover:bg-slate-700 transition duration-200">
+                Mwen gen yon Kont. Konekte >
+            </button>
+
+            <div class="flex items-center gap-3 my-2">
+                <div class="flex-1 h-px bg-slate-700"></div>
+                <div class="text-sm text-slate-400">oswa</div>
+                <div class="flex-1 h-px bg-slate-700"></div>
+            </div>
+
+            <button id="btnGoogleSignUp" class="w-full py-2 rounded-lg bg-white hover:bg-gray-100 text-slate-900 flex items-center justify-center gap-2 font-semibold shadow-md transition duration-200">
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"/> Enskri ak Google
+            </button>
         </div>
 
-        <div class="mt-4">
-          <button id="btnLogout" class="w-full py-2 rounded bg-red-600 hover:bg-red-700">Dekonekte</button>
-        </div>
-      </div>
+        <div id="signInForm" class="hidden space-y-4">
+            <form id="formSignIn" class="space-y-4">
+                <input id="signInEmail" type="email" placeholder="Imèl (Gmail)" class="auth-input" required />
+                <input id="signInPass" type="password" placeholder="Modpas" class="auth-input" required />
+                
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="acceptTerms" class="form-checkbox h-4 w-4 text-yellow-400 bg-slate-700 border-slate-600 rounded transition duration-200" required>
+                    <label for="acceptTerms" class="text-sm text-slate-400">Mwen <a href="#" class="text-yellow-400 underline hover:text-yellow-300">aksepte kondisyon yo</a></label>
+                </div>
 
-      <div id="screenSupport" class="screen hidden bg-slate-800 glass rounded-xl p-4">
-        <div class="font-semibold">Sipò & Chat</div>
-        <div class="text-sm text-slate-400">Chwazi fason pou kontakte nou</div>
-        <div class="mt-3 grid grid-cols-2 gap-2">
-          <a id="supportWA" class="block text-center py-2 rounded bg-green-600 hover:bg-green-700" target="_blank">WhatsApp</a>
-          <a id="supportCall" class="block text-center py-2 rounded bg-slate-700 hover:bg-slate-600" href="tel:+17863618020">Rele</a>
-        </div>
-        <div class="mt-3 text-sm text-slate-400">Email: echanjplus@gmail.com</div>
-      </div>
+                <button id="btnSignIn" type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-lg shadow-yellow-900/50 transition duration-300 transform hover:scale-[1.01]">
+                    Konekte
+                </button>
+            </form>
 
+            <button id="btnGotoSignUp" type="button" class="w-full border border-slate-600 rounded-lg py-2 text-yellow-300 hover:bg-slate-700 transition duration-200">
+                Ou pa gen Kont? Kreye youn >
+            </button>
+
+            <div class="flex items-center gap-3 my-2">
+                <div class="flex-1 h-px bg-slate-700"></div>
+                <div class="text-sm text-slate-400">oswa</div>
+                <div class="flex-1 h-px bg-slate-700"></div>
+            </div>
+
+            <button id="btnGoogleSignIn" class="w-full py-2 rounded-lg bg-white hover:bg-gray-100 text-slate-900 flex items-center justify-center gap-2 font-semibold shadow-md transition duration-200">
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"/> Konekte ak Google
+            </button>
+        </div>
     </section>
   </main>
 
-  <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 z-50 p-2 border-t border-slate-700 hidden">
-    <div class="max-w-md mx-auto bg-slate-800/90 backdrop-blur-md rounded-xl shadow-2xl flex justify-around gap-1 p-1">
-      <button class="tab tab-active p-2 rounded-lg flex flex-col items-center justify-center w-full" data-screen="screenHome">
-        🏠<span class="text-xs">Akèy</span>
-      </button>
-      <button class="tab p-2 rounded-lg flex flex-col items-center justify-center w-full" data-screen="screenSell">
-        💰<span class="text-xs">Vann</span>
-      </button>
-      <button class="tab p-2 rounded-lg flex flex-col items-center justify-center w-full" data-screen="screenTx">
-        📜<span class="text-xs">Tx</span>
-      </button>
-      <button class="tab p-2 rounded-lg flex flex-col items-center justify-center w-full" data-screen="screenReferral">
-        🤝<span class="text-xs">Referral</span>
-      </button>
-      <button class="tab p-2 rounded-lg flex flex-col items-center justify-center w-full" data-screen="screenProfile">
-        👤<span class="text-xs">Profil</span>
-      </button>
-      <button class="tab p-2 rounded-lg flex flex-col items-center justify-center w-full" data-screen="screenSupport">
-        💬<span class="text-xs">Sipo</span>
-      </button>
-    </div>
-  </nav>
-
 </div>
 
-<script type="module">
-  // =========================
-  // CONFIG
-  // =========================
-  const API_URL = "https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec";
-  const SYS_WHATSAPP = '50947111123';     // system number (no +)
-  const SUPPORT_WHATSAPP = '17863618020'; // support number e.g. 1 786 361 8020 (no +)
+---
 
-  // =========================
-  // FIREBASE (v10 modules)
-  // =========================
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+## 💻 Kòd JavaScript Lojik (Tout Nan Youn)
+
+*(Blòk script sa a dwe kole nan fen `<body>` a. Li gen ladan tout **Konfigirasyon Firebase** la.)*
+
+```javascript
+<script type="module">
+  // ===========================================
+  // 🚀 KONFIGIRASYON AK LOJIK JS (TOUT NAN YONN)
+  // ===========================================
+  
+  // --- KONFIGURASYON DE BAZ ---
+  const API_URL = "[https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec](https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec)";
+  
+  // --- DONE JENERAL AYITI ---
+  const DEPARTMENTS = {
+    'Nord-Ouest': ['Port-de-Paix', 'Saint-Louis-du-Nord', 'Borgne'],
+    'Nord': ['Cap-Haïtien', 'Limbé', 'Grande-Rivière-du-Nord', 'Acul-du-Nord'],
+    'Nord-Est': ['Fort-Liberté', 'Ouanaminthe', 'Trou-du-Nord', 'Vallières'],
+    'Artibonite': ['Gonaïves', 'Saint-Marc', 'Dessalines', 'Verrettes'],
+    'Centre': ['Mirebalais', 'Hinche', 'Lascahobas', 'Saut-d’Eau'],
+    'Ouest': ['Port-au-Prince', 'Carrefour', 'Pétion-Ville', 'Léogâne', 'Croix-des-Bouquets', 'Delmas', 'Tabarre'],
+    'Sud-Est': ['Jacmel', 'Bainet', 'Marigot', 'Cayes-Jacmel'],
+    'Sud': ['Les Cayes', 'Aquin', 'Port-Salut', 'Cavaillon'],
+    'Grande-Anse': ['Jérémie', 'Corail', 'Dame-Marie', 'Anse-d\'Hainault'],
+    'Nippes': ['Miragoâne', 'Anse-à-Veau', 'Baradères', 'Petit-Trou-de-Nippes']
+  };
+
+  // --- FIREBASE IMPORT AK INIT ---
+  import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js)";
   import {
     getAuth, setPersistence, browserLocalPersistence,
     createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    GoogleAuthProvider, signInWithPopup
+    // onAuthStateChanged, signOut (Pou lojik konplè)
+  } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js)";
+  // import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js)";
 
-  // Konfigirasyon an dwe repete isit la menm si li te la anwo a.
+  // Konfigirasyon Firebase (Kòd ou a)
   const firebaseConfig = {
     apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
     authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+    databaseURL: "[https://echanj-plus-778cd-default-rtdb.firebaseio.com](https://echanj-plus-778cd-default-rtdb.firebaseio.com)",
     projectId: "echanj-plus-778cd",
     storageBucket: "echanj-plus-778cd.firebasestorage.app",
     messagingSenderId: "111144762929",
@@ -250,181 +196,162 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const storage = getStorage(app);
+  const auth = getAuth(app); // **auth kounye a byen defini**
   const gProvider = new GoogleAuthProvider();
-
-  // Persistence so user stays logged in
   setPersistence(auth, browserLocalPersistence).catch(e => console.warn('persistence:', e.message));
 
-  // =========================
-  // UI REFERENCES (DOM)
-  // =========================
-  const authCard = document.getElementById('authCard');
-  const appMain = document.getElementById('appMain');
-  const bottomNav = document.getElementById('bottomNav');
-  const tabs = document.querySelectorAll('.tab');
-  const screens = document.querySelectorAll('.screen');
 
-  const formAuth = document.getElementById('formAuth');
-  const btnSignUp = document.getElementById('btnSignUp');
-  const btnGoogle = document.getElementById('btnGoogle');
+  // --- REFERANS ELEMAN UI ---
   const openAuthBtn = document.getElementById('openAuthBtn');
-
+  const authTitle = document.getElementById('authTitle');
+  const signUpForm = document.getElementById('signUpForm');
+  const signInForm = document.getElementById('signInForm');
+  const btnGotoSignIn = document.getElementById('btnGotoSignIn');
+  const btnGotoSignUp = document.getElementById('btnGotoSignUp');
+  const formSignUp = document.getElementById('formSignUp');
+  const formSignIn = document.getElementById('formSignIn');
+  const btnGoogleSignUp = document.getElementById('btnGoogleSignUp');
+  const btnGoogleSignIn = document.getElementById('btnGoogleSignIn');
+  const authNom = document.getElementById('authNom');
   const authEmail = document.getElementById('authEmail');
   const authPass = document.getElementById('authPass');
+  const authPhone = document.getElementById('authPhone');
+  const authReferralCode = document.getElementById('authReferralCode');
+  const authDepatman = document.getElementById('authDepatman');
+  const authKomin = document.getElementById('authKomin');
+  const signInEmail = document.getElementById('signInEmail');
+  const signInPass = document.getElementById('signInPass');
 
-  const homeName = document.getElementById('homeName');
-  const homePhone = document.getElementById('homePhone');
-  const homeAvatarImg = document.getElementById('homeAvatarImg');
-  const profAvatarImg = document.getElementById('profAvatarImg');
-  const profName = document.getElementById('inputName');
-  const profPhone = document.getElementById('inputPhone');
 
-  const btnPickPhoto = document.getElementById('btnPickPhoto');
-  const btnSaveProfile = document.getElementById('btnSaveProfile');
-  const btnLogout = document.getElementById('btnLogout'); // Ajoute referans bouton dekoneksyon an
-
-  const sellPhone = document.getElementById('sellPhone');
-  const sellAmount = document.getElementById('sellAmount');
-  const btnDigicelSell = document.getElementById('btnDigicelSell');
-  const btnDigicelConfirm = document.getElementById('btnDigicelConfirm');
-  const btnNatcomSell = document.getElementById('btnNatcomSell');
-  const btnCreateTx = document.getElementById('btnCreateTx');
-  const sellStatus = document.getElementById('sellStatus');
-  const sellCountdown = document.getElementById('sellCountdown');
-  const blockMessage = document.getElementById('blockMessage');
-
-  const txListArea = document.getElementById('txListArea');
-  const homeTxList = document.getElementById('homeTxList');
-
-  const userReferralCodeEl = document.getElementById('userReferralCode');
-  const shareReferral = document.getElementById('shareReferral');
-  const copyReferral = document.getElementById('copyReferral');
-  const referralStats = document.getElementById('referralStats');
-
-  const payNumber = document.getElementById('payNumber');
-  const btnSendPay = document.getElementById('btnSendPay');
-  const btnRecordPay = document.getElementById('btnRecordPay');
-
-  const supportWA = document.getElementById('supportWA');
-  supportWA.href = `https://wa.me/${SUPPORT_WHATSAPP}`;
-  
-  const homeBalance = document.getElementById('homeBalance'); // Ajoute referans solde a
-
-  // =========================
-  // FONKSYONLITE
-  // =========================
-
-  // Navigation behavior
-  tabs.forEach(tab=>{
-    tab.addEventListener('click', ()=>{
-      tabs.forEach(t=>t.classList.remove('tab-active'));
-      tab.classList.add('tab-active');
-      const screen = tab.dataset.screen;
-      screens.forEach(s=>s.classList.add('hidden'));
-      document.getElementById(screen).classList.remove('hidden');
-    });
-  });
-  // Klike sou Akèy nan kòmansman an
-  document.querySelector('.tab[data-screen="screenHome"]').click();
-
-  // Helper: API POST
+  // --- FUNKSYON API (Pou sove done nan Google Sheet) ---
   async function apiPost(body){
     try{
-      const r = await fetch(API_URL, { method:'POST', body: JSON.stringify(body) });
-      return await r.json();
-    }catch(e){ console.error('API error', e); return { status:'error', message: e.message }; }
+      const r = await fetch(API_URL, { 
+        method:'POST', 
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(body) 
+      });
+      if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+      const text = await r.text();
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        return { status: 'error', message: 'Repons API a pa kòrèk.', raw: text };
+      }
+    }catch(e){ 
+      return { status:'error', message: 'Koneksyon echwe. Tanpri eseye ankò.' }; 
+    }
   }
 
-  // Fonksyon Dekoneksyon
-  btnLogout.addEventListener('click', async ()=>{
-      try {
-          await signOut(auth);
-          alert('Ou dekonekte.');
-      } catch (e) {
-          alert('Erè dekoneksyon: '+e.message);
+  // --- LOGIK NAVIGASYON (KREYE KONT / KONEKTE) ---
+
+  function showSignIn() {
+      authTitle.innerText = 'Konekte sou Kont ou';
+      signUpForm.classList.add('hidden');
+      signInForm.classList.remove('hidden');
+  }
+
+  function showSignUp() {
+      authTitle.innerText = 'Kreye Kont';
+      signInForm.classList.add('hidden');
+      signUpForm.classList.remove('hidden');
+  }
+
+  btnGotoSignIn.addEventListener('click', showSignIn);
+  btnGotoSignUp.addEventListener('click', showSignUp);
+
+  // Bouton Konekte nan Header la
+  openAuthBtn.addEventListener('click', showSignIn);
+
+
+  // --- POPULATE DEPARTMENTS/COMMUNES ---
+  function populateDepartments() {
+      Object.keys(DEPARTMENTS).forEach(dep => {
+          const option = document.createElement('option');
+          option.value = dep;
+          option.textContent = dep;
+          authDepatman.appendChild(option);
+      });
+  }
+
+  function populateCommunes(department) {
+      authKomin.innerHTML = '<option value="">Chwazi Komin</option>';
+      if (department && DEPARTMENTS[department]) {
+          DEPARTMENTS[department].forEach(com => {
+              const option = document.createElement('option');
+              option.value = com;
+              option.textContent = com;
+              authKomin.appendChild(option);
+          });
       }
+  }
+
+  authDepatman.addEventListener('change', (e) => {
+      populateCommunes(e.target.value);
   });
+  
+  populateDepartments(); 
+  showSignUp(); // Montre paj enskripsyon an nan kòmansman
 
 
-  // Auth handlers
-  formAuth.addEventListener('submit', async (e) => {
+  // --- HANDLERS FIREBASE ---
+  
+  // 1. LOGIN (Sign In) Handler
+  formSignIn.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = signInEmail.value.trim(), pass = signInPass.value;
+    if(!email || !pass) return alert('Antre imèl epi modpas.');
+    try{
+      // auth is defined here! No more error.
+      await signInWithEmailAndPassword(auth, email, pass);
+      alert('Koneksyon Reyisi!'); // Ajoute lojik pou redireksyon isit la
+    }catch(err){ 
+      alert('Login echwe: ' + err.message); 
+    }
+  });
+  
+  // 2. SIGN UP (Create Account) Handler
+  formSignUp.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = authEmail.value.trim(), pass = authPass.value;
-    if(!email || !pass) return alert('Antre imèl epi modpas.');
-    try{
-      // Dezaktive bouton yo pandan li ap konekte
-      document.getElementById('btnSignIn').disabled = true;
-      document.getElementById('btnSignIn').innerText = 'Konekte...';
+    const nom = authNom.value.trim();
+    const numero = authPhone.value.trim();
+    const referral_code = authReferralCode.value.trim();
+    const depatman = authDepatman.value; 
+    const komin = authKomin.value; 
+    const type_compte = document.querySelector('input[name="op_type"]:checked')?.value;
 
-      await signInWithEmailAndPassword(auth, email, pass);
-    }catch(err){ 
-        alert('Login: '+err.message); 
-    } finally {
-        // Reyaktive bouton yo
-        document.getElementById('btnSignIn').disabled = false;
-        document.getElementById('btnSignIn').innerText = 'Konekte';
+    if(!email || !pass || !numero || !type_compte || !depatman || !komin || !nom) {
+      return alert('Tanpri ranpli tout enfòmasyon ki obligatwa yo.');
     }
-  });
 
-  btnSignUp.addEventListener('click', async ()=>{
-    const email = authEmail.value.trim(), pass = authPass.value;
-    if(!email || !pass) return alert('Antre imèl epi modpas.');
     try{
-      // Dezaktive bouton an pandan li ap kreye kont
-      btnSignUp.disabled = true;
-      btnSignUp.innerText = 'Kreye...';
-
-      const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      // Register on Sheets (best-effort)
-      await apiPost({ action:'register_user', nom: email.split('@')[0], email, numero:'', type_compte:'', modpas:'', referral_code:'' });
-      alert('Kont kreye avèk siksè! Ou konekte otomatikman.');
-    }catch(err){ 
-        alert('Signup: '+err.message); 
-    } finally {
-        btnSignUp.disabled = false;
-        btnSignUp.innerText = 'Kreye';
-    }
-  });
-
-  btnGoogle.addEventListener('click', async ()=>{
-    try{
-      btnGoogle.disabled = true;
-      btnGoogle.innerText = 'Konekte ak Google...';
-      const res = await signInWithPopup(auth, gProvider);
-      const user = res.user;
-      // Register user in Sheets
-      await apiPost({ action:'register_user', nom: user.displayName || user.email.split('@')[0], email: user.email, numero:'', type_compte:'', modpas:'', referral_code:'' });
-    }catch(err){ 
-        alert('Google sign-in: '+err.message); 
-    } finally {
-        btnGoogle.disabled = false;
-        btnGoogle.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"/> Konekte ak Google`;
-    }
-  });
-
-  openAuthBtn.addEventListener('click', ()=> { 
-      // Si itilizatè a konekte, l ap dekonekte li. Sinon, l ap monte ekran an.
-      if (auth.currentUser) {
-          if(confirm('Èske ou sèten ou vle dekonekte?')){
-            signOut(auth);
-          }
-      } else {
-          window.scrollTo({top:0,behavior:'smooth'}); 
-      }
-  });
-
-  // Helper pou chwazi fichye
-  function chooseFile(){ return new Promise(resolve=>{ const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange = ()=> resolve(inp.files[0]); inp.click(); }); }
-
-  // Kontwòl tan block
-  let countdownInterval = null;
-  function startCountdown(blockedUntilDate){
-      blockMessage.classList.remove('hidden');
-      blockMessage.innerText = 'Kont ou bloke pou yon ti tan (twòp tantativ vann ki echwe).';
+      // Kreye itilizatè a nan Firebase Auth
+      await createUserWithEmailAndPassword(auth, email, pass);
       
-      if(countdownInterval) clearInterval(countdownInterval);
+      // Sove enfòmasyon pwofil nan Google Sheet via API
+      const res = await apiPost({ 
+        action:'register_user', 
+        nom, email, numero, type_compte, referral_code, depatman, komin 
+      });
 
-      const updateCountdown = () => {
-          const now = new Date
+      if (res && res.status === 'success') {
+          alert('Kont kreye avèk siksè! Byenveni nan Echanj Plus. Konekte kounye a.');
+          showSignIn(); 
+      } else {
+           alert('Kont kreye nan Firebase, men erè sove nan sistèm nan: ' + res.message);
+      }
+
+    }catch(err){ alert('Signup echwe: '+err.message); }
+  });
+
+  // 3. Google Sign In & Sign Up Handlers
+  const handleGoogleAuth = async () => {
+      try{ await signInWithPopup(auth, gProvider); }
+      catch(err){ alert('Google Auth echwe: '+err.message); }
+  };
+  
+  btnGoogleSignIn.addEventListener('click', handleGoogleAuth);
+  btnGoogleSignUp.addEventListener('click', handleGoogleAuth);
+
+</script>
