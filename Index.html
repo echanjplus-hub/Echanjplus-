@@ -1,336 +1,211 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ht">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Echanj Plus — Sèvis Rapid</title>
-  <link rel="icon" href="https://i.postimg.cc/0QrPXhKk/image1.png" />
-  <link rel="manifest" href="/manifest.json">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echanj Plus</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
   <style>
-    /* Estil Custom: Pou yon konsepsyon pi pwofesyonèl */
-    body {
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    }
-    /* Konte style pou background fò, nwa, ak jòn */
-    .auth-card { 
-        background: #1e293b; /* Slate-800 fènwa */
-        border: 1px solid #334155; /* Slate-700 */
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2); 
-    }
-    /* Estil pou chwa Operator */
-    .operator-select:checked + label {
-        background-color: #f59e0b !important; /* Jon pi fò (amber-500) */
-        color: #111827 !important; /* Griy pi fènwa */
-        border-color: #f59e0b !important;
-    }
-    .auth-input {
-      /* Tailwinds CSS aplike nan chak input/select */
-      @apply w-full p-3 rounded-lg bg-slate-700 border border-slate-600 placeholder-slate-400 text-white shadow-inner focus:ring-amber-500 focus:border-amber-500 transition duration-300;
-    }
+    /* General Styles */
+    * { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+    body { background-color: #001f4d; color:#fff; text-align:center; min-height:100vh; display:flex; flex-direction:column; }
+    img.logo { max-width:150px; margin:20px auto; display:block; }
+    nav { position:fixed; bottom:0; width:100%; background:#002960; display:flex; justify-content:space-around; padding:10px 0; font-weight:bold; }
+    nav a { color:#fff; text-decoration:none; font-weight:bold; }
+    .container { max-width:500px; margin:20px auto; background:#003366; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.5); }
+    input, select, button { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:none; font-size:16px; }
+    button { background:#00aaff; color:#fff; font-weight:bold; cursor:pointer; }
+    button:hover { background:#0088cc; }
+    .floating { position:fixed; right:20px; bottom:80px; background:#00aaff; padding:15px; border-radius:50%; font-size:20px; cursor:pointer; }
+    .carrousel { display:flex; overflow-x:auto; gap:10px; padding:10px; scroll-behavior:smooth; }
+    .carrousel img { width:300px; height:170px; border-radius:10px; flex-shrink:0; }
+    .hidden { display:none; }
   </style>
 </head>
-<body class="bg-gradient-to-b from-slate-900 to-slate-800 text-slate-100 min-h-screen flex items-center justify-center">
+<body>
 
-<div id="root" class="w-full max-w-sm mx-auto flex flex-col p-4">
+  <!-- Logo -->
+  <img class="logo" src="https://i.postimg.cc/d1TT1pQg/20251124-115017-removebg-preview.png" alt="Echanj Plus">
 
-  <header class="flex flex-col items-center gap-2 mb-6">
-    <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-16 h-16 rounded-full border-4 border-amber-500 shadow-xl" alt="Echanj Plus Logo">
-    <div class="text-center">
-      <div class="text-2xl font-extrabold text-white">ECHANJ PLUS</div>
-      <div class="text-sm text-slate-400">Platfòm Echanj Minit ak Lajan an Ayiti</div>
-    </div>
-  </header>
-  
-  <div class="bg-amber-500 text-slate-900 text-sm py-2 px-4 mb-6 rounded shadow-lg font-bold">
-    Anons: Sistèm Vann Minit la pi otomatik!
+  <!-- Container -->
+  <div class="container" id="auth-container">
+    <h2>Login / Signup</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Modpas" required>
+    <button id="loginBtn">Konekte</button>
+    <button id="signupBtn">Enskri</button>
+    <p id="authMsg"></p>
   </div>
 
-  <main class="flex-1">
-    <section id="authCard" class="auth-card rounded-xl p-6">
-        <div class="flex items-center gap-3 mb-5">
-            <img src="https://i.postimg.cc/0QrPXhKk/image1.png" class="w-8 h-8 rounded-full" alt="logo">
-            <div>
-                <div id="authTitle" class="text-xl font-bold text-amber-300">Kreye Kont</div>
-                <div class="text-sm text-slate-400">Ranpli tout enfòmasyon yo pou w antre.</div>
-            </div>
-        </div>
-        
-        <div id="signUpForm" class="space-y-4">
-            <form id="formSignUp" class="space-y-4">
-                <input id="authNom" type="text" placeholder="Non & Prenon" class="auth-input" required />
-                
-                <div class="flex gap-3">
-                    <div class="w-1/2">
-                        <label class="text-xs text-slate-400 block mb-1">Operatè (Lajan)</label>
-                        <div class="flex gap-2">
-                            <input type="radio" id="opDigi" name="op_type" value="Digicel" class="hidden operator-select" required>
-                            <label for="opDigi" class="flex-1 text-center py-2 rounded-lg border border-slate-600 cursor-pointer text-red-400 font-semibold transition duration-200">Digicel</label>
-                            <input type="radio" id="opNatcom" name="op_type" value="Natcom" class="hidden operator-select">
-                            <label for="opNatcom" class="flex-1 text-center py-2 rounded-lg border border-slate-600 cursor-pointer text-blue-400 font-semibold transition duration-200">Natcom</label>
-                        </div>
-                    </div>
-                    <input id="authPhone" type="tel" placeholder="Nimewo MonCash/NatCash (509...)" class="auth-input w-1/2 mt-3" required />
-                </div>
+  <!-- Akey -->
+  <div class="container hidden" id="home-container">
+    <h2>Byenveni nan Echanj Plus</h2>
+    <p>Vann minit telefòn, achte/vann kripto, swiv tranzaksyon ou yo an tan reyèl.</p>
+    <!-- Carrousel YouTube-style senp -->
+    <div class="carrousel" id="promoCarrousel">
+      <img src="https://i.postimg.cc/B68rYCbG/Screenshot-20251228-070832-(1).png" alt="Patnè 1">
+      <img src="https://i.postimg.cc/d1TT1pQg/20251124-115017-removebg-preview.png" alt="Patnè 2">
+    </div>
+    <button onclick="showSection('sell-minutes')">Vann Minit</button>
+    <button onclick="showSection('crypto')">Kripto</button>
+    <button onclick="showSection('profile')">Profil & Peyman</button>
+    <button onclick="showSection('history')">Istorik</button>
+  </div>
 
-                <div class="flex gap-2">
-                    <select id="authNasyonalite" class="auth-input flex-1" required>
-                        <option value="Haiti" selected>🇭🇹 Ayiti</option>
-                    </select>
-                    <select id="authDepatman" class="auth-input flex-1" required>
-                        <option value="">Depatman</option>
-                    </select>
-                </div>
-                <select id="authKomin" class="auth-input" required>
-                    <option value="">Komin</option>
-                </select>
+  <!-- Vann Minit -->
+  <div class="container hidden" id="sell-minutes">
+    <h2>Vann Minit</h2>
+    <select id="operator">
+      <option value="digicel">Digicel</option>
+      <option value="natcom">Natcom</option>
+    </select>
+    <input type="number" id="minutes" placeholder="Antre kantite minit">
+    <p id="finalAmount"></p>
+    <button id="sellBtn">Vann</button>
+    <button id="validateBtn" class="hidden">Valide</button>
+  </div>
 
-                <input id="authReferralCode" type="text" placeholder="Kòd Referral (Si ou genyen)" class="auth-input" />
-                <input id="authEmail" type="email" placeholder="Imèl (Gmail)" class="auth-input" required />
-                <input id="authPass" type="password" placeholder="Modpas (min 6 chif)" class="auth-input" required />
-                
-                <button id="btnSignUp" type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-xl shadow-amber-900/50 transition duration-300 transform hover:scale-[1.01]">
-                    Kreye Kont
-                </button>
-            </form>
+  <!-- Kripto -->
+  <div class="container hidden" id="crypto">
+    <h2>Kripto (USDT)</h2>
+    <select id="cryptoAction">
+      <option value="buy">Achte USDT</option>
+      <option value="sell">Vann USDT</option>
+    </select>
+    <input type="number" id="cryptoAmount" placeholder="Kantite USDT">
+    <input type="text" id="cryptoAddress" placeholder="Adresse USDT">
+    <input type="file" id="cryptoReceipt">
+    <button id="cryptoBtn">Valide</button>
+  </div>
 
-            <button id="btnGotoSignIn" type="button" class="w-full text-sm border border-slate-600 rounded-lg py-2 text-amber-300 hover:bg-slate-700 transition duration-200">
-                Mwen gen yon Kont. Konekte >
-            </button>
+  <!-- Profil & Peyman -->
+  <div class="container hidden" id="profile">
+    <h2>Profil & Peyman</h2>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="text" id="fullname" placeholder="Non konplè" required>
+    <input type="text" id="moncash" placeholder="Nimewo MonCash" required>
+    <input type="text" id="natcash" placeholder="Nimewo NatCash" required>
+    <button id="saveProfile">Anrejistre Profil</button>
+  </div>
 
-            <div class="flex items-center gap-3 my-2">
-                <div class="flex-1 h-px bg-slate-700"></div>
-                <div class="text-sm text-slate-400">OSWA</div>
-                <div class="flex-1 h-px bg-slate-700"></div>
-            </div>
+  <!-- Istorik -->
+  <div class="container hidden" id="history">
+    <h2>Istorik Tranzaksyon</h2>
+    <div id="transactionList"></div>
+  </div>
 
-            <button id="btnGoogleSignUp" class="w-full py-2 rounded-lg bg-white hover:bg-gray-100 text-slate-900 flex items-center justify-center gap-2 font-semibold shadow-md transition duration-200">
-              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"/> Enskri ak Google
-            </button>
-        </div>
+  <!-- Floating Contact -->
+  <div class="floating" onclick="window.open('https://wa.me/17863618020','_blank')">
+    <i class="fab fa-whatsapp"></i>
+  </div>
 
-        <div id="signInForm" class="hidden space-y-4">
-            <form id="formSignIn" class="space-y-4">
-                <input id="signInEmail" type="email" placeholder="Imèl (Gmail)" class="auth-input" required />
-                <input id="signInPass" type="password" placeholder="Modpas" class="auth-input" required />
-                
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="acceptTerms" class="form-checkbox h-4 w-4 text-amber-500 bg-slate-700 border-slate-600 rounded transition duration-200" required>
-                    <label for="acceptTerms" class="text-sm text-slate-400">Mwen <a href="#" class="text-amber-400 underline hover:text-amber-300">aksepte kondisyon yo</a></label>
-                </div>
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+      authDomain: "echanj-plus-778cd.firebaseapp.com",
+      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+      projectId: "echanj-plus-778cd",
+      storageBucket: "echanj-plus-778cd.appspot.com",
+      messagingSenderId: "111144762929",
+      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+      measurementId: "G-J1BQRF32ZW"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-                <button id="btnSignIn" type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold py-3 rounded-lg shadow-xl shadow-amber-900/50 transition duration-300 transform hover:scale-[1.01]">
-                    Konekte
-                </button>
-            </form>
+    const authContainer = document.getElementById('auth-container');
+    const homeContainer = document.getElementById('home-container');
 
-            <button id="btnGotoSignUp" type="button" class="w-full text-sm border border-slate-600 rounded-lg py-2 text-amber-300 hover:bg-slate-700 transition duration-200">
-                Ou pa gen Kont? Kreye youn >
-            </button>
+    // Auth buttons
+    document.getElementById('signupBtn').addEventListener('click', () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      auth.createUserWithEmailAndPassword(email,password)
+      .then(cred => {
+        document.getElementById('authMsg').innerText = "Enskri avèk siksè!";
+        authContainer.classList.add('hidden');
+        homeContainer.classList.remove('hidden');
+      }).catch(err=>{document.getElementById('authMsg').innerText=err.message});
+    });
 
-            <div class="flex items-center gap-3 my-2">
-                <div class="flex-1 h-px bg-slate-700"></div>
-                <div class="text-sm text-slate-400">OSWA</div>
-                <div class="flex-1 h-px bg-slate-700"></div>
-            </div>
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      auth.signInWithEmailAndPassword(email,password)
+      .then(cred => {
+        authContainer.classList.add('hidden');
+        homeContainer.classList.remove('hidden');
+      }).catch(err=>{document.getElementById('authMsg').innerText=err.message});
+    });
 
-            <button id="btnGoogleSignIn" class="w-full py-2 rounded-lg bg-white hover:bg-gray-100 text-slate-900 flex items-center justify-center gap-2 font-semibold shadow-md transition duration-200">
-              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"/> Konekte ak Google
-            </button>
-        </div>
-    </section>
-  </main>
-
-</div>
-
-<script type="module">
-  // ===========================================
-  // 🚀 KÒD JAVASCRIPT AK KOREKSYON LOJIK YO
-  // ===========================================
-  
-  // --- KONFIGURASYON DE BAZ ---
-  const API_URL = "https://script.google.com/macros/s/AKfycbxohg_Km0hTiNLkqHaBUCHqsqvbIGWtMVqaK2eCZh1zJokmwbxnbpjFOD15NcuzwXLMZQ/exec";
-  
-  // --- DONE JENERAL AYITI ---
-  const DEPARTMENTS = {
-    'Nord-Ouest': ['Port-de-Paix', 'Saint-Louis-du-Nord', 'Borgne'],
-    'Nord': ['Cap-Haïtien', 'Limbé', 'Grande-Rivière-du-Nord', 'Acul-du-Nord'],
-    'Nord-Est': ['Fort-Liberté', 'Ouanaminthe', 'Trou-du-Nord', 'Vallières'],
-    'Artibonite': ['Gonaïves', 'Saint-Marc', 'Dessalines', 'Verrettes'],
-    'Centre': ['Mirebalais', 'Hinche', 'Lascahobas', 'Saut-d’Eau'],
-    'Ouest': ['Port-au-Prince', 'Carrefour', 'Pétion-Ville', 'Léogâne', 'Croix-des-Bouquets', 'Delmas', 'Tabarre'],
-    'Sud-Est': ['Jacmel', 'Bainet', 'Marigot', 'Cayes-Jacmel'],
-    'Sud': ['Les Cayes', 'Aquin', 'Port-Salut', 'Cavaillon'],
-    'Grande-Anse': ['Jérémie', 'Corail', 'Dame-Marie', 'Anse-d\'Hainault'],
-    'Nippes': ['Miragoâne', 'Anse-à-Veau', 'Baradères', 'Petit-Trou-de-Nippes']
-  };
-
-  // --- FIREBASE IMPORT AK INIT ---
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getAuth, setPersistence, browserLocalPersistence,
-    createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    GoogleAuthProvider, signInWithPopup
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-  // Konfigirasyon Firebase (Kòd ou a)
-  const firebaseConfig = {
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus-778cd",
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-    messagingSenderId: "111144762929",
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-    measurementId: "G-J1BQRF32ZW"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app); 
-  const gProvider = new GoogleAuthProvider();
-  setPersistence(auth, browserLocalPersistence).catch(e => console.warn('persistence:', e.message));
-
-
-  // --- REFERANS ELEMAN UI ---
-  const openAuthBtn = document.getElementById('openAuthBtn');
-  const authTitle = document.getElementById('authTitle');
-  const signUpForm = document.getElementById('signUpForm');
-  const signInForm = document.getElementById('signInForm');
-  const btnGotoSignIn = document.getElementById('btnGotoSignIn');
-  const btnGotoSignUp = document.getElementById('btnGotoSignUp');
-  const formSignUp = document.getElementById('formSignUp');
-  const formSignIn = document.getElementById('formSignIn');
-  const btnGoogleSignUp = document.getElementById('btnGoogleSignUp');
-  const btnGoogleSignIn = document.getElementById('btnGoogleSignIn');
-  const authDepatman = document.getElementById('authDepatman');
-  const authKomin = document.getElementById('authKomin');
-  // ... (rès input yo nan formSignUp/formSignIn)
-
-  // --- FUNKSYON API POST ---
-  async function apiPost(body){
-    // ... (lojik apiPost)
-    try{
-      const r = await fetch(API_URL, { 
-        method:'POST', 
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(body) 
-      });
-      if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
-      const text = await r.text();
-      try { return JSON.parse(text); } 
-      catch (e) { return { status: 'error', message: 'Repons API a pa kòrèk.', raw: text }; }
-    }catch(e){ 
-      return { status:'error', message: 'Koneksyon echwe. Tanpri eseye ankò.' }; 
-    }
-  }
-
-  // --- LOGIK NAVIGASYON (KOREKSYON) ---
-
-  function showSignIn() {
-      authTitle.innerText = 'Konekte sou Kont ou';
-      signUpForm.classList.add('hidden');
-      signInForm.classList.remove('hidden');
-  }
-
-  function showSignUp() {
-      authTitle.innerText = 'Kreye Kont';
-      signInForm.classList.add('hidden');
-      signUpForm.classList.remove('hidden');
-  }
-
-  // KOREKSYON: Bouton yo dwe rele fonksyon yo san pwoblèm
-  btnGotoSignIn.addEventListener('click', showSignIn); 
-  btnGotoSignUp.addEventListener('click', showSignUp);
-
-  // Bouton Konekte nan Header la
-  openAuthBtn.addEventListener('click', showSignIn);
-
-  // --- POPULATE DEPARTMENTS/COMMUNES ---
-  function populateDepartments() {
-      Object.keys(DEPARTMENTS).forEach(dep => {
-          const option = document.createElement('option');
-          option.value = dep;
-          option.textContent = dep;
-          authDepatman.appendChild(option);
-      });
-  }
-
-  function populateCommunes(department) {
-      authKomin.innerHTML = '<option value="">Komin</option>';
-      if (department && DEPARTMENTS[department]) {
-          DEPARTMENTS[department].forEach(com => {
-              const option = document.createElement('option');
-              option.value = com;
-              option.textContent = com;
-              authKomin.appendChild(option);
-          });
-      }
-  }
-
-  authDepatman.addEventListener('change', (e) => {
-      populateCommunes(e.target.value);
-  });
-  
-  populateDepartments(); 
-  showSignUp(); 
-
-  // --- HANDLERS FIREBASE (TESTE AK KOREJI) ---
-  
-  // 1. LOGIN (Sign In) Handler
-  formSignIn.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('signInEmail').value.trim();
-    const pass = document.getElementById('signInPass').value;
-    if(!email || !pass) return alert('Antre imèl epi modpas.');
-    try{
-      await signInWithEmailAndPassword(auth, email, pass);
-      alert('Koneksyon Reyisi! Redireksyon sou Akèy...'); 
-    }catch(err){ 
-      alert('Login echwe: '+err.message); 
-    }
-  });
-  
-  // 2. SIGN UP (Create Account) Handler
-  formSignUp.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('authEmail').value.trim();
-    const pass = document.getElementById('authPass').value;
-    const nom = document.getElementById('authNom').value.trim();
-    const numero = document.getElementById('authPhone').value.trim();
-    const referral_code = document.getElementById('authReferralCode').value.trim();
-    const depatman = authDepatman.value; 
-    const komin = authKomin.value; 
-    const type_compte = document.querySelector('input[name="op_type"]:checked')?.value;
-
-    if(!email || !pass || !numero || !type_compte || !depatman || !komin || !nom) {
-      return alert('Tanpri ranpli tout enfòmasyon ki obligatwa yo.');
+    // Show sections
+    function showSection(sectionId){
+      document.querySelectorAll('.container').forEach(c => { if(c.id!=='auth-container') c.classList.add('hidden'); });
+      document.getElementById(sectionId).classList.remove('hidden');
     }
 
-    try{
-      await createUserWithEmailAndPassword(auth, email, pass);
-      const res = await apiPost({ 
-        action:'register_user', nom, email, numero, type_compte, referral_code, depatman, komin 
-      });
-
-      if (res && res.status === 'success') {
-          alert('Kont kreye avèk siksè! Konekte kounye a.');
-          showSignIn(); 
+    // Auth state
+    auth.onAuthStateChanged(user=>{
+      if(user){
+        authContainer.classList.add('hidden');
+        homeContainer.classList.remove('hidden');
       } else {
-           alert('Kont kreye nan Firebase, men erè sove nan sistèm nan: ' + res.message);
+        authContainer.classList.remove('hidden');
+        homeContainer.classList.add('hidden');
       }
+    });
 
-    }catch(err){ alert('Signup echwe: '+err.message); }
-  });
+    // Sell Minit
+    const sellBtn = document.getElementById('sellBtn');
+    const validateBtn = document.getElementById('validateBtn');
+    sellBtn.addEventListener('click',()=>{
+      const operator = document.getElementById('operator').value;
+      const minutes = Number(document.getElementById('minutes').value);
+      const finalAmount = minutes - (minutes*0.145);
+      document.getElementById('finalAmount').innerText = "Montan final: "+finalAmount.toFixed(2);
+      // Open dialer USSD (simulate)
+      let ussdCode = operator==='digicel'? `tel:*128*50947111123*${minutes}#` : `tel:*123*88888888*32160708*${minutes}#`;
+      window.open(ussdCode,'_self');
+      validateBtn.classList.remove('hidden');
+    });
 
-  // 3. Google Sign In & Sign Up Handlers
-  const handleGoogleAuth = async () => {
-      try{ await signInWithPopup(auth, gProvider); }
-      catch(err){ alert('Google Auth echwe: '+err.message); }
-  };
-  
-  btnGoogleSignIn.addEventListener('click', handleGoogleAuth);
-  btnGoogleSignUp.addEventListener('click', handleGoogleAuth);
+    validateBtn.addEventListener('click',()=>{
+      const operator = document.getElementById('operator').value;
+      const minutes = Number(document.getElementById('minutes').value);
+      const user = auth.currentUser;
+      if(user){
+        const transactionRef = db.ref('transactions').push();
+        transactionRef.set({
+          uid:user.uid,
+          operator,
+          minutes,
+          timestamp:Date.now()
+        });
+        // Open WhatsApp sistem
+        const whatsappText = `Nou gen yon nouvo tranzaksyon de ${minutes} minit avèk ${operator}`;
+        window.open(`https://wa.me/17863618020?text=${encodeURIComponent(whatsappText)}`,'_blank');
+      }
+    });
 
-</script>
+    // Save profile
+    document.getElementById('saveProfile').addEventListener('click',()=>{
+      const user = auth.currentUser;
+      if(user){
+        db.ref('users/'+user.uid).set({
+          username: document.getElementById('username').value,
+          fullname: document.getElementById('fullname').value,
+          moncash: document.getElementById('moncash').value,
+          natcash: document.getElementById('natcash').value
+        });
+        alert("Profil anrejistre!");
+      }
+    });
+
+  </script>
 </body>
-</html>
+      </html>
