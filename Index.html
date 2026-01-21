@@ -1,211 +1,78 @@
 <!DOCTYPE html>
-<html lang="ht">
+<html lang="hc">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Echanj Plus</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <style>
-    /* General Styles */
-    * { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
-    body { background-color: #001f4d; color:#fff; text-align:center; min-height:100vh; display:flex; flex-direction:column; }
-    img.logo { max-width:150px; margin:20px auto; display:block; }
-    nav { position:fixed; bottom:0; width:100%; background:#002960; display:flex; justify-content:space-around; padding:10px 0; font-weight:bold; }
-    nav a { color:#fff; text-decoration:none; font-weight:bold; }
-    .container { max-width:500px; margin:20px auto; background:#003366; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.5); }
-    input, select, button { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:none; font-size:16px; }
-    button { background:#00aaff; color:#fff; font-weight:bold; cursor:pointer; }
-    button:hover { background:#0088cc; }
-    .floating { position:fixed; right:20px; bottom:80px; background:#00aaff; padding:15px; border-radius:50%; font-size:20px; cursor:pointer; }
-    .carrousel { display:flex; overflow-x:auto; gap:10px; padding:10px; scroll-behavior:smooth; }
-    .carrousel img { width:300px; height:170px; border-radius:10px; flex-shrink:0; }
-    .hidden { display:none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echanj Plus - Mizajou</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Background Imaj la */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://i.postimg.cc/G2NnFhrn/1762628276093-(1)-(1).jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .container {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1); /* Yon ti efè glas */
+            backdrop-filter: blur(5px); /* Flou dèyè bwat la */
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 90%;
+        }
+
+        h1 {
+            color: #ffffff;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #eeeeee;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #ffffff;
+            background: #911710; /* Wouj ou an pou bouton an */
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Logo -->
-  <img class="logo" src="https://i.postimg.cc/d1TT1pQg/20251124-115017-removebg-preview.png" alt="Echanj Plus">
+    <div class="container">
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <lord-icon
+            src="https://cdn.lordicon.com/kkdnopsh.json"
+            trigger="loop"
+            delay="2000"
+            colors="primary:#ffffff,secondary:#b4b4b4,tertiary:#911710"
+            style="width:200px;height:200px">
+        </lord-icon>
 
-  <!-- Container -->
-  <div class="container" id="auth-container">
-    <h2>Login / Signup</h2>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Modpas" required>
-    <button id="loginBtn">Konekte</button>
-    <button id="signupBtn">Enskri</button>
-    <p id="authMsg"></p>
-  </div>
-
-  <!-- Akey -->
-  <div class="container hidden" id="home-container">
-    <h2>Byenveni nan Echanj Plus</h2>
-    <p>Vann minit telefòn, achte/vann kripto, swiv tranzaksyon ou yo an tan reyèl.</p>
-    <!-- Carrousel YouTube-style senp -->
-    <div class="carrousel" id="promoCarrousel">
-      <img src="https://i.postimg.cc/B68rYCbG/Screenshot-20251228-070832-(1).png" alt="Patnè 1">
-      <img src="https://i.postimg.cc/d1TT1pQg/20251124-115017-removebg-preview.png" alt="Patnè 2">
+        <h1>Echanj Plus</h1>
+        <p>Sistèm nan ap <strong>mizajou</strong> pou n ba ou pi bon kalite.<br>
+        Tanpri retounen nan yon ti moman.</p>
+        
+        <div class="status">Travay an kou...</div>
     </div>
-    <button onclick="showSection('sell-minutes')">Vann Minit</button>
-    <button onclick="showSection('crypto')">Kripto</button>
-    <button onclick="showSection('profile')">Profil & Peyman</button>
-    <button onclick="showSection('history')">Istorik</button>
-  </div>
 
-  <!-- Vann Minit -->
-  <div class="container hidden" id="sell-minutes">
-    <h2>Vann Minit</h2>
-    <select id="operator">
-      <option value="digicel">Digicel</option>
-      <option value="natcom">Natcom</option>
-    </select>
-    <input type="number" id="minutes" placeholder="Antre kantite minit">
-    <p id="finalAmount"></p>
-    <button id="sellBtn">Vann</button>
-    <button id="validateBtn" class="hidden">Valide</button>
-  </div>
-
-  <!-- Kripto -->
-  <div class="container hidden" id="crypto">
-    <h2>Kripto (USDT)</h2>
-    <select id="cryptoAction">
-      <option value="buy">Achte USDT</option>
-      <option value="sell">Vann USDT</option>
-    </select>
-    <input type="number" id="cryptoAmount" placeholder="Kantite USDT">
-    <input type="text" id="cryptoAddress" placeholder="Adresse USDT">
-    <input type="file" id="cryptoReceipt">
-    <button id="cryptoBtn">Valide</button>
-  </div>
-
-  <!-- Profil & Peyman -->
-  <div class="container hidden" id="profile">
-    <h2>Profil & Peyman</h2>
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="text" id="fullname" placeholder="Non konplè" required>
-    <input type="text" id="moncash" placeholder="Nimewo MonCash" required>
-    <input type="text" id="natcash" placeholder="Nimewo NatCash" required>
-    <button id="saveProfile">Anrejistre Profil</button>
-  </div>
-
-  <!-- Istorik -->
-  <div class="container hidden" id="history">
-    <h2>Istorik Tranzaksyon</h2>
-    <div id="transactionList"></div>
-  </div>
-
-  <!-- Floating Contact -->
-  <div class="floating" onclick="window.open('https://wa.me/17863618020','_blank')">
-    <i class="fab fa-whatsapp"></i>
-  </div>
-
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-      authDomain: "echanj-plus-778cd.firebaseapp.com",
-      databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-      projectId: "echanj-plus-778cd",
-      storageBucket: "echanj-plus-778cd.appspot.com",
-      messagingSenderId: "111144762929",
-      appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-      measurementId: "G-J1BQRF32ZW"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    const authContainer = document.getElementById('auth-container');
-    const homeContainer = document.getElementById('home-container');
-
-    // Auth buttons
-    document.getElementById('signupBtn').addEventListener('click', () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      auth.createUserWithEmailAndPassword(email,password)
-      .then(cred => {
-        document.getElementById('authMsg').innerText = "Enskri avèk siksè!";
-        authContainer.classList.add('hidden');
-        homeContainer.classList.remove('hidden');
-      }).catch(err=>{document.getElementById('authMsg').innerText=err.message});
-    });
-
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      auth.signInWithEmailAndPassword(email,password)
-      .then(cred => {
-        authContainer.classList.add('hidden');
-        homeContainer.classList.remove('hidden');
-      }).catch(err=>{document.getElementById('authMsg').innerText=err.message});
-    });
-
-    // Show sections
-    function showSection(sectionId){
-      document.querySelectorAll('.container').forEach(c => { if(c.id!=='auth-container') c.classList.add('hidden'); });
-      document.getElementById(sectionId).classList.remove('hidden');
-    }
-
-    // Auth state
-    auth.onAuthStateChanged(user=>{
-      if(user){
-        authContainer.classList.add('hidden');
-        homeContainer.classList.remove('hidden');
-      } else {
-        authContainer.classList.remove('hidden');
-        homeContainer.classList.add('hidden');
-      }
-    });
-
-    // Sell Minit
-    const sellBtn = document.getElementById('sellBtn');
-    const validateBtn = document.getElementById('validateBtn');
-    sellBtn.addEventListener('click',()=>{
-      const operator = document.getElementById('operator').value;
-      const minutes = Number(document.getElementById('minutes').value);
-      const finalAmount = minutes - (minutes*0.145);
-      document.getElementById('finalAmount').innerText = "Montan final: "+finalAmount.toFixed(2);
-      // Open dialer USSD (simulate)
-      let ussdCode = operator==='digicel'? `tel:*128*50947111123*${minutes}#` : `tel:*123*88888888*32160708*${minutes}#`;
-      window.open(ussdCode,'_self');
-      validateBtn.classList.remove('hidden');
-    });
-
-    validateBtn.addEventListener('click',()=>{
-      const operator = document.getElementById('operator').value;
-      const minutes = Number(document.getElementById('minutes').value);
-      const user = auth.currentUser;
-      if(user){
-        const transactionRef = db.ref('transactions').push();
-        transactionRef.set({
-          uid:user.uid,
-          operator,
-          minutes,
-          timestamp:Date.now()
-        });
-        // Open WhatsApp sistem
-        const whatsappText = `Nou gen yon nouvo tranzaksyon de ${minutes} minit avèk ${operator}`;
-        window.open(`https://wa.me/17863618020?text=${encodeURIComponent(whatsappText)}`,'_blank');
-      }
-    });
-
-    // Save profile
-    document.getElementById('saveProfile').addEventListener('click',()=>{
-      const user = auth.currentUser;
-      if(user){
-        db.ref('users/'+user.uid).set({
-          username: document.getElementById('username').value,
-          fullname: document.getElementById('fullname').value,
-          moncash: document.getElementById('moncash').value,
-          natcash: document.getElementById('natcash').value
-        });
-        alert("Profil anrejistre!");
-      }
-    });
-
-  </script>
 </body>
-      </html>
+</html>
+
