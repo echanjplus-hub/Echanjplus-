@@ -3,76 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echanj Plus - Mizajou</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Background Imaj la */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://i.postimg.cc/G2NnFhrn/1762628276093-(1)-(1).jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #ffffff;
-            text-align: center;
-        }
-
-        .container {
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.1); /* Yon ti efè glas */
-            backdrop-filter: blur(5px); /* Flou dèyè bwat la */
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 90%;
-        }
-
-        h1 {
-            color: #ffffff;
-            margin-top: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        p {
-            font-size: 1.2rem;
-            color: #eeeeee;
-        }
-
-        .status {
-            font-weight: bold;
-            color: #ffffff;
-            background: #911710; /* Wouj ou an pou bouton an */
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 50px;
-            margin-top: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-    </style>
+    <title>Echanj Plus - Auth</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="container">
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
-        <lord-icon
-            src="https://cdn.lordicon.com/kkdnopsh.json"
-            trigger="loop"
-            delay="2000"
-            colors="primary:#ffffff,secondary:#b4b4b4,tertiary:#911710"
-            style="width:200px;height:200px">
-        </lord-icon>
+<div class="auth-container">
+    <img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" alt="Logo" class="logo">
 
-        <h1>Echanj Plus</h1>
-        <p>Sistèm nan ap <strong>mizajou</strong> pou n ba ou pi bon kalite.<br>
-        Tanpri retounen nan yon ti moman.</p>
+    <div id="signup-form">
+        <h2>Kreye yon kont</h2>
+        <div class="input-group">
+            <i class="fa fa-user"></i>
+            <input type="text" id="reg-fullname" placeholder="Non konplè ou">
+        </div>
+        <div class="input-group">
+            <i class="fa fa-phone"></i>
+            <input type="tel" id="reg-phone" placeholder="Nimewo telefòn ou">
+        </div>
+        <div class="input-group">
+            <i class="fa fa-envelope"></i>
+            <input type="email" id="reg-email" placeholder="Email ou">
+        </div>
+        <div class="input-group">
+            <i class="fa fa-lock"></i>
+            <input type="password" id="reg-pass" placeholder="Modpas ou">
+        </div>
         
-        <div class="status">Travay an kou...</div>
+        <div class="gender-selection">
+            <label><input type="radio" name="gender" value="Fi"> Fi 🔘</label>
+            <label><input type="radio" name="gender" value="Gason"> Gason 🔘</label>
+        </div>
+
+        <button onclick="handleSignup()" class="btn-main">Enskri</button>
+        <p class="switch-text">Ou gen kont deja? <a href="#" onclick="toggleAuth()">Konekte</a></p>
     </div>
 
-</body>
-</html>
+    <div id="login-form" style="display: none;">
+        <h2>Byenvini ankò</h2>
+        <div class="input-group">
+            <i class="fa fa-envelope"></i>
+            <input type="email" id="log-email" placeholder="Email ou">
+        </div>
+        <div class="input-group">
+            <i class="fa fa-lock"></i>
+            <input type="password" id="log-pass" placeholder="Modpas ou">
+        </div>
+        <button onclick="handleLogin()" class="btn-main">Konekte</button>
+        <p class="switch-text">Ou pa gen kont? <a href="#" onclick="toggleAuth()">Enskri la</a></p>
+    </div>
+</div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="app.js"></script>
+</body>
+                </html>
+                                                                                   
