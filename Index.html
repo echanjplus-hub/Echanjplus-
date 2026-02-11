@@ -3,62 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echanj Plus - Auth</title>
+    <title>Echanj Plus - Sèvis rapid</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<div class="auth-container">
-    <img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" alt="Logo" class="logo">
+    <div class="container">
+        <img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" alt="Logo" class="logo">
 
-    <div id="signup-form">
-        <h2>Kreye yon kont</h2>
-        <div class="input-group">
-            <i class="fa fa-user"></i>
-            <input type="text" id="reg-fullname" placeholder="Non konplè ou">
-        </div>
-        <div class="input-group">
-            <i class="fa fa-phone"></i>
-            <input type="tel" id="reg-phone" placeholder="Nimewo telefòn ou">
-        </div>
-        <div class="input-group">
-            <i class="fa fa-envelope"></i>
-            <input type="email" id="reg-email" placeholder="Email ou">
-        </div>
-        <div class="input-group">
-            <i class="fa fa-lock"></i>
-            <input type="password" id="reg-pass" placeholder="Modpas ou">
-        </div>
-        
-        <div class="gender-selection">
-            <label><input type="radio" name="gender" value="Fi"> Fi 🔘</label>
-            <label><input type="radio" name="gender" value="Gason"> Gason 🔘</label>
+        <div id="auth-section">
+            <div id="login-form">
+                <h2>Konekte</h2>
+                <input type="email" id="login-email" placeholder="Email ou">
+                <input type="password" id="login-pass" placeholder="Modpas ou">
+                <button onclick="login()">Konekte</button>
+                <p>Poko gen kont? <a href="#" onclick="toggleAuth()">Enskri la</a></p>
+            </div>
+
+            <div id="register-form" style="display:none;">
+                <h2>Enskri</h2>
+                <input type="text" id="reg-name" placeholder="Non konplè ou">
+                <input type="tel" id="reg-phone" placeholder="Nimewo telefòn ou">
+                <input type="email" id="reg-email" placeholder="Email ou">
+                <input type="password" id="reg-pass" placeholder="Modpas ou">
+                <div class="radio-group">
+                    <label><input type="radio" name="seks" value="Fi"> Fi</label>
+                    <label><input type="radio" name="seks" value="Gason"> Gason</label>
+                </div>
+                <button onclick="register()">Enskri</button>
+                <p>Gen yon kont deja? <a href="#" onclick="toggleAuth()">Konekte la</a></p>
+            </div>
         </div>
 
-        <button onclick="handleSignup()" class="btn-main">Enskri</button>
-        <p class="switch-text">Ou gen kont deja? <a href="#" onclick="toggleAuth()">Konekte</a></p>
+        <div id="main-app" style="display:none;">
+            <div class="balance-card">
+                <h3>Balans ou: <span id="user-balance">0.00</span> Gdes</h3>
+            </div>
+
+            <nav class="nav-bar">
+                <button onclick="showSection('echanj')">Echanj</button>
+                <button onclick="showSection('retre')">Retrè</button>
+                <button onclick="logout()">Soti</button>
+            </nav>
+
+            <div id="echanj-section">
+                <div class="card digicel" onclick="openExchange('digicel')">
+                    <span class="provider-name">DIGICEL</span>
+                </div>
+                <div class="card natcom" onclick="openExchange('natcom')">
+                    <span class="provider-name">NATCOM</span>
+                </div>
+
+                <div id="exchange-modal" class="modal">
+                    <h3 id="modal-title">Vann Minit</h3>
+                    <input type="number" id="amount-to-sell" placeholder="Kantite (Gdes)">
+                    <p id="calc-preview">W ap resevwa: 0 Gdes</p>
+                    <button id="btn-confirm-exchange">Echanje</button>
+                    <button onclick="closeModal()">Anile</button>
+                </div>
+            </div>
+
+            <div id="retre-section" style="display:none;">
+                <h3>Mande yon retrè</h3>
+                <div class="radio-group">
+                    <label><input type="radio" name="metod" value="MonCash"> MonCash</label>
+                    <label><input type="radio" name="metod" value="NatCash"> NatCash</label>
+                    <label><input type="radio" name="metod" value="Paryaj Lakay"> Paryaj Lakay</label>
+                </div>
+                <input type="number" id="withdraw-amount" placeholder="Kantite">
+                <input type="text" id="withdraw-name" placeholder="Non Konplè">
+                <button onclick="processWithdrawal()">Fè Retrè</button>
+            </div>
+        </div>
     </div>
 
-    <div id="login-form" style="display: none;">
-        <h2>Byenvini ankò</h2>
-        <div class="input-group">
-            <i class="fa fa-envelope"></i>
-            <input type="email" id="log-email" placeholder="Email ou">
-        </div>
-        <div class="input-group">
-            <i class="fa fa-lock"></i>
-            <input type="password" id="log-pass" placeholder="Modpas ou">
-        </div>
-        <button onclick="handleLogin()" class="btn-main">Konekte</button>
-        <p class="switch-text">Ou pa gen kont? <a href="#" onclick="toggleAuth()">Enskri la</a></p>
-    </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="app.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
-                </html>
-                                                                                   
+</html>
