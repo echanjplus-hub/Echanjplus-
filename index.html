@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echanj Plus - Sistèm Sekirize</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="auth-page" class="container">
+        <center><img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" width="120" style="margin:20px 0;"></center>
+        
+        <div id="login-section" class="card">
+            <h2>Konekte</h2>
+            <input type="email" id="login-email" placeholder="Email ou">
+            <div class="pass-group">
+                <input type="password" id="login-pass" placeholder="Modpas ou">
+                <i class="fa fa-eye" onclick="togglePass('login-pass')"></i>
+            </div>
+            <button class="btn-main bg-blue" onclick="handleLogin()">Konekte</button>
+            <p onclick="toggleAuth('signup')" class="link">Poko gen kont? <span>Enskri</span></p>
+            <p onclick="toggleAuth('reset')" class="link red">Modpas bliye?</p>
+        </div>
+
+        <div id="signup-section" class="card hidden">
+            <h2>Kreye Kont</h2>
+            <input type="text" id="sign-name" placeholder="Non konplè">
+            <input type="tel" id="sign-phone" placeholder="Telefòn">
+            <input type="email" id="sign-email" placeholder="Email">
+            <input type="password" id="sign-pass" placeholder="Modpas">
+            <button class="btn-main bg-green" onclick="handleSignup()">Enskri</button>
+            <p onclick="toggleAuth('login')" class="link">Gen kont deja? <span>Konekte</span></p>
+        </div>
+
+        <div id="reset-section" class="card hidden">
+            <h2>Reyajiste Modpas</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">N ap voye yon lyen nan imel ou pou chanje modpas la.</p>
+            <input type="email" id="reset-email" placeholder="Email ou">
+            <button class="btn-main bg-dark" onclick="handleReset()">Voye Lyen</button>
+            <p onclick="toggleAuth('login')" class="link">Retounen nan Koneksyon</p>
+        </div>
+    </div>
+
+    <div id="home-page" class="hidden">
+        <nav class="navbar">
+            <span>Echanj Plus</span>
+            <button onclick="handleLogout()" class="logout-btn">Soti</button>
+        </nav>
+
+        <div class="container">
+            <div class="balance-card">
+                <span class="label">BALANS DISPONIB</span>
+                <div id="user-balance">0.00</div>
+                <small>Gourdes (HTG)</small>
+            </div>
+
+            <div class="box">
+                <span class="title">Echanj Digicel</span>
+                <button class="btn-main btn-digi" onclick="toggleBox('input-digi')">Minit -> Gdes (Digi)</button>
+                <div id="input-digi" class="hidden">
+                    <input type="number" id="qty-digi" placeholder="Kantite Minit">
+                    <p id="calc-digi" class="res-text">W ap resevwa: 0.00 G</p>
+                    <button class="confirm-btn" onclick="processEchanj('digicel')">KONFIME</button>
+                </div>
+            </div>
+
+            <div class="box">
+                <span class="title">Echanj Natcom</span>
+                <button class="btn-main btn-nat" onclick="toggleBox('input-nat')">Minit -> Gdes (Nat)</button>
+                <div id="input-nat" class="hidden">
+                    <input type="number" id="qty-nat" placeholder="Kantite Minit">
+                    <p id="calc-nat" class="res-text">W ap resevwa: 0.00 G</p>
+                    <button class="confirm-btn" onclick="processEchanj('natcom')">KONFIME</button>
+                </div>
+            </div>
+
+            <div class="withdraw-logo" onclick="toggleBox('panel-retre')">RETRÈ</div>
+
+            <div id="panel-retre" class="box hidden border-green">
+                <span class="title green">Mande Retrè</span>
+                <select id="metod" class="input-field">
+                    <option value="MonCash">MonCash</option>
+                    <option value="NatCash">NatCash</option>
+                </select>
+                <input type="number" id="retre-amt" placeholder="Kantite Gdes">
+                <input type="text" id="retre-nom" placeholder="Non konplè">
+                <button class="btn-main bg-green" onclick="processRetre()">VOYE SOU WHATSAPP</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script>
+        function togglePass(id) { const el = document.getElementById(id); el.type = el.type === "password" ? "text" : "password"; }
+        function toggleBox(id) { document.getElementById(id).classList.toggle('hidden'); }
+        
+        function toggleAuth(mode) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('signup-section').classList.add('hidden');
+            document.getElementById('reset-section').classList.add('hidden');
+            
+            if(mode === 'login') document.getElementById('login-section').classList.remove('hidden');
+            if(mode === 'signup') document.getElementById('signup-section').classList.remove('hidden');
+            if(mode === 'reset') document.getElementById('reset-section').classList.remove('hidden');
+        }
+    </script>
+</body>
+                    </html>
+                    
