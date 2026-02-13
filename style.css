@@ -1,0 +1,32 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; }
+.container { width: 100%; max-width: 450px; margin: auto; padding: 15px; }
+.card, .box { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
+.hidden { display: none; }
+
+.navbar { background: #007bff; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+.logout-btn { background: #ff4d4d; border: none; color: white; padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+
+.balance-card { background: #111; color: #00ff88; padding: 30px; border-radius: 25px; text-align: center; margin-bottom: 20px; border: 2px solid #333; }
+#user-balance { font-size: 3rem; font-weight: bold; }
+.label { font-size: 0.8rem; color: #888; }
+
+input, select, .input-field { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
+.btn-main { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.bg-blue { background: #007bff; color: white; }
+.bg-green { background: #28a745; color: white; }
+.bg-dark { background: #333; color: white; }
+.btn-digi { background: #ff0000; color: white; }
+.btn-nat { background: #ff8c00; color: white; }
+.confirm-btn { width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+.withdraw-logo { background: #28a745; color: white; width: 80px; height: 80px; border-radius: 50%; margin: 20px auto; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.res-text { font-weight: bold; color: #28a745; margin: 5px 0; }
+.link { text-align: center; margin-top: 15px; cursor: pointer; font-size: 14px; color: #555; }
+.link span { color: #007bff; font-weight: bold; }
+.red { color: #ff4d4d !important; }
+.green { color: #28a745 !important; }
+.border-green { border: 2px solid #28a745 !important; }
+.pass-group { position: relative; }
+.pass-group i { position: absolute; right: 15px; top: 25px; cursor: pointer; color: #777; }
+  
