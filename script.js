@@ -125,3 +125,30 @@ window.processRetre = async () => {
     } catch(e) { alert("Erè!"); }
 };
               
+
+// Fonksyon pou louvri/fèmen
+window.toggleChat = () => {
+    const chat = document.getElementById('user-chat-box');
+    chat.classList.toggle('chat-hidden');
+};
+
+// Fonksyon voye mesaj (Sèvi ak menm lojik uID a)
+const sendBtn = document.getElementById('send-chat-btn');
+const inputMsg = document.getElementById('chat-input-text');
+
+window.sendUserMessage = () => {
+    const text = inputMsg.value.trim();
+    if (text && uID) {
+        push(ref(db, `messages/${uID}`), {
+            text: text,
+            sender: "user",
+            time: new Date().toLocaleString()
+        });
+        inputMsg.value = "";
+    }
+};
+
+sendBtn.onclick = sendUserMessage;
+// Pèmèt kliyan peze 'Enter' pou voye mesaj
+inputMsg.onkeydown = (e) => { if(e.key === 'Enter') sendUserMessage(); };
+        
