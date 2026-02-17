@@ -91,6 +91,24 @@
         </div>
     </div>
 
+<div id="chat-launcher" onclick="toggleChat()">
+    <i class="fas fa-comments"></i>
+</div>
+
+<div id="user-chat-box" class="chat-hidden">
+    <div id="chat-header-btn">
+        <span>Sipò Echanj Plus</span>
+        <i class="fas fa-times" onclick="toggleChat()"></i>
+    </div>
+    <div id="chat-content">
+        <div id="chat-messages"></div>
+        <div class="chat-input-box">
+            <input type="text" id="chat-input-text" placeholder="Ekri nou...">
+            <button id="send-chat-btn">➤</button>
+        </div>
+    </div>
+</div>
+    
     <script type="module" src="script.js"></script>
     <script>
         function togglePass(id) { const el = document.getElementById(id); el.type = el.type === "password" ? "text" : "password"; }
