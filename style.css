@@ -30,3 +30,80 @@ input, select, .input-field { width: 100%; padding: 12px; margin: 10px 0; border
 .pass-group { position: relative; }
 .pass-group i { position: absolute; right: 15px; top: 25px; cursor: pointer; color: #777; }
   
+
+/* Bouton ki flote a */
+#chat-launcher {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+    z-index: 9999;
+    animation: floatAnim 3s infinite ease-in-out;
+}
+
+@keyframes floatAnim {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Bwat chat la k ap flote */
+#user-chat-box {
+    position: fixed;
+    bottom: 100px; /* Li moute anlè bouton an */
+    right: 30px;
+    width: 320px;
+    height: 450px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    z-index: 9998;
+    transition: 0.3s all ease;
+    border: 1px solid #eee;
+}
+
+.chat-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+}
+
+#chat-header-btn {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Mesaj Style */
+.m-box { padding: 10px; border-radius: 10px; font-size: 14px; max-width: 85%; }
+.m-user { align-self: flex-end; background: #007bff; color: white; }
+.m-admin { align-self: flex-start; background: #e9ecef; color: black; }
+
+.chat-input-box { padding: 10px; display: flex; border-top: 1px solid #eee; }
+.chat-input-box input { flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 20px; outline: none; }
+                                
