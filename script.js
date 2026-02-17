@@ -124,31 +124,77 @@ window.processRetre = async () => {
         window.location.href = `https://wa.me/50947111123?text=${msg}`;
     } catch(e) { alert("Erè!"); }
 };
-              
+
+
+// --- KÒD CHAT KLIYAN KORİJE ---
+const launcher = document.getElementById('chat-launcher');
+const chatBox = document.getElementById('user-chat-box');
+const sendBtn = document.getElementById('send-chat-btn');
+const inputMsg = document.getElementById('chat-input-text');
+const messagesDiv = document.getElementById('chat-messages');
 
 // Fonksyon pou louvri/fèmen
 window.toggleChat = () => {
-    const chat = document.getElementById('user-chat-box');
-    chat.classList.toggle('chat-hidden');
+    chatBox.classList.toggle('chat-hidden');
 };
 
-// Fonksyon voye mesaj (Sèvi ak menm lojik uID a)
-const sendBtn = document.getElementById('send-chat-btn');
-const inputMsg = document.getElementById('chat-input-text');
-
+// VOYE MESAJ NAN DATABASE
 window.sendUserMessage = () => {
     const text = inputMsg.value.trim();
-    if (text && uID) {
-        push(ref(db, `messages/${uID}`), {
+    
+    // N ap tcheke si uID egziste anvan nou voye
+    if (text !== "" && uID) {
+        const msgRef = ref(db, `messages/${uID}`); // Sa a konekte ak messages/uID nan Firebase
+        push(msgRef, {
             text: text,
             sender: "user",
             time: new Date().toLocaleString()
+        }).then(() => {
+            inputMsg.value = ""; // Vide bwat la apre mesaj la fin voye
+        }).catch((error) => {
+            console.error("Erè voye mesaj:", error);
         });
-        inputMsg.value = "";
+    } else if (!uID) {
+        alert("Ou dwe konekte pou w ka ekri!");
     }
 };
 
+// KOUTE MESAJ YO (LIVE)
+function listenToChat(userId) {
+    const chatRef = ref(db, `messages/${userId}`);
+    onValue(chatRef, (snap) => {
+        messagesDiv.innerHTML = "";
+        snap.forEach((child) => {
+            const m = child.val();
+            const div = document.createElement('div');
+            div.className = `m-box ${m.sender === 'user' ? 'm-user' : 'm-admin'}`;
+            div.innerText = m.text;
+            messagesDiv.appendChild(div);
+        });
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Toujou desann anba
+    });
+}
+
+// EVÈNMAN YO
 sendBtn.onclick = sendUserMessage;
-// Pèmèt kliyan peze 'Enter' pou voye mesaj
 inputMsg.onkeydown = (e) => { if(e.key === 'Enter') sendUserMessage(); };
+
+// ENTEGRASYON NAN AUTH LA (Trè enpòtan)
+onAuthStateChanged(auth, (user) => {
+    if (user && user.emailVerified) {
+        uID = user.uid; // Nou asire uID a gen valè
         
+        // Limen chat la kounye a
+        if(launcher) launcher.style.display = "flex";
+        listenToChat(uID); // Kòmanse koute mesaj pou UID sa a
+        
+        document.getElementById('auth-page').classList.add('hidden');
+        document.getElementById('home-page').classList.remove('hidden');
+    } else {
+        uID = null;
+        if(launcher) launcher.style.display = "none";
+        document.getElementById('home-page').classList.add('hidden');
+        document.getElementById('auth-page').classList.remove('hidden');
+    }
+});
+                 
