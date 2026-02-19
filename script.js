@@ -198,3 +198,23 @@ onAuthStateChanged(auth, (user) => {
     }
 });
                  
+
+
+        // Fonksyon Karousel Otomatik
+function startCarousel() {
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+
+    function nextSlide() {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+    }
+
+    // Chanje chak 8 segond (8000ms)
+    setInterval(nextSlide, 8000);
+}
+
+// Rele fonksyon an lè paj la chaje
+document.addEventListener('DOMContentLoaded', startCarousel);
+            
