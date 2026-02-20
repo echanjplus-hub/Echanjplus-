@@ -218,3 +218,23 @@ function startCarousel() {
 // Rele fonksyon an lè paj la chaje
 document.addEventListener('DOMContentLoaded', startCarousel);
             
+
+
+       //fonksyon rezo sosyo yo 
+onAuthStateChanged(auth, (user) => {
+    if (user && user.emailVerified) {
+        // Debloke Carrousel la
+        document.getElementById('carousel-section').classList.remove('hidden');
+        startCarousel();
+
+        // DEBLOKE REZO SOSYO YO ISIT LA
+        document.getElementById('social-section').classList.remove('hidden');
+
+    } else {
+        // Kache yo si moun nan dekonekte
+        document.getElementById('carousel-section').classList.add('hidden');
+        document.getElementById('social-section').classList.add('hidden');
+    }
+});
+    
+        
