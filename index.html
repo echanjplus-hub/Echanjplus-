@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echanj Plus - Sistèm Sekirize</title>
+    <title>Echanj Plus - Tout-an-Yonn</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -21,7 +21,6 @@
             </div>
             <button class="btn-main bg-blue" onclick="handleLogin()">Konekte</button>
             <p onclick="toggleAuth('signup')" class="link">Poko gen kont? <span>Enskri</span></p>
-            <p onclick="toggleAuth('reset')" class="link red">Modpas bliye?</p>
         </div>
 
         <div id="signup-section" class="card hidden">
@@ -30,170 +29,133 @@
             <input type="tel" id="sign-phone" placeholder="Telefòn">
             <input type="email" id="sign-email" placeholder="Email">
             <input type="password" id="sign-pass" placeholder="Modpas">
+            <input type="text" id="sign-ref" placeholder="Kòd Parenaj (Opsyonèl)">
             <button class="btn-main bg-green" onclick="handleSignup()">Enskri</button>
             <p onclick="toggleAuth('login')" class="link">Gen kont deja? <span>Konekte</span></p>
         </div>
-
-        <div id="reset-section" class="card hidden">
-            <h2>Reyajiste Modpas</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">N ap voye yon lyen nan imel ou pou chanje modpas la.</p>
-            <input type="email" id="reset-email" placeholder="Email ou">
-            <button class="btn-main bg-dark" onclick="handleReset()">Voye Lyen</button>
-            <p onclick="toggleAuth('login')" class="link">Retounen nan Koneksyon</p>
-        </div>
     </div>
-
 
     <div id="home-page" class="hidden">
-        <nav class="navbar">
-            <span>Echanj Plus</span>
-            <button onclick="handleLogout()" class="logout-btn">Soti</button>
+        
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" width="60">
+                <span onclick="toggleSidebar()">&times;</span>
+            </div>
+            <div class="sidebar-content">
+                <p><b>Non:</b> <span id="side-name">...</span></p>
+                <p><b>Tel:</b> <span id="side-phone">...</span></p>
+                <p><b>Email:</b> <span id="side-email">...</span></p>
+                <hr>
+                <button class="side-link" onclick="handleReset()">Chanje Modpas</button>
+                <button class="side-link logout" onclick="handleLogout()">Dekonekte</button>
+            </div>
+        </div>
+
+        <header class="top-nav">
+            <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+            <span id="user-id-display" class="user-id">ID: ARS-...</span>
+        </header>
+
+        <main id="main-content">
+            <section id="paj-akey" class="paj-active">
+                <div class="balance-card">
+                    <span class="label">BALANS DISPONIB</span>
+                    <div id="user-balance" class="main-bal">0.00</div>
+                    <small>Gourdes (HTG)</small>
+                </div>
+                <div class="carousel"><div class="slide">Byenveni sou Echanj Plus 2026!</div></div>
+            </section>
+
+            <section id="paj-echanj" class="hidden">
+                <div class="container">
+                    <h3>Echanje Minit</h3>
+                    <div class="box">
+                        <button class="btn-main btn-digi" onclick="toggleBox('input-digi')">Digicel</button>
+                        <div id="input-digi" class="hidden">
+                            <input type="number" id="qty-digi" placeholder="Kantite Minit">
+                            <p id="calc-digi" class="res-text">Resevwa: 0.00 G</p>
+                            <button class="confirm-btn" onclick="processEchanj('digicel')">KONFIME</button>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <button class="btn-main btn-nat" onclick="toggleBox('input-nat')">Natcom</button>
+                        <div id="input-nat" class="hidden">
+                            <input type="number" id="qty-nat" placeholder="Kantite Minit">
+                            <p id="calc-nat" class="res-text">Resevwa: 0.00 G</p>
+                            <button class="confirm-btn" onclick="processEchanj('natcom')">KONFIME</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="paj-retre" class="hidden">
+                <div class="container">
+                    <h3>Mande Retrè</h3>
+                    <div class="box border-green">
+                        <select id="metod"><option value="MonCash">MonCash</option><option value="NatCash">NatCash</option></select>
+                        <input type="number" id="retre-amt" placeholder="Kantite Gdes">
+                        <input type="tel" id="retre-phone" placeholder="Nimewo Telefòn">
+                        <input type="text" id="retre-nom" placeholder="Non sou kont lan">
+                        <button class="btn-main bg-green" onclick="processRetre()">KONFIME</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="paj-trans" class="hidden">
+                <div class="container"><h3>Istorik</h3><div id="transaction-list"></div></div>
+            </section>
+
+            <section id="paj-kripto" class="hidden">
+                <div class="container"><h3>Kripto</h3><p>Byento...</p></div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="showPage('paj-akey', this)"><i class="fa fa-home"></i><span>Akey</span></div>
+            <div class="nav-item" onclick="showPage('paj-echanj', this)"><i class="fa fa-exchange-alt"></i><span>Echanj</span></div>
+            <div class="nav-item" onclick="showPage('paj-kripto', this)"><i class="fa fa-bitcoin-sign"></i><span>Kripto</span></div>
+            <div class="nav-item" onclick="showPage('paj-trans', this)"><i class="fa fa-history"></i><span>Trans</span></div>
+            <div class="nav-item" onclick="showPage('paj-retre', this)"><i class="fa fa-wallet"></i><span>Retrè</span></div>
         </nav>
-<a href="https://admin-ars.netlify.app/" target="_blank" class="link-sit"></a>
-        
-        <div class="carousel-wrapper">
-    <div class="carousel-container">
-        <div class="slide active">
-            <img src="https://i.postimg.cc/WbFqbP9Q/1771501473121-(1).jpg" alt="Fre">
-            <div class="caption-box">
-                <h3>Frè Sistèm lan</h3>
-                <p>Pwofite pi bon tarif sou mache a.</p>
-            </div>
-        </div>
-        <div class="slide">
-            <img src="https://i.postimg.cc/tCZnCHr8/1771501480676-(1).jpg" alt="Echanj">
-            <div class="caption-box">
-                <h3>Echanj Minit yo</h3>
-                <p>Chanje minit ou an kach rapid rapid.</p>
-            </div>
-        </div>
-        <div class="slide">
-            <img src="https://i.postimg.cc/Gh8Th17w/1771501496828-(1).jpg" alt="Kolaborasyon">
-            <div class="caption-box">
-                <h3>Bon Kolaborasyon</h3>
-                <p>Yon ekip ki la pou sèvi ou 24/7.</p>
-            </div>
-        </div>
-        <div class="slide">
-            <img src="https://i.postimg.cc/tCZnCHrK/Balance.jpg" alt="Balans">
-            <div class="caption-box">
-                <h3>Balans</h3>
-                <p>Kontwole lajan ou nenpòt kote ou ye.</p>
-            </div>
-        </div>
-        <div class="slide">
-            <img src="https://i.postimg.cc/gkVX6Kp9/1771501449871-(1).jpg" alt="Transaksyon">
-            <div class="caption-box">
-                <h3>Frè 1er Transaksyon</h3>
-                <p>Kado espesyal pou premye fwa ou itilize nou.</p>
-            </div>
-        </div>
     </div>
-                </div>
-        
 
-        <div class="container">
-            <div class="balance-card">
-                <span class="label">BALANS DISPONIB</span>
-                <div id="user-balance">0.00</div>
-                <small>Gourdes (HTG)</small>
-            </div>
-
-            <div class="box">
-                <span class="title">Echanj Digicel</span>
-                <button class="btn-main btn-digi" onclick="toggleBox('input-digi')">Minit -> Gdes (Digi)</button>
-                <div id="input-digi" class="hidden">
-                    <input type="number" id="qty-digi" placeholder="Kantite Minit">
-                    <p id="calc-digi" class="res-text">W ap resevwa: 0.00 G</p>
-                    <button class="confirm-btn" onclick="processEchanj('digicel')">KONFIME</button>
-                </div>
-            </div>
-
-            <div class="box">
-                <span class="title">Echanj Natcom</span>
-                <button class="btn-main btn-nat" onclick="toggleBox('input-nat')">Minit -> Gdes (Nat)</button>
-                <div id="input-nat" class="hidden">
-                    <input type="number" id="qty-nat" placeholder="Kantite Minit">
-                    <p id="calc-nat" class="res-text">W ap resevwa: 0.00 G</p>
-                    <button class="confirm-btn" onclick="processEchanj('natcom')">KONFIME</button>
-                </div>
-            </div>
-
-            <div class="withdraw-logo" onclick="toggleBox('panel-retre')">RETRÈ</div>
-
-            <div id="panel-retre" class="box hidden border-green">
-                <span class="title green">Mande Retrè</span>
-                <select id="metod" class="input-field">
-                    <option value="MonCash">MonCash</option>
-                    <option value="NatCash">NatCash</option>
-                </select>
-                <input type="number" id="retre-amt" placeholder="Kantite Gdes">
-                <input type="text" id="retre-nom" placeholder="Non konplè">
-                <button class="btn-main bg-green" onclick="processRetre()">VOYE SOU WHATSAPP</button>
-            </div>
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3>Konplete Profil ou</h3>
+            <input type="text" id="update-name" placeholder="Non konplè">
+            <input type="tel" id="update-phone" placeholder="Nimewo Telefòn">
+            <button class="btn-main bg-blue" onclick="updateMissingProfile()">Sove</button>
         </div>
     </div>
 
-
-    <footer>
-    <div id="social-section" class="social-footer hidden">
-    <div class="social-container">
-        <h3>REZWONNEN AK NOU</h3>
-        <div class="social-grid">
-            <a href="https://chat.whatsapp.com/DrUr1KQcaEEHGtng4rfuZD" target="_blank" class="social-link">
-                <img src="https://i.postimg.cc/bNw7n234/WhatsApp.png" alt="WhatsApp">
-            </a>
-
-            <a href="https://www.facebook.com/share/p/1Hmcy8DdGx/" target="_blank" class="social-link">
-                <img src="https://i.postimg.cc/mZjxhSyW/Facebook.png" alt="Facebook">
-            </a>
-
-            <a href="https://www.youtube.com/@EchanjPlus" target="_blank" class="social-link">
-                <img src="https://i.postimg.cc/4NxDchWk/YouTube.jpg" alt="YouTube">
-            </a>
-        </div>
-        <p class="copyright">&copy; 2026 Echanj Plus. Tout dwa rezève.</p>
-    </div>
-    </div>
-    </footer>
-    
-
-<div id="chat-launcher" onclick="toggleChat()">
-    <i class="fas fa-comments"></i>
-</div>
-
-<div id="user-chat-box" class="chat-hidden">
-    <div id="chat-header-btn">
-        <span>Sipò Echanj Plus</span>
-        <i class="fas fa-times" onclick="toggleChat()"></i>
-    </div>
-    <div id="chat-content">
+    <div id="chat-launcher" class="hidden" onclick="toggleChat()"><i class="fas fa-comments"></i></div>
+    <div id="user-chat-box" class="chat-hidden">
+        <div id="chat-header-btn"><span>Sipò Echanj Plus</span><i class="fas fa-times" onclick="toggleChat()"></i></div>
         <div id="chat-messages"></div>
         <div class="chat-input-box">
             <input type="text" id="chat-input-text" placeholder="Ekri nou...">
             <button id="send-chat-btn">➤</button>
         </div>
     </div>
-</div>
 
-  
-    
-    <script type="module" src="script.js"></script>
+    <script type="module" src="app.js"></script>
     <script>
         function togglePass(id) { const el = document.getElementById(id); el.type = el.type === "password" ? "text" : "password"; }
+        function toggleAuth(m) { 
+            document.getElementById('login-section').classList.toggle('hidden', m === 'signup');
+            document.getElementById('signup-section').classList.toggle('hidden', m === 'login');
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         function toggleBox(id) { document.getElementById(id).classList.toggle('hidden'); }
-        
-        function toggleAuth(mode) {
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('signup-section').classList.add('hidden');
-            document.getElementById('reset-section').classList.add('hidden');
-            
-            if(mode === 'login') document.getElementById('login-section').classList.remove('hidden');
-            if(mode === 'signup') document.getElementById('signup-section').classList.remove('hidden');
-            if(mode === 'reset') document.getElementById('reset-section').classList.remove('hidden');
+        function toggleChat() { document.getElementById('user-chat-box').classList.toggle('chat-hidden'); }
+        function showPage(p, el) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(p).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
         }
     </script>
-    
 </body>
-                    </html>
-                    
+                                                                      </html>
+                                
