@@ -1,81 +1,228 @@
-:root {
-    --primary: #0062ff;
-    --dark: #0f172a;
-    --light: #f8fafc;
-    --success: #00c853;
-    --danger: #ef4444;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+import { getDatabase, ref, set, push, onValue, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+// 1. KONFIGIRASYON FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  authDomain: "echanj-plus-778cd.firebaseapp.com",
+  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+  projectId: "echanj-plus-778cd",
+  storageBucket: "echanj-plus-778cd.firebasestorage.app",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+let uID, userData;
+
+// ==========================================
+// 2. OTANTIFIKASYON (MARE AK WINDOW)
+// ==========================================
+
+window.handleLogin = async () => {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-pass').value;
+    if(!email || !pass) return alert("Tanpri antre email ak modpas ou.");
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+    } catch(e) { alert("Erè: Email oswa Modpas pa bon!"); }
+};
+
+window.handleSignup = async () => {
+    const name = document.getElementById('sign-name').value;
+    const phone = document.getElementById('sign-phone').value;
+    const email = document.getElementById('sign-email').value;
+    const pass = document.getElementById('sign-pass').value;
+    
+    if(!name || !phone || !email || pass.length < 6) {
+        return alert("Ranpli tout jaden yo. Modpas la dwe gen 6 karaktè oswa plis.");
+    }
+
+    try {
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await set(ref(db, `users/${res.user.uid}`), {
+            name: name,
+            phone: phone,
+            email: email,
+            balance: 0,
+            ars_id: "ARS-" + Math.floor(1000 + Math.random() * 9000),
+            date_kreyasyon: Date.now()
+        });
+        location.reload();
+    } catch(e) { alert("Erè: " + e.message); }
+};
+
+window.handleLogout = () => signOut(auth).then(() => location.reload());
+
+// ==========================================
+// 3. LISTENERS REAL-TIME (DONE KLIYAN)
+// ==========================================
+
+onAuthStateChanged(auth, (user) => {
+    if(user) {
+        uID = user.uid;
+        document.getElementById('auth-page').classList.add('hidden');
+        document.getElementById('home-page').classList.remove('hidden');
+
+        // Rale done profil kliyan an
+        onValue(ref(db, `users/${uID}`), (snap) => {
+            userData = snap.val();
+            if(userData) {
+                document.getElementById('user-balance').innerText = userData.balance.toFixed(2);
+                document.getElementById('side-name').innerText = userData.name;
+                document.getElementById('side-id').innerText = userData.ars_id;
+                document.getElementById('side-email').innerText = userData.email;
+                document.getElementById('side-phone').innerText = userData.phone;
+            }
+        });
+
+        listenToChat();
+        loadTransactions();
+    } else {
+        document.getElementById('auth-page').classList.remove('hidden');
+        document.getElementById('home-page').classList.add('hidden');
+    }
+});
+
+// ==========================================
+// 4. AKSYON ECHANJ AK RETRÈ
+// ==========================================
+
+window.openDialer = (provider) => {
+    let amt = prompt("Konbe Gdes w ap voye?");
+    if(!amt || isNaN(amt) || amt < 50) return alert("Minimòm echanj se 50 Gdes.");
+
+    let code = (provider === 'digicel') 
+        ? `*128*50947111123*${amt}#` 
+        : `*123*88888888*32160708*${amt}#`;
+
+    window.location.href = "tel:" + code.replace("#", "%23");
+
+    // Sove tranzaksyon an kòm "An atant"
+    push(ref(db, `transactions/${uID}`), {
+        type: "Echanj " + provider.charAt(0).toUpperCase() + provider.slice(1),
+        amount: amt,
+        status: "An atant",
+        date: Date.now()
+    });
+};
+
+window.processRetre = async () => {
+    const amount = parseFloat(document.getElementById('retre-amount').value);
+    const rName = document.getElementById('retre-name').value;
+    const rPhone = document.getElementById('retre-phone').value;
+    const rMethod = document.getElementById('retre-method').value;
+
+    if(!amount || amount < 100) return alert("Retrè minimòm se 100 Gdes.");
+    if(amount > userData.balance) return alert("Balans ou pa ase.");
+    if(!rName || !rPhone) return alert("Tanpri ranpli tout enfòmasyon retrè yo.");
+
+    try {
+        // Debite balans lan dabò
+        await update(ref(db, `users/${uID}`), { balance: userData.balance - amount });
+
+        // Voye tranzaksyon bay admin
+        await push(ref(db, `transactions/${uID}`), {
+            type: "Retrè",
+            amount: amount,
+            metod: rMethod,
+            info: { non: rName, tel: rPhone },
+            status: "An atant",
+            date: Date.now()
+        });
+
+        alert("Demann retrè ou voye pafètman!");
+        document.getElementById('retre-amount').value = "";
+    } catch(e) { alert("Erè: " + e.message); }
+};
+
+// ==========================================
+// 5. ISTORIK AK FILTRE (DATA CLASSIFICATION)
+// ==========================================
+
+function loadTransactions() {
+    onValue(ref(db, `transactions/${uID}`), (snap) => {
+        const list = document.getElementById('transaction-list');
+        list.innerHTML = "";
+        
+        if(!snap.exists()) {
+            list.innerHTML = `<p style="text-align:center; padding:20px; color:#94a3b8;">Poko gen tranzaksyon.</p>`;
+            return;
+        }
+
+        snap.forEach(child => {
+            const t = child.val();
+            const div = document.createElement('div');
+            div.className = "provider-card trans-item";
+            div.setAttribute('data-type', t.type); // Enpòtan pou filtre a
+            
+            div.innerHTML = `
+                <div>
+                    <b>${t.type}</b><br>
+                    <small style="color:#94a3b8;">${new Date(t.date).toLocaleDateString()}</small>
+                </div>
+                <div style="text-align:right;">
+                    <b>${t.amount} G</b><br>
+                    <span class="status-badge ${t.status === 'An atant' ? 'status-atant' : 'status-ok'}">${t.status}</span>
+                </div>
+            `;
+            list.prepend(div);
+        });
+    });
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { background: var(--light); color: var(--dark); }
-.hidden { display: none !important; }
+window.filterData = (kategori, el) => {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
 
-/* AUTH */
-.auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: #e2e8f0; }
-.auth-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-.auth-title { text-align: center; margin-bottom: 20px; }
-.input-group { position: relative; margin-bottom: 15px; }
-.input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-.input-group input { width: 100%; padding: 12px 15px 12px 45px; border: 1.5px solid #e2e8f0; border-radius: 12px; outline: none; }
-.btn-primary-pro { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-.auth-footer { text-align: center; margin-top: 15px; font-size: 13px; color: var(--primary); cursor: pointer; font-weight: bold; }
+    const items = document.querySelectorAll('.trans-item');
+    items.forEach(item => {
+        const tip = item.getAttribute('data-type');
+        if(kategori === 'tout' || tip.includes(kategori)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+};
 
-/* SIDEBAR */
-.sidebar-pro { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: white; z-index: 5000; transition: 0.4s; box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
-.sidebar-pro.active { left: 0; }
-.sidebar-header { padding: 30px 20px; background: var(--dark); color: white; }
-.user-meta h4 { margin-top: 8px; font-size: 18px; }
-.user-meta p { font-size: 12px; opacity: 0.7; }
-.menu-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; font-weight: 600; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
-.menu-item.logout { color: var(--danger); }
+// ==========================================
+// 6. CHAT SIPÒ
+// ==========================================
 
-/* MAIN UI */
-.main-header { height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-.brand-name { font-weight: 900; color: var(--primary); }
-.card-balance-rect { background: var(--dark); margin: 15px; padding: 25px; border-radius: 24px; color: white; }
-.card-balance-rect h1 { font-size: 32px; margin-top: 5px; }
+window.sendMessage = async () => {
+    const input = document.getElementById('chat-input-text');
+    const msg = input.value.trim();
+    if(!msg) return;
 
-/* CAROUSEL */
-.carousel-container { margin: 15px; border-radius: 20px; overflow: hidden; height: 150px; }
-.carousel-wrapper { display: flex; transition: 0.5s; width: 200%; }
-.slide { width: 50%; }
-.slide img { width: 100%; height: 150px; object-fit: cover; }
+    await push(ref(db, `chats/${uID}`), {
+        sender: 'user',
+        text: msg,
+        timestamp: serverTimestamp()
+    });
+    input.value = "";
+};
 
-/* PROVIDER CARDS */
-.section-title { padding: 15px 15px 5px; }
-.provider-card { background: white; margin: 10px 15px; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; }
-.provider-info { display: flex; align-items: center; gap: 10px; }
-.provider-info img { width: 35px; border-radius: 5px; }
+function listenToChat() {
+    onValue(ref(db, `chats/${uID}`), (snap) => {
+        const box = document.getElementById('chat-messages');
+        box.innerHTML = "";
+        snap.forEach(child => {
+            const m = child.val();
+            box.innerHTML += `<div class="m-box ${m.sender === 'user' ? 'm-user' : 'm-admin'}">${m.text}</div>`;
+        });
+        box.scrollTop = box.scrollHeight;
+    });
+}
 
-/* RETRE */
-.withdraw-card-pro { background: white; margin: 15px; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-.input-pro-group { margin-bottom: 12px; }
-.input-pro-group label { display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px; }
-.input-pro-group input, select { width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; }
-
-/* NAV FILTRE ISTORIK */
-.trans-filter-nav { display: flex; gap: 5px; padding: 10px 15px; }
-.filter-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-weight: bold; background: #e2e8f0; color: #64748b; }
-.filter-btn.active { background: var(--primary); color: white; }
-
-/* CHAT */
-.chat-window { position: fixed; bottom: 80px; right: 15px; width: calc(100% - 30px); max-width: 350px; height: 450px; background: white; border-radius: 20px; display: flex; flex-direction: column; z-index: 4000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: 0.3s; }
-.chat-closed { transform: translateY(120%); opacity: 0; pointer-events: none; }
-.chat-header-pro { background: var(--primary); padding: 15px; color: white; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; }
-.chat-body-pro { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
-.m-box { padding: 10px; border-radius: 12px; font-size: 13px; max-width: 80%; }
-.m-user { background: var(--primary); color: white; align-self: flex-end; }
-.m-admin { background: white; align-self: flex-start; }
-.chat-footer-pro { padding: 10px; display: flex; gap: 10px; background: white; }
-.chat-footer-pro input { flex: 1; padding: 10px; border: none; background: #f0f2f5; border-radius: 20px; outline: none; }
-.chat-footer-pro button { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 50%; }
-
-/* BOTTOM NAV */
-.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; }
-.nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 10px; cursor: pointer; }
-.nav-item.active { color: var(--primary); }
-.nav-item i { font-size: 20px; margin-bottom: 2px; }
-
-/* ABOUT */
-.modal-about { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 6000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.about-card { background: white; padding: 25px; border-radius: 20px; text-align: center; }
+// 7. CAROUSEL AUTOMATIQUE
+let currentSlide = 0;
+setInterval(() => {
+    currentSlide = (currentSlide + 1) % 2;
+    const slider = document.getElementById('carousel-slider');
+    if(slider) slider.style.transform = `translateX(-${currentSlide * 50}%)`;
+}, 4000);
