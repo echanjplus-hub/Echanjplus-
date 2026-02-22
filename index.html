@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Echanj Plus | Vèsyon Ofisyèl 2026</title>
+    <title>Echanj Plus | Ofisyèl</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,20 +14,30 @@
 
     <div id="auth-page" class="auth-container">
         <div class="auth-card">
-            <center><img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" style="width: 80px;"></center>
+            <center>
+                <img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" alt="Logo" style="width: 80px; margin-bottom: 20px;">
+            </center>
+
             <div id="login-section">
-                <h2 class="auth-title">Konekte</h2>
-                <div class="input-group"><i class="fa fa-envelope"></i><input type="email" id="login-email" placeholder="Email"></div>
-                <div class="input-group"><i class="fa fa-lock"></i><input type="password" id="login-pass" placeholder="Modpas"></div>
+                <h2 class="auth-title">Byenveni ankò</h2>
+                <div class="input-group">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="Email ou">
+                </div>
+                <div class="input-group">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" id="login-pass" placeholder="Modpas">
+                </div>
                 <button class="btn-primary-pro" onclick="handleLogin()">KONEKTE</button>
-                <p class="auth-footer">Poko gen kont? <span onclick="toggleAuth('signup')">Enskri</span></p>
+                <p class="auth-footer">Poko gen kont? <span onclick="toggleAuth('signup')">Klike la pou enskri</span></p>
             </div>
+
             <div id="signup-section" class="hidden">
-                <h2 class="auth-title">Kreye Kont</h2>
+                <h2 class="auth-title">Kreye Kont ou</h2>
                 <div class="input-group"><i class="fa fa-user"></i><input type="text" id="sign-name" placeholder="Non Konplè"></div>
-                <div class="input-group"><i class="fa fa-phone"></i><input type="tel" id="sign-phone" placeholder="Telefòn (MonCash/NatCash)"></div>
+                <div class="input-group"><i class="fa fa-phone"></i><input type="tel" id="sign-phone" placeholder="Telefòn MonCash/NatCash"></div>
                 <div class="input-group"><i class="fa fa-envelope"></i><input type="email" id="sign-email" placeholder="Email"></div>
-                <div class="input-group"><i class="fa fa-lock"></i><input type="password" id="sign-pass" placeholder="Modpas"></div>
+                <div class="input-group"><i class="fa fa-lock"></i><input type="password" id="sign-pass" placeholder="Modpas (6 karaktè min)"></div>
                 <button class="btn-primary-pro" onclick="handleSignup()">ANSKRI</button>
                 <p class="auth-footer" onclick="toggleAuth('login')">Gen kont deja? Konekte</p>
             </div>
@@ -35,42 +45,50 @@
     </div>
 
     <div id="home-page" class="hidden">
+        
         <div id="sidebar" class="sidebar-pro">
             <div class="sidebar-header">
                 <div class="user-meta">
-                    <p id="side-id" style="font-weight: bold; color: var(--primary);">ARS-ID</p>
-                    <h4 id="side-name">Non Kliyan</h4>
+                    <div class="ars-badge" id="side-id">ARS-ID</div>
+                    <h4 id="side-name">Chaje non...</h4>
                     <p id="side-email">email@egzanp.com</p>
-                    <p id="side-phone">509 0000-0000</p>
+                    <p id="side-phone">Nimewo telefòn</p>
                 </div>
+                <i class="fa fa-times close-sidebar" onclick="toggleSidebar()"></i>
             </div>
             <div class="sidebar-menu">
-                <div class="menu-item" onclick="showPage('paj-akey')"><i class="fa fa-house"></i> Akèy</div>
+                <div class="menu-item active" onclick="showPage('paj-akey')"><i class="fa fa-house"></i> Akèy</div>
                 <div class="menu-item" onclick="showAbout()"><i class="fa fa-circle-info"></i> About Echanj Plus</div>
                 <div class="menu-item logout" onclick="handleLogout()"><i class="fa fa-right-from-bracket"></i> Dekonekte</div>
             </div>
         </div>
 
         <header class="main-header">
-            <i class="fa fa-bars-staggered" onclick="toggleSidebar()"></i>
+            <i class="fa fa-bars-staggered" onclick="toggleSidebar()" style="font-size: 22px; cursor: pointer;"></i>
             <div class="brand-name">ECHANJ PLUS</div>
             <i class="fa fa-bell"></i>
         </header>
 
         <main class="main-content">
             <section id="paj-akey" class="paj-active">
-                <div class="carousel-container">
-                    <div class="carousel-wrapper" id="carousel-slider">
-                        <div class="slide"><img src="https://i.postimg.cc/gkVX6Kp9/1771501449871-(1).jpg"></div>
-                        <div class="slide"><img src="https://i.postimg.cc/tCZnCHr8/1771501480676-(1).jpg"></div>
+                <div class="carousel-section">
+                    <div class="carousel-container">
+                        <div class="carousel-wrapper" id="carousel-slider">
+                            <div class="slide"><img src="https://i.postimg.cc/gkVX6Kp9/1771501449871-(1).jpg"></div>
+                            <div class="slide"><img src="https://i.postimg.cc/tCZnCHr8/1771501480676-(1).jpg"></div>
+                        </div>
                     </div>
                 </div>
+
                 <div class="card-balance-rect">
-                    <p>Balans ou</p>
-                    <h1><span id="user-balance">0.00</span> <small>HTG</small></h1>
+                    <p style="font-size: 13px; opacity: 0.8;">Balans ou disponib</p>
+                    <div class="balance-display">
+                        <h1 id="user-balance">0.00</h1> <span>HTG</span>
+                    </div>
                 </div>
-                <div class="provider-card" onclick="showPage('paj-echanj')">
-                    <div class="provider-info"><i class="fa fa-rotate"></i> <b>Kòmanse yon echanj</b></div>
+
+                <div class="quick-action" onclick="showPage('paj-echanj')">
+                    <div class="action-info"><i class="fa fa-rotate"></i> <b>Kòmanse yon echanj</b></div>
                     <i class="fa fa-chevron-right"></i>
                 </div>
             </section>
@@ -78,43 +96,83 @@
             <section id="paj-echanj" class="hidden">
                 <h3 class="section-title">Echanj Minit</h3>
                 <div class="provider-card" onclick="openDialer('digicel')">
-                    <div class="provider-info"><img src="https://i.postimg.cc/zvH2mMwz/Digicel.jpg"> <b>Digicel (99 > 1001)</b></div>
-                    <i class="fa fa-phone"></i>
+                    <div class="provider-info">
+                        <img src="https://i.postimg.cc/zvH2mMwz/Digicel.jpg">
+                        <div><b>Digicel</b><br><small>Minit pou Cash</small></div>
+                    </div>
+                    <i class="fa fa-phone-flip" style="color: var(--success);"></i>
                 </div>
                 <div class="provider-card" onclick="openDialer('natcom')">
-                    <div class="provider-info"><img src="https://i.postimg.cc/6q4bsSVK/natcom.webp"> <b>Natcom (99 > 501)</b></div>
-                    <i class="fa fa-phone"></i>
+                    <div class="provider-info">
+                        <img src="https://i.postimg.cc/6q4bsSVK/natcom.webp">
+                        <div><b>Natcom</b><br><small>Minit pou Cash</small></div>
+                    </div>
+                    <i class="fa fa-phone-flip" style="color: var(--success);"></i>
                 </div>
             </section>
 
             <section id="paj-retre" class="hidden">
                 <div class="withdraw-card-pro">
                     <h3>Retire Lajan</h3>
-                    <div class="input-pro-group"><label>Non sou kont lan</label><input type="text" id="retre-name"></div>
-                    <div class="input-pro-group"><label>Nimewo</label><input type="tel" id="retre-phone"></div>
-                    <div class="input-pro-group"><label>Metòd</label><select id="retre-method"><option>MonCash</option><option>NatCash</option></select></div>
-                    <div class="input-pro-group"><label>Montan</label><input type="number" id="retre-amount"></div>
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Lajan an ap rive sou kont ou rapid.</p>
+                    
+                    <div class="input-pro-group">
+                        <label>Non sou kont lan</label>
+                        <input type="text" id="retre-name" placeholder="Non konplè">
+                    </div>
+                    <div class="input-pro-group">
+                        <label>Nimewo resepsyon</label>
+                        <input type="tel" id="retre-phone" placeholder="509...">
+                    </div>
+                    <div class="input-pro-group">
+                        <label>Metòd Retrè</label>
+                        <select id="retre-method">
+                            <option value="MonCash">MonCash</option>
+                            <option value="NatCash">NatCash</option>
+                        </select>
+                    </div>
+                    <div class="input-pro-group">
+                        <label>Montan (HTG)</label>
+                        <input type="number" id="retre-amount" placeholder="Minimòm 100 G">
+                    </div>
                     <button class="btn-primary-pro" onclick="processRetre()">KONFIME RETRÈ</button>
                 </div>
             </section>
 
             <section id="paj-trans" class="hidden">
-                <h3 class="section-title">Istorik</h3>
+                <h3 class="section-title">Istorik Tranzaksyon</h3>
                 <div class="trans-filter-nav">
                     <button class="filter-btn active" onclick="filterTrans('tout', this)">Tout</button>
                     <button class="filter-btn" onclick="filterTrans('Echanj', this)">Echanj</button>
                     <button class="filter-btn" onclick="filterTrans('Retrè', this)">Retrè</button>
                 </div>
-                <div id="transaction-list"></div>
+                <div id="transaction-list" class="trans-container">
+                    </div>
             </section>
         </main>
 
         <div id="user-chat-box" class="chat-window chat-closed">
-            <div class="chat-header-pro"><span>Sipò Echanj Plus</span><i class="fa fa-x" onclick="toggleChat()"></i></div>
-            <div id="chat-messages" class="chat-body-pro"></div>
+            <div class="chat-header-pro">
+                <div class="status-info">
+                    <div class="online-dot"></div>
+                    <span>Sipò Echanj Plus</span>
+                </div>
+                <i class="fa fa-times" onclick="toggleChat()" style="cursor: pointer;"></i>
+            </div>
+            <div id="chat-messages" class="chat-body-pro">
+                </div>
             <div class="chat-footer-pro">
-                <input type="text" id="chat-input-text" placeholder="Ekri nou la...">
+                <input type="text" id="chat-input-text" placeholder="Ekri nou yon mesaj...">
                 <button onclick="sendMessage()"><i class="fa fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <div id="modal-about" class="modal-overlay hidden">
+            <div class="about-card">
+                <i class="fa fa-circle-info" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+                <h3>About Echanj Plus</h3>
+                <p>Echanj Plus se sèvis referans an Ayiti pou chanje minit Digicel ak Natcom an kòb kach sou MonCash ak NatCash. Nou travay 24/7 pou ba ou pi bon sèvis la rapid e an sekirite.</p>
+                <button class="btn-primary-pro" onclick="closeAbout()" style="margin-top: 20px;">Dako, Mèsi</button>
             </div>
         </div>
 
@@ -122,20 +180,30 @@
             <div class="nav-item active" onclick="showPage('paj-akey', this)"><i class="fa fa-house"></i><span>Akèy</span></div>
             <div class="nav-item" onclick="showPage('paj-echanj', this)"><i class="fa fa-rotate"></i><span>Echanj</span></div>
             <div class="nav-item" onclick="showPage('paj-retre', this)"><i class="fa fa-money-bill-transfer"></i><span>Retrè</span></div>
-            <div class="nav-item" onclick="showPage('paj-trans', this)"><i class="fa fa-clock"></i><span>Istorik</span></div>
-            <div class="nav-item" onclick="toggleChat()"><i class="fa fa-comments"></i><span>Sipò</span></div>
+            <div class="nav-item" onclick="showPage('paj-trans', this)"><i class="fa fa-clock-rotate-left"></i><span>Istorik</span></div>
+            <div class="nav-item chat-trigger" onclick="toggleChat()"><i class="fa fa-comments"></i><span>Sipò</span></div>
         </nav>
     </div>
 
-    <div id="modal-about" class="modal-about hidden">
-        <div class="about-card">
-            <h3>Echanj Plus</h3>
-            <p>Echanj Plus se platfòm nimewo 1 ki pèmèt ou chanje minit Digicel/Natcom an kòb kach. Sèvis la rapid ak sekirize 24/7.</p>
-            <button class="btn-primary-pro" onclick="closeAbout()">OK, DAKÒ</button>
-        </div>
-    </div>
-
     <script type="module" src="app.js"></script>
+
+    <script>
+        function toggleAuth(mode) {
+            document.getElementById('login-section').classList.toggle('hidden', mode === 'signup');
+            document.getElementById('signup-section').classList.toggle('hidden', mode === 'login');
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function toggleChat() { document.getElementById('user-chat-box').classList.toggle('chat-closed'); }
+        function showAbout() { document.getElementById('modal-about').classList.remove('hidden'); toggleSidebar(); }
+        function closeAbout() { document.getElementById('modal-about').classList.add('hidden'); }
+        
+        function showPage(pageId, el) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+            if(document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
+        }
+    </script>
 </body>
-                                                                           </html>
-    
+</html>
