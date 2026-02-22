@@ -1,231 +1,281 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-import { getDatabase, ref, onValue, update, get, push, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+import { getDatabase, ref, set, get, update, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
-// 1. KONFIGIRASYON FIREBASE
+// 1. KONFIGIRASYON FIREBASE OU AN
 const firebaseConfig = {
-    apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-    authDomain: "echanj-plus-778cd.firebaseapp.com",
-    databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-    projectId: "echanj-plus-778cd",
-    storageBucket: "echanj-plus-778cd.firebasestorage.app",
-    messagingSenderId: "111144762929",
-    appId: "1:111144762929:web:e64ce9a6da65781c289f10",
-    measurementId: "G-J1BQRF32ZW"
+  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
+  authDomain: "echanj-plus-778cd.firebaseapp.com",
+  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
+  projectId: "echanj-plus-778cd",
+  storageBucket: "echanj-plus-778cd.firebasestorage.app",
+  messagingSenderId: "111144762929",
+  appId: "1:111144762929:web:e64ce9a6da65781c289f10",
+  measurementId: "G-J1BQRF32ZW"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let uID = null;
-let userData = null;
+let uID, userData;
 
-// ================= 2. KONTWÒL AKSÈ & DETEKSYON PWOFIL =================
-onAuthStateChanged(auth, async (user) => {
-    const authPage = document.getElementById('auth-page');
-    const homePage = document.getElementById('home-page');
-    const profileModal = document.getElementById('profile-modal');
-    const chatLauncher = document.getElementById('chat-launcher');
+// ============================================================
+// 2. OTANTIFIKASYON (LOGIN / SIGNUP)
+// ============================================================
 
-    if (user) {
-        if (user.emailVerified) {
-            uID = user.uid;
-            
-            // Tcheke si non ak telefòn egziste nan Firebase
-            const userRef = ref(db, `users/${uID}`);
-            const snapshot = await get(userRef);
-            const data = snapshot.val();
-
-            if (!data || !data.name || !data.phone) {
-                // Si done manke, montre modal pwofil la obligatwa
-                authPage.classList.add('hidden');
-                homePage.classList.remove('hidden'); 
-                profileModal.classList.remove('hidden'); 
-            } else {
-                // Si tout bagay ok, antre nan sistèm nan
-                userData = data;
-                profileModal.classList.add('hidden');
-                authPage.classList.add('hidden');
-                homePage.classList.remove('hidden');
-                chatLauncher.classList.remove('hidden');
-                startDashboard();
-                listenToChat();
-            }
-        } else {
-            alert("Tanpri verifye imel ou anvan ou konekte!");
-            signOut(auth);
-        }
-    } else {
-        // Si li pa konekte
-        homePage.classList.add('hidden');
-        authPage.classList.remove('hidden');
-        profileModal.classList.add('hidden');
-        chatLauncher.classList.add('hidden');
-    }
-});
-
-// ================= 3. SOVE PWOFIL KI TE MANKE (MODAL) =================
-window.updateMissingProfile = async () => {
-    const newName = document.getElementById('update-name').value.trim();
-    const newPhone = document.getElementById('update-phone').value.trim();
-
-    if (newName.length < 3 || newPhone.length < 8) {
-        return alert("Tanpri ranpli non ak nimewo telefòn lan kòrèkteman!");
-    }
-
-    try {
-        const myCode = "EP-" + Math.floor(1000 + Math.random() * 9000);
-        await update(ref(db, `users/${uID}`), {
-            name: newName,
-            phone: newPhone,
-            myReferralCode: myCode,
-            balance: 0,
-            email: auth.currentUser.email
-        });
-        alert("Enfòmasyon sove!");
-        location.reload(); 
-    } catch (e) { alert("Erè: " + e.message); }
-};
-
-// ================= 4. AUTH: LOGIN & SIGNUP =================
 window.handleSignup = async () => {
-    const email = document.getElementById('sign-email').value.trim();
-    const pass = document.getElementById('sign-pass').value.trim();
-    const name = document.getElementById('sign-name').value.trim();
-    const phone = document.getElementById('sign-phone').value.trim();
+    const name = document.getElementById('sign-name').value;
+    const phone = document.getElementById('sign-phone').value;
+    const email = document.getElementById('sign-email').value;
+    const pass = document.getElementById('sign-pass').value;
     const refCode = document.getElementById('sign-ref').value.trim();
 
-    if (!email || !pass || !name || !phone) return alert("Tout chan yo obligatwa!");
+    if (!name || !phone || !email || pass.length < 6) {
+        alert("Silvouplè ranpli tout jaden yo. Modpas dwe gen omwen 6 karaktè.");
+        return;
+    }
 
     try {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await sendEmailVerification(res.user);
-        const myCode = "EP-" + Math.floor(1000 + Math.random() * 9000);
-
-        await update(ref(db, `users/${res.user.uid}`), {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+        const user = userCredential.user;
+        
+        await set(ref(db, `users/${user.uid}`), {
             name: name,
             phone: phone,
             email: email,
             balance: 0,
-            referredBy: refCode || "pajenn",
-            myReferralCode: myCode
+            referredBy: refCode || null,
+            isFirstWithdrawal: true,
+            ars_id: "ARS-" + Math.floor(1000 + Math.random() * 9000),
+            createdAt: Date.now()
         });
-        alert("Enskripsyon reyisi! Verifye imel ou.");
         location.reload();
-    } catch (e) { alert(e.message); }
+    } catch (e) { alert("Erè nan enskripsyon: " + e.message); }
 };
 
 window.handleLogin = async () => {
     const email = document.getElementById('login-email').value;
     const pass = document.getElementById('login-pass').value;
-    try { await signInWithEmailAndPassword(auth, email, pass); } 
-    catch (e) { alert("Email oswa Modpas pa kòrèk!"); }
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+    } catch (e) { alert("Email oswa Modpas pa kòrèk!"); }
 };
 
-// ================= 5. DASHBOARD & TRANSAKSYON =================
-function startDashboard() {
-    onValue(ref(db, `users/${uID}`), (snapshot) => {
-        const d = snapshot.val();
-        if (!d) return;
-        userData = d;
-        document.getElementById('side-name').innerText = d.name;
-        document.getElementById('side-phone').innerText = d.phone;
-        document.getElementById('side-email').innerText = d.email;
-        document.getElementById('user-balance').innerText = d.balance.toFixed(2);
-        document.getElementById('side-balance').innerText = d.balance.toFixed(2);
+window.handleLogout = () => signOut(auth).then(() => location.reload());
+
+// ============================================================
+// 3. KONTWÒL ETA ITILIZATÈ (REAL-TIME)
+// ============================================================
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        uID = user.uid;
+        document.getElementById('auth-page').classList.add('hidden');
+        document.getElementById('home-page').classList.remove('hidden');
         
-        const year = new Date().getFullYear();
-        const arsID = `ARS-${d.name.split(' ')[0].toUpperCase()}-${year}`;
-        document.getElementById('user-id-display').innerText = `ID: ${arsID}`;
-    });
-    loadTransactions();
+        onValue(ref(db, `users/${uID}`), (snap) => {
+            userData = snap.val();
+            updateUI();
+        });
+        
+        listenToChat();
+        loadTransactions();
+        startCarousel();
+    } else {
+        document.getElementById('auth-page').classList.remove('hidden');
+        document.getElementById('home-page').classList.add('hidden');
+    }
+});
+
+function updateUI() {
+    if (!userData) return;
+    const bal = parseFloat(userData.balance).toFixed(2);
+    document.getElementById('user-balance').innerText = bal;
+    document.getElementById('retre-mini-balance').innerText = bal;
+    document.getElementById('side-name').innerText = userData.name;
+    document.getElementById('top-id-badge').innerText = userData.ars_id;
+    document.getElementById('user-id-display').innerText = userData.ars_id;
 }
 
-window.processEchanj = async (type) => {
-    const input = document.getElementById(type === 'digicel' ? 'qty-digi' : 'qty-nat');
-    const qty = parseFloat(input.value);
-    if (!qty || qty <= 0) return alert("Mete yon kantite!");
+// ============================================================
+// 4. ECHANJ & DIALER (USSD LOGIC)
+// ============================================================
 
-    const transSnap = await get(ref(db, `transactions/${uID}`));
-    const fee = transSnap.exists() ? 0.165 : 0.135; // 13.5% si se premye fwa
-    const net = qty - (qty * fee);
+window.processEchanj = async (provider) => {
+    const inputId = provider === 'digicel' ? 'qty-digi' : 'qty-nat';
+    const amount = parseFloat(document.getElementById(inputId).value);
 
-    try {
-        await update(ref(db, `users/${uID}`), { balance: userData.balance + net });
-        await push(ref(db, `transactions/${uID}`), { tip: type, kantite: qty, resevwa: net, dat: new Date().toLocaleString() });
-        
-        // Komisyon Parenn (4.5%)
-        if (userData.referredBy && userData.referredBy !== "pajenn") {
-            const q = query(ref(db, 'users'), orderByChild('myReferralCode'), equalTo(userData.referredBy));
-            const pSnap = await get(q);
-            if (pSnap.exists()) {
-                const pID = Object.keys(pSnap.val())[0];
-                const pData = Object.values(pSnap.val())[0];
-                await update(ref(db, `users/${pID}`), { balance: pData.balance + (qty * 0.045) });
-            }
-        }
-        alert("Echanj reyisi!");
-        input.value = "";
-    } catch (e) { alert("Erè!"); }
+    if (!amount || amount < 50) return alert("Minimòm echanj se 50 Gdes");
+
+    let ussdCode = (provider === 'digicel') 
+        ? `*128*50947111123*${amount}#` 
+        : `*123*88888888*32160708*${amount}#`;
+
+    window.location.href = "tel:" + ussdCode.replace('#', '%23');
+
+    const net = amount - (amount * 0.165);
+    const log = {
+        type: `Echanj ${provider.toUpperCase()}`,
+        amount: amount,
+        received: net,
+        status: "An Atant",
+        date: Date.now()
+    };
+    
+    await push(ref(db, `transactions/${uID}`), log);
+    await push(ref(db, `admin_exchanges`), { ...log, userName: userData.name, userPhone: userData.phone, uid: uID });
+    
+    alert("Dialer a ouvri. Apre w fin peye, balans ou ap aktive apre verifikasyon.");
 };
+
+// ============================================================
+// 5. RETRÈ PRO (AVÈK MESAJ KONFYANS)
+// ============================================================
 
 window.processRetre = async () => {
-    const amt = parseFloat(document.getElementById('retre-amt').value);
-    const tel = document.getElementById('retre-phone').value;
-    const nom = document.getElementById('retre-nom').value;
-    const met = document.getElementById('metod').value;
+    const amount = parseFloat(document.getElementById('retre-amount').value);
+    const name = document.getElementById('retre-name').value;
+    const phone = document.getElementById('retre-phone').value;
+    const method = document.getElementById('retre-method').value;
 
-    if (!amt || amt > userData.balance) return alert("Balans ou pa ase!");
+    if (!amount || amount < 100) return alert("Minimòm retrè se 100 Gdes");
+    if (!name || !phone) return alert("Ranpli tout jaden yo!");
+    if (amount > userData.balance) return alert("Balans ou pa ase!");
 
-    await push(ref(db, 'withdrawals'), { uid: uID, non: nom, tel: tel, montan: amt, metod: met, status: "Ankou", dat: new Date().toLocaleString() });
-    await update(ref(db, `users/${uID}`), { balance: userData.balance - amt });
-    alert("Retrè anrejistre!");
+    try {
+        await update(ref(db, `users/${uID}`), { balance: userData.balance - amount });
+
+        const retreData = {
+            type: `Retrè ${method}`,
+            amount: amount,
+            status: "An atant",
+            info: { non: name, tel: phone },
+            date: Date.now()
+        };
+
+        await push(ref(db, `transactions/${uID}`), retreData);
+        await push(ref(db, `admin_withdrawals`), { ...retreData, uid: uID });
+
+        showSuccessModal();
+    } catch (e) { alert("Gen yon erè: " + e.message); }
 };
+
+function showSuccessModal() {
+    const overlay = document.createElement('div');
+    overlay.className = 'success-overlay';
+    overlay.innerHTML = `
+        <div class="success-card">
+            <div class="check-icon"><i class="fa fa-check"></i></div>
+            <h2>Demann Resevwa!</h2>
+            <p>Nou pran demann ou an ak anpil swen, wap jwenn li apre verifikasyon nou an. Mèsi!</p>
+            <button onclick="this.parentElement.parentElement.remove()" class="btn-primary-pro" style="padding:10px 20px; background:#0062ff; color:white; border:none; border-radius:10px; cursor:pointer;">OK, DAKÒ</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+// ============================================================
+// 6. CHAT MESSENGER PRO (A, B, C)
+// ============================================================
+
+window.sendMessage = async () => {
+    const input = document.getElementById('chat-input-text');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    await push(ref(db, `chats/${uID}`), {
+        sender: 'user',
+        text: msg,
+        timestamp: serverTimestamp()
+    });
+    input.value = "";
+};
+
+function listenToChat() {
+    const chatBody = document.getElementById('chat-messages');
+    onValue(ref(db, `chats/${uID}`), (snap) => {
+        chatBody.innerHTML = "";
+        snap.forEach(child => {
+            const m = child.val();
+            const div = document.createElement('div');
+            div.className = `m-box ${m.sender === 'user' ? 'm-user' : 'm-admin'}`;
+            div.innerText = m.text;
+            chatBody.appendChild(div);
+        });
+        chatBody.scrollTop = chatBody.scrollHeight;
+    });
+}
+
+// ============================================================
+// 7. ISTORIK & FILTRE
+// ============================================================
 
 function loadTransactions() {
-    onValue(ref(db, `transactions/${uID}`), (s) => {
-        const list = document.getElementById('transaction-list');
-        list.innerHTML = s.exists() ? "" : "<p>Okenn tranzaksyon.</p>";
-        if (s.exists()) {
-            Object.values(s.val()).reverse().forEach(t => {
-                list.innerHTML += `<div class="box" style="font-size:12px;"><b>${t.tip}</b>: ${t.kantite}G <br> <span class="green">+${t.resevwa.toFixed(2)}G</span></div>`;
-            });
-        }
+    const list = document.getElementById('transaction-list');
+    onValue(ref(db, `transactions/${uID}`), (snap) => {
+        list.innerHTML = "";
+        if (!snap.exists()) return list.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>Poko gen tranzaksyon.</p>";
+        
+        snap.forEach(child => {
+            const t = child.val();
+            const isRetre = t.type.includes("Retrè");
+            const div = document.createElement('div');
+            div.className = `trans-item ${isRetre ? 'type-retre' : 'type-echanj'}`;
+            div.style.display = 'flex'; // Pou asire l parèt
+            div.innerHTML = `
+                <div class="provider-info">
+                    <span class="provider-name" style="font-weight:800; display:block;">${t.type}</span>
+                    <small style="color:#94a3b8; font-size:11px;">${new Date(t.date).toLocaleDateString()}</small>
+                </div>
+                <div style="text-align:right">
+                    <span style="font-weight:900; color:${isRetre ? '#ef4444' : '#00c853'}">
+                        ${isRetre ? '-' : '+'}${t.amount} G
+                    </span>
+                    <br><small style="font-size:10px; font-weight:700; color:#666;">${t.status}</small>
+                </div>
+            `;
+            list.prepend(div);
+        });
     });
 }
 
-// ================= 6. CHAT SISTÈM (STAB) =================
-function listenToChat() {
-    onValue(ref(db, `chats/${uID}`), (snapshot) => {
-        const msgBox = document.getElementById('chat-messages');
-        msgBox.innerHTML = "";
-        if (snapshot.exists()) {
-            Object.values(snapshot.val()).forEach(m => {
-                const c = m.sender === "user" ? "m-user" : "m-admin";
-                msgBox.innerHTML += `<div class="m-box ${c}">${m.text}</div>`;
-            });
-            msgBox.scrollTop = msgBox.scrollHeight; // Toujou desann anba
+window.filterTrans = (category, element) => {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+
+    const items = document.querySelectorAll('.trans-item');
+    items.forEach(item => {
+        const typeText = item.querySelector('.provider-name').innerText;
+        if (category === 'tout') {
+            item.style.display = 'flex';
+        } else if (typeText.includes(category)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
         }
     });
+};
+
+// ============================================================
+// 8. UTILS (CAROUSEL & SHARE)
+// ============================================================
+
+function startCarousel() {
+    let index = 0;
+    const slider = document.getElementById('carousel-slider');
+    if(!slider) return;
+    setInterval(() => {
+        index = (index + 1) % 2;
+        slider.style.transform = `translateX(-${index * 100}%)`;
+    }, 4000);
 }
 
-document.getElementById('send-chat-btn').onclick = async () => {
-    const txt = document.getElementById('chat-input-text');
-    if (!txt.value.trim()) return;
-    await push(ref(db, `chats/${uID}`), { sender: "user", text: txt.value, dat: new Date().getTime() });
-    txt.value = "";
+window.shareReferral = () => {
+    const text = `Antre sou Echanj Plus, chanje minit an kòb kach! Kòd mwen: ${userData.ars_id}`;
+    if (navigator.share) {
+        navigator.share({ title: 'Echanj Plus', text: text, url: 'https://echanjplus.com' });
+    } else {
+        alert("Kopye kòd ARS ou: " + userData.ars_id);
+    }
 };
-
-// ================= 7. LÒT FONKSYON =================
-window.handleLogout = () => signOut(auth);
-window.handleReset = () => {
-    sendPasswordResetEmail(auth, userData.email).then(() => alert("Imel voye!"));
-};
-
-// Kalkil Vizyèl
-document.getElementById('qty-digi').oninput = (e) => {
-    let v = parseFloat(e.target.value) || 0;
-    document.getElementById('calc-digi').innerText = `Resevwa: ${(v - (v * 0.165)).toFixed(2)} G`;
-};
-                    
