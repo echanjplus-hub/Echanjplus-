@@ -2,160 +2,227 @@
 <html lang="ht">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echanj Plus - Tout-an-Yonn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Echanj Plus | Vèsyon Ofisyèl 2026</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div id="auth-page" class="container">
-        <center><img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" width="120" style="margin:20px 0;"></center>
-        
-        <div id="login-section" class="card">
-            <h2>Konekte</h2>
-            <input type="email" id="login-email" placeholder="Email ou">
-            <div class="pass-group">
-                <input type="password" id="login-pass" placeholder="Modpas ou">
-                <i class="fa fa-eye" onclick="togglePass('login-pass')"></i>
+    <div id="auth-page" class="auth-container">
+        <div class="auth-card">
+            <center>
+                <img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" alt="Logo" class="main-logo">
+            </center>
+            
+            <div id="login-section">
+                <h2 class="auth-title">Byenveni!</h2>
+                <p class="auth-subtitle">Konekte pou w kòmanse echanj</p>
+                <div class="input-group">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="Email ou">
+                </div>
+                <div class="input-group">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" id="login-pass" placeholder="Modpas">
+                </div>
+                <button class="btn-primary-pro" onclick="handleLogin()">KONEKTE</button>
+                <p class="auth-footer">Poko gen kont? <span onclick="toggleAuth('signup')">Enskri la</span></p>
             </div>
-            <button class="btn-main bg-blue" onclick="handleLogin()">Konekte</button>
-            <p onclick="toggleAuth('signup')" class="link">Poko gen kont? <span>Enskri</span></p>
-        </div>
 
-        <div id="signup-section" class="card hidden">
-            <h2>Kreye Kont</h2>
-            <input type="text" id="sign-name" placeholder="Non konplè">
-            <input type="tel" id="sign-phone" placeholder="Telefòn">
-            <input type="email" id="sign-email" placeholder="Email">
-            <input type="password" id="sign-pass" placeholder="Modpas">
-            <input type="text" id="sign-ref" placeholder="Kòd Parenaj (Opsyonèl)">
-            <button class="btn-main bg-green" onclick="handleSignup()">Enskri</button>
-            <p onclick="toggleAuth('login')" class="link">Gen kont deja? <span>Konekte</span></p>
+            <div id="signup-section" class="hidden">
+                <h2 class="auth-title">Kreye Kont</h2>
+                <div class="input-group"><i class="fa fa-user"></i><input type="text" id="sign-name" placeholder="Non Konplè"></div>
+                <div class="input-group"><i class="fa fa-phone"></i><input type="tel" id="sign-phone" placeholder="Nimewo Telefòn"></div>
+                <div class="input-group"><i class="fa fa-envelope"></i><input type="email" id="sign-email" placeholder="Email"></div>
+                <div class="input-group"><i class="fa fa-lock"></i><input type="password" id="sign-pass" placeholder="Modpas"></div>
+                <div class="input-group"><i class="fa fa-users"></i><input type="text" id="sign-ref" placeholder="Kòd Parenn (ARS-...)"></div>
+                <button class="btn-primary-pro" onclick="handleSignup()">ANSKRI KOUNYE A</button>
+                <p class="auth-footer">Gen kont deja? <span onclick="toggleAuth('login')">Konekte</span></p>
+            </div>
         </div>
     </div>
 
     <div id="home-page" class="hidden">
         
-        <div id="sidebar" class="sidebar">
+        <div id="sidebar" class="sidebar-pro">
             <div class="sidebar-header">
-                <img src="https://i.postimg.cc/vTtVtB8P/20260205-163353-removebg-preview.png" width="60">
-                <span onclick="toggleSidebar()">&times;</span>
+                <div class="user-profile">
+                    <div class="avatar-rect">EP</div>
+                    <div class="user-meta">
+                        <h4 id="side-name">Kliyan...</h4>
+                        <p id="user-id-display" class="ars-badge-text">ARS-ID-2026</p>
+                    </div>
+                </div>
+                <i class="fa fa-xmark close-sidebar" onclick="toggleSidebar()"></i>
             </div>
-            <div class="sidebar-content">
-                <p><b>Non:</b> <span id="side-name">...</span></p>
-                <p><b>Tel:</b> <span id="side-phone">...</span></p>
-                <p><b>Email:</b> <span id="side-email">...</span></p>
-                <hr>
-                <button class="side-link" onclick="handleReset()">Chanje Modpas</button>
-                <button class="side-link logout" onclick="handleLogout()">Dekonekte</button>
+            <div class="sidebar-menu">
+                <div class="menu-item" onclick="showPage('paj-akey', document.querySelector('.nav-item'))"><i class="fa fa-house"></i> Akèy</div>
+                <div class="menu-item" onclick="alert('Echanj Plus v2.0 - Sèvis rapid 24/7')"><i class="fa fa-circle-info"></i> Enfòmasyon</div>
+                <div class="menu-item logout" onclick="handleLogout()"><i class="fa fa-right-from-bracket"></i> Dekonekte</div>
             </div>
         </div>
 
-        <header class="top-nav">
-            <i class="fa fa-bars" onclick="toggleSidebar()"></i>
-            <span id="user-id-display" class="user-id">ID: ARS-...</span>
+        <header class="main-header">
+            <i class="fa fa-bars-staggered" onclick="toggleSidebar()"></i>
+            <div class="id-badge" id="top-id-badge">EP-PRO</div>
         </header>
 
-        <main id="main-content">
+        <main class="content">
             <section id="paj-akey" class="paj-active">
-                <div class="balance-card">
-                    <span class="label">BALANS DISPONIB</span>
-                    <div id="user-balance" class="main-bal">0.00</div>
-                    <small>Gourdes (HTG)</small>
+                <div class="carousel-section">
+                    <div class="carousel-container">
+                        <div class="carousel-wrapper" id="carousel-slider">
+                            <div class="slide"><img src="https://i.postimg.cc/gkVX6Kp9/1771501449871-(1).jpg"></div>
+                            <div class="slide"><img src="https://i.postimg.cc/tCZnCHr8/1771501480676-(1).jpg"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="carousel"><div class="slide">Byenveni sou Echanj Plus 2026!</div></div>
+
+                <div class="card-balance-rect">
+                    <p style="opacity: 0.8; font-size: 13px;">Balans ou disponib</p>
+                    <div class="balance-row">
+                        <h1 id="user-balance">0.00</h1>
+                        <span>HTG</span>
+                    </div>
+                </div>
+
+                <div class="referral-banner" onclick="shareReferral()">
+                    <div class="ref-icon"><i class="fa fa-gift"></i></div>
+                    <div class="ref-text">
+                        <b>Pataje & Touche 3.5%</b>
+                        <p>Klike pou voye kòd ou bay zanmi</p>
+                    </div>
+                    <i class="fa fa-chevron-right"></i>
+                </div>
             </section>
 
             <section id="paj-echanj" class="hidden">
-                <div class="container">
-                    <h3>Echanje Minit</h3>
-                    <div class="box">
-                        <button class="btn-main btn-digi" onclick="toggleBox('input-digi')">Digicel</button>
-                        <div id="input-digi" class="hidden">
-                            <input type="number" id="qty-digi" placeholder="Kantite Minit">
-                            <p id="calc-digi" class="res-text">Resevwa: 0.00 G</p>
-                            <button class="confirm-btn" onclick="processEchanj('digicel')">KONFIME</button>
+                <h3 class="section-title">Echanj Minit</h3>
+                <div class="provider-list">
+                    <div class="provider-card" onclick="toggleBox('box-digi')">
+                        <div class="provider-info">
+                            <img src="https://i.postimg.cc/zvH2mMwz/Digicel.jpg">
+                            <div><h4>Digicel</h4><small>99><1001</small></div>
                         </div>
+                        <i class="fa fa-chevron-down"></i>
                     </div>
-                    <div class="box">
-                        <button class="btn-main btn-nat" onclick="toggleBox('input-nat')">Natcom</button>
-                        <div id="input-nat" class="hidden">
-                            <input type="number" id="qty-nat" placeholder="Kantite Minit">
-                            <p id="calc-nat" class="res-text">Resevwa: 0.00 G</p>
-                            <button class="confirm-btn" onclick="processEchanj('natcom')">KONFIME</button>
+                    <div id="box-digi" class="hidden provider-details">
+                        <input type="number" id="qty-digi" placeholder="Montan Gdes" oninput="calculate('digi')">
+                        <div class="calc-res" id="calc-digi">W ap resevwa: 0.00 G</div>
+                        <button class="btn-dialer digi-bg" onclick="processEchanj('digicel')">KONFIME & OUVRI DIALER</button>
+                    </div>
+
+                    <div class="provider-card" onclick="toggleBox('box-nat')">
+                        <div class="provider-info">
+                            <img src="https://i.postimg.cc/6q4bsSVK/natcom.webp">
+                            <div><h4>Natcom</h4><small>99><501</small></div>
                         </div>
+                        <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <div id="box-nat" class="hidden provider-details">
+                        <input type="number" id="qty-nat" placeholder="Montan Gdes" oninput="calculate('nat')">
+                        <div class="calc-res" id="calc-nat">W ap resevwa: 0.00 G</div>
+                        <button class="btn-dialer nat-bg" onclick="processEchanj('natcom')">KONFIME & OUVRI DIALER</button>
                     </div>
                 </div>
             </section>
 
             <section id="paj-retre" class="hidden">
-                <div class="container">
-                    <h3>Mande Retrè</h3>
-                    <div class="box border-green">
-                        <select id="metod"><option value="MonCash">MonCash</option><option value="NatCash">NatCash</option></select>
-                        <input type="number" id="retre-amt" placeholder="Kantite Gdes">
-                        <input type="tel" id="retre-phone" placeholder="Nimewo Telefòn">
-                        <input type="text" id="retre-nom" placeholder="Non sou kont lan">
-                        <button class="btn-main bg-green" onclick="processRetre()">KONFIME</button>
+                <div class="header-section-pro">
+                    <h3 class="section-title">Retire Lajan</h3>
+                    <div class="mini-balance-badge"><i class="fa fa-wallet"></i> <span id="retre-mini-balance">0.00</span> G</div>
+                </div>
+
+                <div class="withdraw-card-pro">
+                    <div class="input-pro-group">
+                        <label>Non sou kont lan</label>
+                        <input type="text" id="retre-name" placeholder="Egz: Jean Bakèl">
                     </div>
+                    <div class="input-pro-group">
+                        <label>Nimewo MonCash/NatCash</label>
+                        <input type="tel" id="retre-phone" placeholder="509...">
+                    </div>
+                    <div class="input-pro-group">
+                        <label>Metòd</label>
+                        <select id="retre-method">
+                            <option value="MonCash">MonCash</option>
+                            <option value="NatCash">NatCash</option>
+                        </select>
+                    </div>
+                    <div class="input-pro-group">
+                        <label>Montan pou retire</label>
+                        <input type="number" id="retre-amount" placeholder="Minimòm 100 G">
+                    </div>
+                    <button class="btn-withdraw-ultra" onclick="processRetre()">
+                        <div class="btn-content">
+                            <span class="btn-text">KONFIME RETRÈ</span>
+                            <div class="btn-icon"><i class="fa fa-arrow-right-long"></i></div>
+                        </div>
+                        <div class="btn-shine"></div>
+                    </button>
                 </div>
             </section>
 
             <section id="paj-trans" class="hidden">
-                <div class="container"><h3>Istorik</h3><div id="transaction-list"></div></div>
-            </section>
-
-            <section id="paj-kripto" class="hidden">
-                <div class="container"><h3>Kripto</h3><p>Byento...</p></div>
+                <h3 class="section-title">Istorik</h3>
+                <div class="trans-filter-nav">
+                    <button class="filter-btn active" onclick="filterTrans('tout', this)">Tout</button>
+                    <button class="filter-btn" onclick="filterTrans('Echanj', this)">Echanj</button>
+                    <button class="filter-btn" onclick="filterTrans('Retrè', this)">Retrè</button>
+                </div>
+                <div id="transaction-list" class="trans-container"></div>
             </section>
         </main>
 
+        <div id="user-chat-box" class="chat-window chat-closed">
+            <div class="chat-header-pro">
+                <div class="admin-status"><div class="online-dot"></div><span>Sipò Echanj Plus</span></div>
+                <button onclick="toggleChat()" class="btn-close-chat"><i class="fa fa-x"></i></button>
+            </div>
+            <div id="chat-messages" class="chat-body-pro"></div>
+            <div class="chat-footer-pro">
+                <div class="input-container-pro">
+                    <input type="text" id="chat-input-text" placeholder="Ekri yon mesaj...">
+                    <button id="send-chat-btn" onclick="sendMessage()"><i class="fa fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
         <nav class="bottom-nav">
-            <div class="nav-item active" onclick="showPage('paj-akey', this)"><i class="fa fa-home"></i><span>Akey</span></div>
-            <div class="nav-item" onclick="showPage('paj-echanj', this)"><i class="fa fa-exchange-alt"></i><span>Echanj</span></div>
-            <div class="nav-item" onclick="showPage('paj-kripto', this)"><i class="fa fa-bitcoin-sign"></i><span>Kripto</span></div>
-            <div class="nav-item" onclick="showPage('paj-trans', this)"><i class="fa fa-history"></i><span>Trans</span></div>
-            <div class="nav-item" onclick="showPage('paj-retre', this)"><i class="fa fa-wallet"></i><span>Retrè</span></div>
+            <div class="nav-item active" onclick="showPage('paj-akey', this)"><i class="fa fa-house"></i><span>Akèy</span></div>
+            <div class="nav-item" onclick="showPage('paj-echanj', this)"><i class="fa fa-rotate"></i><span>Echanj</span></div>
+            <div class="nav-item" onclick="showPage('paj-retre', this)"><i class="fa fa-money-bill-transfer"></i><span>Retrè</span></div>
+            <div class="nav-item" onclick="showPage('paj-trans', this)"><i class="fa fa-clock-rotate-left"></i><span>Istorik</span></div>
+            <div class="nav-item chat-trigger" onclick="toggleChat()"><i class="fa fa-comment-dots"></i><span>Sipò</span></div>
         </nav>
-    </div>
-
-    <div id="profile-modal" class="modal-overlay hidden">
-        <div class="modal-card">
-            <h3>Konplete Profil ou</h3>
-            <input type="text" id="update-name" placeholder="Non konplè">
-            <input type="tel" id="update-phone" placeholder="Nimewo Telefòn">
-            <button class="btn-main bg-blue" onclick="updateMissingProfile()">Sove</button>
-        </div>
-    </div>
-
-    <div id="chat-launcher" class="hidden" onclick="toggleChat()"><i class="fas fa-comments"></i></div>
-    <div id="user-chat-box" class="chat-hidden">
-        <div id="chat-header-btn"><span>Sipò Echanj Plus</span><i class="fas fa-times" onclick="toggleChat()"></i></div>
-        <div id="chat-messages"></div>
-        <div class="chat-input-box">
-            <input type="text" id="chat-input-text" placeholder="Ekri nou...">
-            <button id="send-chat-btn">➤</button>
-        </div>
     </div>
 
     <script type="module" src="app.js"></script>
     <script>
-        function togglePass(id) { const el = document.getElementById(id); el.type = el.type === "password" ? "text" : "password"; }
-        function toggleAuth(m) { 
-            document.getElementById('login-section').classList.toggle('hidden', m === 'signup');
-            document.getElementById('signup-section').classList.toggle('hidden', m === 'login');
+        function toggleAuth(mode) {
+            document.getElementById('login-section').classList.toggle('hidden', mode === 'signup');
+            document.getElementById('signup-section').classList.toggle('hidden', mode === 'login');
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function toggleChat() { document.getElementById('user-chat-box').classList.toggle('chat-closed'); }
         function toggleBox(id) { document.getElementById(id).classList.toggle('hidden'); }
-        function toggleChat() { document.getElementById('user-chat-box').classList.toggle('chat-hidden'); }
-        function showPage(p, el) {
+        
+        function showPage(pageId, navEl) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(p).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
+            document.getElementById(pageId).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(navEl) navEl.classList.add('active');
+            if(pageId === 'paj-trans') filterTrans('tout', document.querySelector('.filter-btn'));
+        }
+
+        function calculate(type) {
+            const qty = parseFloat(document.getElementById('qty-'+type).value) || 0;
+            const res = qty - (qty * 0.165);
+            document.getElementById('calc-'+type).innerText = "W ap resevwa: " + res.toFixed(2) + " G";
         }
     </script>
 </body>
-                                                                      </html>
-                                
+</html>
