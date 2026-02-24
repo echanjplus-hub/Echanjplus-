@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Echanj Plus | Vèsyon Ofisyèl 2026</title>
+    <title>Echanj Plus | Ofisyèl 2026</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="style.css">
-    
 </head>
 <body>
 
@@ -39,6 +38,7 @@
                 <div class="input-group"><i class="fa fa-phone"></i><input type="tel" id="sign-phone" placeholder="Telefòn (MonCash/NatCash)"></div>
                 <div class="input-group"><i class="fa fa-envelope"></i><input type="email" id="sign-email" placeholder="Email"></div>
                 <div class="input-group"><i class="fa fa-lock"></i><input type="password" id="sign-pass" placeholder="Modpas (6+ karaktè)"></div>
+                <div class="input-group"><i class="fa fa-user-plus"></i><input type="text" id="sign-ref" placeholder="Kòd Parenaj (Opsyonèl)"></div>
                 <button class="btn-primary-pro" onclick="handleSignup()">ANSKRI</button>
                 <p class="auth-footer" onclick="toggleAuth('login')">Gen kont deja? Konekte</p>
             </div>
@@ -59,8 +59,9 @@
             </div>
             <div class="sidebar-menu">
                 <div class="menu-item active" onclick="showPage('paj-akey')"><i class="fa fa-house"></i> Akèy</div>
+                <div class="menu-item" onclick="showPage('paj-parenaj')"><i class="fa fa-gift"></i> Parenaj & Bonis</div>
                 <div class="menu-item" onclick="showAbout()"><i class="fa fa-circle-info"></i> About Echanj Plus</div>
-                <div class="menu-item logout-btn" onclick="handleLogout()"><i class="fa fa-right-from-bracket"></i> Dekonekte</div>
+                <div class="menu-item logout-btn" onclick="handleLogout()" style="color:red; margin-top:20px;"><i class="fa fa-right-from-bracket"></i> Dekonekte</div>
             </div>
         </div>
 
@@ -72,7 +73,7 @@
 
         <main class="content-wrapper">
             
-            <section id="paj-akey" class="active-section">
+            <section id="paj-akey">
                 <div class="carousel-container">
                     <div class="carousel-wrapper" id="carousel-slider">
                         <div class="slide"><img src="https://i.postimg.cc/gkVX6Kp9/1771501449871-(1).jpg"></div>
@@ -93,18 +94,40 @@
                 </div>
             </section>
 
+            <section id="paj-parenaj" class="hidden">
+                <div class="form-container" style="text-align: center;">
+                    <i class="fa fa-gift" style="font-size: 50px; color: #f59e0b; margin-bottom: 15px;"></i>
+                    <h3>Parenaj</h3>
+                    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Envite zanmi epi resevwa bonis sou chak tranzaksyon yo fè.</p>
+                    
+                    <div style="background: #f1f5f9; padding: 15px; border-radius: 15px; border: 2px dashed #0062ff; margin-bottom: 20px;">
+                        <small>KÒD PARENAJ OU</small>
+                        <h2 id="my-ref-code" style="letter-spacing: 2px; color: #0062ff;">ARS-....</h2>
+                    </div>
+                    
+                    <button class="btn-primary-pro" onclick="kopyeKod()">KOPYE KÒD LAN</button>
+                </div>
+                
+                <div class="form-container" style="margin-top: 15px;">
+                    <h4>Moun ou parennen</h4>
+                    <div id="list-moun-parennen" style="font-size: 13px; color: #94a3b8; padding: 10px 0;">
+                        Poko gen moun ki itilize kòd ou a.
+                    </div>
+                </div>
+            </section>
+
             <section id="paj-echanj" class="hidden">
                 <h3 class="page-title">Chwazi Rezo</h3>
                 <div class="provider-card" onclick="openDialer('digicel')">
                     <div class="provider-info">
-                        <img src="https://i.postimg.cc/zvH2mMwz/Digicel.jpg" alt="Digicel">
+                        <img src="https://i.postimg.cc/zvH2mMwz/Digicel.jpg" width="40">
                         <b>Digicel (99 > 1001)</b>
                     </div>
                     <i class="fa fa-phone-flip"></i>
                 </div>
                 <div class="provider-card" onclick="openDialer('natcom')">
                     <div class="provider-info">
-                        <img src="https://i.postimg.cc/6q4bsSVK/natcom.webp" alt="Natcom">
+                        <img src="https://i.postimg.cc/6q4bsSVK/natcom.webp" width="40">
                         <b>Natcom (99 > 501)</b>
                     </div>
                     <i class="fa fa-phone-flip"></i>
@@ -129,8 +152,7 @@
                     <button class="filter-btn" onclick="filterData('Echanj', this)">Echanj</button>
                     <button class="filter-btn" onclick="filterData('Retrè', this)">Retrè</button>
                 </div>
-                <div id="transaction-list">
-                    </div>
+                <div id="transaction-list"></div>
             </section>
         </main>
 
@@ -148,10 +170,10 @@
 
         <div id="modal-about" class="modal-overlay hidden">
             <div class="modal-card">
-                <i class="fa fa-circle-info" style="font-size: 40px; color: var(--primary);"></i>
+                <i class="fa fa-circle-info" style="font-size: 40px; color: #0062ff;"></i>
                 <h3>About Echanj Plus</h3>
-                <p>Echanj Plus se sèl platfòm ki pèmèt ou transfòme minit ou an kòb kach sou MonCash oswa NatCash 24/7. Sèvis nou an rapid, sekirize, e nou la pou ede w nenpòt lè.</p>
-                <button class="btn-primary-pro" onclick="closeAbout()">DANKÒ, MÈSI</button>
+                <p>Echanj Plus se sèvis referans ou pou echanj minit an kòb kach an Ayiti. Sekirite ak rapidite se priyorite nou.</p>
+                <button class="btn-primary-pro" onclick="closeAbout()">DAKÒ</button>
             </div>
         </div>
 
@@ -160,12 +182,12 @@
             <div class="nav-item" onclick="showPage('paj-echanj', this)"><i class="fa fa-rotate"></i><span>Echanj</span></div>
             <div class="nav-item" onclick="showPage('paj-retre', this)"><i class="fa fa-money-bill-transfer"></i><span>Retrè</span></div>
             <div class="nav-item" onclick="showPage('paj-trans', this)"><i class="fa fa-clock-rotate-left"></i><span>Istorik</span></div>
-            <div class="nav-item chat-btn" onclick="toggleChat()"><i class="fa fa-comments"></i><span>Sipò</span></div>
+            <div class="nav-item" onclick="toggleChat()"><i class="fa fa-comments"></i><span>Sipò</span></div>
         </nav>
     </div>
 
     <script type="module" src="script.js"></script>
-    
+
     <script>
         function toggleAuth(mode) {
             document.getElementById('login-section').classList.toggle('hidden', mode === 'signup');
@@ -182,6 +204,12 @@
             if(el) el.classList.add('active');
             if(document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         }
+        function kopyeKod() {
+            const code = document.getElementById('my-ref-code').innerText;
+            navigator.clipboard.writeText(code);
+            alert("Kòd ou kopye ak siksè!");
+        }
     </script>
 </body>
-</html>
+                    </html>
+                                                        
