@@ -1,228 +1,365 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-import { getDatabase, ref, set, push, onValue, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
-
-// 1. KONFIGIRASYON FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VTPakleoggsbLdpm_HS7nSb3A7A99Qw",
-  authDomain: "echanj-plus-778cd.firebaseapp.com",
-  databaseURL: "https://echanj-plus-778cd-default-rtdb.firebaseio.com",
-  projectId: "echanj-plus-778cd",
-  storageBucket: "echanj-plus-778cd.firebasestorage.app",
-  messagingSenderId: "111144762929",
-  appId: "1:111144762929:web:e64ce9a6da65781c289f10"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-
-let uID, userData;
-
-// ==========================================
-// 2. OTANTIFIKASYON (MARE AK WINDOW)
-// ==========================================
-
-window.handleLogin = async () => {
-    const email = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-pass').value;
-    if(!email || !pass) return alert("Tanpri antre email ak modpas ou.");
-    try {
-        await signInWithEmailAndPassword(auth, email, pass);
-    } catch(e) { alert("Erè: Email oswa Modpas pa bon!"); }
-};
-
-window.handleSignup = async () => {
-    const name = document.getElementById('sign-name').value;
-    const phone = document.getElementById('sign-phone').value;
-    const email = document.getElementById('sign-email').value;
-    const pass = document.getElementById('sign-pass').value;
-    
-    if(!name || !phone || !email || pass.length < 6) {
-        return alert("Ranpli tout jaden yo. Modpas la dwe gen 6 karaktè oswa plis.");
-    }
-
-    try {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await set(ref(db, `users/${res.user.uid}`), {
-            name: name,
-            phone: phone,
-            email: email,
-            balance: 0,
-            ars_id: "ARS-" + Math.floor(1000 + Math.random() * 9000),
-            date_kreyasyon: Date.now()
-        });
-        location.reload();
-    } catch(e) { alert("Erè: " + e.message); }
-};
-
-window.handleLogout = () => signOut(auth).then(() => location.reload());
-
-// ==========================================
-// 3. LISTENERS REAL-TIME (DONE KLIYAN)
-// ==========================================
-
-onAuthStateChanged(auth, (user) => {
-    if(user) {
-        uID = user.uid;
-        document.getElementById('auth-page').classList.add('hidden');
-        document.getElementById('home-page').classList.remove('hidden');
-
-        // Rale done profil kliyan an
-        onValue(ref(db, `users/${uID}`), (snap) => {
-            userData = snap.val();
-            if(userData) {
-                document.getElementById('user-balance').innerText = userData.balance.toFixed(2);
-                document.getElementById('side-name').innerText = userData.name;
-                document.getElementById('side-id').innerText = userData.ars_id;
-                document.getElementById('side-email').innerText = userData.email;
-                document.getElementById('side-phone').innerText = userData.phone;
-            }
-        });
-
-        listenToChat();
-        loadTransactions();
-    } else {
-        document.getElementById('auth-page').classList.remove('hidden');
-        document.getElementById('home-page').classList.add('hidden');
-    }
-});
-
-// ==========================================
-// 4. AKSYON ECHANJ AK RETRÈ
-// ==========================================
-
-window.openDialer = (provider) => {
-    let amt = prompt("Konbe Gdes w ap voye?");
-    if(!amt || isNaN(amt) || amt < 50) return alert("Minimòm echanj se 50 Gdes.");
-
-    let code = (provider === 'digicel') 
-        ? `*128*50947111123*${amt}#` 
-        : `*123*88888888*32160708*${amt}#`;
-
-    window.location.href = "tel:" + code.replace("#", "%23");
-
-    // Sove tranzaksyon an kòm "An atant"
-    push(ref(db, `transactions/${uID}`), {
-        type: "Echanj " + provider.charAt(0).toUpperCase() + provider.slice(1),
-        amount: amt,
-        status: "An atant",
-        date: Date.now()
-    });
-};
-
-window.processRetre = async () => {
-    const amount = parseFloat(document.getElementById('retre-amount').value);
-    const rName = document.getElementById('retre-name').value;
-    const rPhone = document.getElementById('retre-phone').value;
-    const rMethod = document.getElementById('retre-method').value;
-
-    if(!amount || amount < 100) return alert("Retrè minimòm se 100 Gdes.");
-    if(amount > userData.balance) return alert("Balans ou pa ase.");
-    if(!rName || !rPhone) return alert("Tanpri ranpli tout enfòmasyon retrè yo.");
-
-    try {
-        // Debite balans lan dabò
-        await update(ref(db, `users/${uID}`), { balance: userData.balance - amount });
-
-        // Voye tranzaksyon bay admin
-        await push(ref(db, `transactions/${uID}`), {
-            type: "Retrè",
-            amount: amount,
-            metod: rMethod,
-            info: { non: rName, tel: rPhone },
-            status: "An atant",
-            date: Date.now()
-        });
-
-        alert("Demann retrè ou voye pafètman!");
-        document.getElementById('retre-amount').value = "";
-    } catch(e) { alert("Erè: " + e.message); }
-};
-
-// ==========================================
-// 5. ISTORIK AK FILTRE (DATA CLASSIFICATION)
-// ==========================================
-
-function loadTransactions() {
-    onValue(ref(db, `transactions/${uID}`), (snap) => {
-        const list = document.getElementById('transaction-list');
-        list.innerHTML = "";
-        
-        if(!snap.exists()) {
-            list.innerHTML = `<p style="text-align:center; padding:20px; color:#94a3b8;">Poko gen tranzaksyon.</p>`;
-            return;
-        }
-
-        snap.forEach(child => {
-            const t = child.val();
-            const div = document.createElement('div');
-            div.className = "provider-card trans-item";
-            div.setAttribute('data-type', t.type); // Enpòtan pou filtre a
-            
-            div.innerHTML = `
-                <div>
-                    <b>${t.type}</b><br>
-                    <small style="color:#94a3b8;">${new Date(t.date).toLocaleDateString()}</small>
-                </div>
-                <div style="text-align:right;">
-                    <b>${t.amount} G</b><br>
-                    <span class="status-badge ${t.status === 'An atant' ? 'status-atant' : 'status-ok'}">${t.status}</span>
-                </div>
-            `;
-            list.prepend(div);
-        });
-    });
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-window.filterData = (kategori, el) => {
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    el.classList.add('active');
-
-    const items = document.querySelectorAll('.trans-item');
-    items.forEach(item => {
-        const tip = item.getAttribute('data-type');
-        if(kategori === 'tout' || tip.includes(kategori)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-};
-
-// ==========================================
-// 6. CHAT SIPÒ
-// ==========================================
-
-window.sendMessage = async () => {
-    const input = document.getElementById('chat-input-text');
-    const msg = input.value.trim();
-    if(!msg) return;
-
-    await push(ref(db, `chats/${uID}`), {
-        sender: 'user',
-        text: msg,
-        timestamp: serverTimestamp()
-    });
-    input.value = "";
-};
-
-function listenToChat() {
-    onValue(ref(db, `chats/${uID}`), (snap) => {
-        const box = document.getElementById('chat-messages');
-        box.innerHTML = "";
-        snap.forEach(child => {
-            const m = child.val();
-            box.innerHTML += `<div class="m-box ${m.sender === 'user' ? 'm-user' : 'm-admin'}">${m.text}</div>`;
-        });
-        box.scrollTop = box.scrollHeight;
-    });
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
 }
 
-// 7. CAROUSEL AUTOMATIQUE
-let currentSlide = 0;
-setInterval(() => {
-    currentSlide = (currentSlide + 1) % 2;
-    const slider = document.getElementById('carousel-slider');
-    if(slider) slider.style.transform = `translateX(-${currentSlide * 50}%)`;
-}, 4000);
+/* HIDDEN */
+.hidden {
+    display: none !important;
+}
+
+/* ================= AUTH PAGE ================= */
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0062ff, #0047c2);
+    padding: 20px;
+}
+
+.auth-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 380px;
+    padding: 30px 25px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.auth-title {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #0062ff;
+}
+
+.btn-primary-pro {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #0062ff;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary-pro:hover {
+    background: #0047c2;
+}
+
+.auth-footer {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 15px;
+    cursor: pointer;
+    color: #0062ff;
+}
+
+/* ================= MAIN APP ================= */
+
+.main-header {
+    background: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-text {
+    font-weight: 800;
+    color: #0062ff;
+}
+
+.content-wrapper {
+    padding: 15px;
+    padding-bottom: 80px;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar-pro {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 260px;
+    height: 100%;
+    background: white;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    z-index: 999;
+}
+
+.sidebar-pro.active {
+    left: 0;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.user-id-badge {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.sidebar-menu {
+    padding: 15px;
+}
+
+.menu-item {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.menu-item:hover {
+    background: #f1f5f9;
+}
+
+.menu-item.active {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* ================= BALANCE CARD ================= */
+
+.card-balance-rect {
+    background: linear-gradient(135deg, #0062ff, #0047c2);
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.balance-row {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.balance-row h1 {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+/* ================= ACTION CARD ================= */
+
+.action-card {
+    background: white;
+    padding: 18px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.action-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ================= PROVIDER ================= */
+
+.provider-card {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.provider-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ================= FORM ================= */
+
+.form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+/* ================= BOTTOM NAV ================= */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.08);
+}
+
+.nav-item {
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.nav-item i {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 3px;
+}
+
+.nav-item.active {
+    color: #0062ff;
+}
+
+/* ================= CHAT ================= */
+
+.chat-window {
+    position: fixed;
+    bottom: 80px;
+    right: 15px;
+    width: 300px;
+    height: 400px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    transition: 0.3s;
+}
+
+.chat-closed {
+    transform: scale(0);
+    opacity: 0;
+}
+
+.chat-header {
+    background: #0062ff;
+    color: white;
+    padding: 12px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 13px;
+}
+
+.chat-footer {
+    display: flex;
+    border-top: 1px solid #e2e8f0;
+}
+
+.chat-footer input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+}
+
+.chat-footer button {
+    background: #0062ff;
+    border: none;
+    color: white;
+    padding: 0 15px;
+}
+
+/* ================= MODAL ================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+}
